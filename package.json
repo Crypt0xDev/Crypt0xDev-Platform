@@ -2,6 +2,14 @@
   "name": "crypt0xdev",
   "type": "module",
   "version": "0.0.1",
+  "description": "Plataforma profesional de ciberseguridad y CTF writeups desarrollada con Astro",
+  "author": "Crypt0xDev",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Crypt0xDev/Crypt0.git"
+  },
+  "keywords": ["cybersecurity", "ctf", "writeups", "astro", "typescript", "blog"],
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
