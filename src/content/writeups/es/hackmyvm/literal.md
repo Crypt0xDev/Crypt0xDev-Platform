@@ -6,7 +6,7 @@ platform: "hackmyvm"
 category: "machines"
 difficulty: "easy"
 os: "linux"
-lang: es
+language: es
 tags: ["lfi", "sudo", "path-hijacking"]
 retired: false
 heroImage: "/images/writeups/hackmyvm/literal.jpg"

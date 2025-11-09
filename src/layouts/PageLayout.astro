@@ -18,14 +18,7 @@ const { title, description, lang = 'es', image } = Astro.props;
   image={image}
   canonical={Astro.url.href}
 >
-  <main class="page-layout">
+  <main class="min-h-[calc(100vh-16rem)] py-8">
     <slot />
   </main>
 </Layout>
-
-<style>
-  .page-layout {
-    min-height: calc(100vh - 16rem);
-    padding: 2rem 0;
-  }
-</style>

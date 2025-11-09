@@ -1,31 +1,114 @@
 ---
-// Redirección al idioma por defecto
+// Redirección inteligente basada en ubicación geográfica y preferencias del navegador
 export const prerender = true;
-
-const defaultLang = 'es';
-const supportedLanguages = ['es', 'en'];
-
-// Obtener idioma preferido del navegador
-function getPreferredLanguage(accept: string | null): string {
-  if (!accept) return defaultLang;
-  
-  const languages = accept.split(',')
-    .map(lang => {
-      const [code, q = '1'] = lang.split(';q=');
-      return {
-        code: code.split('-')[0],
-        q: parseFloat(q)
-      };
-    })
-    .sort((a, b) => b.q - a.q);
-  
-  const preferred = languages.find(lang => 
-    supportedLanguages.includes(lang.code)
-  );
-  
-  return preferred ? preferred.code : defaultLang;
-}
-
-// Redirigir al idioma por defecto
-return Astro.redirect(`/${defaultLang}`);
 ---
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crypt0xDev - Redirecting...</title>
+  <meta name="robots" content="noindex, nofollow">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      color: white;
+    }
+    .loader {
+      text-align: center;
+    }
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 4px solid white;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .message {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <div class="loader">
+    <div class="spinner"></div>
+    <p class="message">Detectando tu ubicación...</p>
+  </div>
+
+  <script>
+    // Países de habla hispana (código ISO 3166-1 alpha-2)
+    const spanishSpeakingCountries = [
+      'ES', 'MX', 'AR', 'CO', 'CL', 'PE', 'VE', 'EC', 'GT', 'CU',
+      'BO', 'DO', 'HN', 'PY', 'SV', 'NI', 'CR', 'PA', 'UY', 'PR', 'GQ'
+    ];
+
+    // Países anglófonos
+    const englishSpeakingCountries = [
+      'US', 'GB', 'CA', 'AU', 'NZ', 'IE', 'ZA', 'IN', 'SG', 'PH'
+    ];
+
+    // Función para detectar idioma del navegador
+    function getBrowserLanguage() {
+      const lang = navigator.language;
+      const langCode = lang.split('-')[0].toLowerCase();
+      
+      if (langCode === 'es') return 'es';
+      if (langCode === 'en') return 'en';
+      
+      return 'es'; // Default español
+    }
+
+    // Función para detectar ubicación usando API de geolocalización IP
+    async function detectLanguageByLocation() {
+      try {
+        // Intentar obtener el país usando CloudFlare trace
+        const response = await fetch('https://www.cloudflare.com/cdn-cgi/trace');
+        const data = await response.text();
+        
+        const locMatch = data.match(/loc=([A-Z]{2})/);
+        if (locMatch && locMatch[1]) {
+          const country = locMatch[1];
+          
+          // Si está en país de habla hispana
+          if (spanishSpeakingCountries.includes(country)) {
+            return 'es';
+          }
+          
+          // Si está en país anglófono
+          if (englishSpeakingCountries.includes(country)) {
+            return 'en';
+          }
+        }
+      } catch (error) {
+        console.log('No se pudo detectar ubicación, usando idioma del navegador');
+      }
+      
+      // Fallback: usar idioma del navegador
+      return getBrowserLanguage();
+    }
+
+    // Ejecutar detección y redirección
+    (async function() {
+      const targetLang = await detectLanguageByLocation();
+      
+      // Redirigir al idioma detectado
+      window.location.href = `/${targetLang}`;
+    })();
+  </script>
+</body>
+</html>

@@ -6,7 +6,7 @@ platform: "vulnhub"
 category: "machines"
 difficulty: "medium"
 os: "linux"
-lang: es
+language: es
 tags: ["wordpress", "bruteforce", "suid", "privilege-escalation"]
 retired: false
 heroImage: "/images/writeups/vulnhub/mrrobot-card.png"

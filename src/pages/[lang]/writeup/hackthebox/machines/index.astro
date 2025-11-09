@@ -1,8 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
 import Layout from '../../../../../layouts/Layout.astro';
-import { useTranslations } from '../../../../../utils/i18n';
-import { sortByDate, filterByLang } from '../../../../../utils/helpers';
+import Card from '../../../../../components/shared/Card.astro';
+import { useTranslations } from '../../../../../i18n/core';
+import { sortByDate, filterByLang } from '../../../../../i18n/utils';
 
 export async function getStaticPaths() {
   return [
@@ -14,9 +15,9 @@ export async function getStaticPaths() {
 const { lang } = Astro.params;
 const t = useTranslations(lang as 'es' | 'en');
 
-// Obtener todos los writeups de HTB Machines
+// Obtener writeups de HTB Machines
 const allWriteups = await getCollection('writeups');
-const machineWriteups = sortByDate(
+const machinesWriteups = sortByDate(
   filterByLang(allWriteups, lang as string).filter(w => 
     w.data.platform === 'htb' && w.data.category === 'machines'
   )
@@ -31,91 +32,62 @@ const difficultyColors = {
 ---
 
 <Layout
-  title={`HackTheBox - Machines`}
-  description={lang === 'es' ? 'Writeups de Machines de HackTheBox' : 'HackTheBox Machines Writeups'}
+  title={lang === 'es' ? 'Máquinas' : 'Machines'}
+  description={lang === 'es' ? 'Writeups de máquinas de HackTheBox' : 'HackTheBox machines writeups'}
   lang={lang}
 >
-  <main class="htb-category">
+  <main class="machines-page">
     <div class="container">
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb">
+        <a href={`/${lang}/writeup`}>{t('writeups.title')}</a>
+        <span class="separator">/</span>
+        <a href={`/${lang}/writeup/hackthebox`}>HackTheBox</a>
+        <span class="separator">/</span>
+        <span class="current">{lang === 'es' ? 'Máquinas' : 'Machines'}</span>
+      </nav>
+
       <!-- Header -->
-      <header class="category-header">
-        <a href={`/${lang}/writeup/hackthebox`} class="back-link">
-          ← {lang === 'es' ? 'Volver a HackTheBox' : 'Back to HackTheBox'}
-        </a>
-        <div class="category-info">
-          <div class="category-logo">
-            <img 
-              src="/images/platforms/htb/machines.png" 
-              alt="Machines"
-              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-            />
-            <span class="category-fallback">🖥️</span>
-          </div>
-          <div>
-            <h1 class="category-title">Machines</h1>
-            <p class="category-subtitle">
-              {machineWriteups.length} {lang === 'es' ? 'writeups disponibles' : 'available writeups'}
-            </p>
+      <header class="page-header">
+        <div class="header-content">
+          <div class="icon">💻</div>
+          <h1>{lang === 'es' ? 'Máquinas HackTheBox' : 'HackTheBox Machines'}</h1>
+          <p class="subtitle">
+            {lang === 'es' 
+              ? 'Writeups detallados de máquinas de HackTheBox' 
+              : 'Detailed HackTheBox machines writeups'
+            }
+          </p>
+          <div class="stats">
+            <span class="stat-badge">
+              📦 {machinesWriteups.length} {lang === 'es' ? 'Máquinas' : 'Machines'}
+            </span>
           </div>
         </div>
       </header>
 
       <!-- Grid de writeups -->
-      {machineWriteups.length > 0 ? (
+      {machinesWriteups.length > 0 ? (
         <div class="writeups-grid">
-          {machineWriteups.map((writeup) => {
-            // El slug viene como "es/htb/lame", extraemos "htb/lame"
-            const slugParts = writeup.slug.split('/');
-            const actualSlug = slugParts.slice(1).join('/');
-            
+          {machinesWriteups.map((writeup) => {
+            // El slug es "es/hackthebox/sau", necesitamos solo "sau"
+            const machineName = writeup.slug.split('/').slice(2).join('/');
             return (
-            <a href={`/${lang}/writeup/${actualSlug}`} class="writeup-card">
-              <div class="writeup-icon">
-                <img 
-                  src={writeup.data.logo || writeup.data.heroImage || "/images/platforms/htb/machines.png"}
-                  alt={writeup.data.title}
-                  class="writeup-logo"
-                  onerror="this.src='/images/platforms/htb/machines.png'"
-                />
-              </div>
-              <div class="writeup-content">
-                <div class="writeup-header">
-                  <h3 class="writeup-title">{writeup.data.title}</h3>
-                  <div class="writeup-badges">
-                    <span 
-                      class="badge badge-difficulty"
-                      style={`background: ${difficultyColors[writeup.data.difficulty as keyof typeof difficultyColors] || '#6b7280'}; color: white;`}
-                    >
-                      {writeup.data.difficulty}
-                    </span>
-                    {writeup.data.os && (
-                      <span class="badge badge-os">{writeup.data.os}</span>
-                    )}
-                  </div>
-                </div>
-              
-                {writeup.data.description && (
-                  <p class="writeup-description">{writeup.data.description}</p>
-                )}
-                
-                <div class="writeup-footer">
-                  <div class="writeup-tags">
-                    {writeup.data.tags?.slice(0, 3).map((tag: string) => (
-                      <span class="tag">#{tag}</span>
-                    ))}
-                  </div>
-                  <span class="read-more">
-                    {lang === 'es' ? 'Leer más' : 'Read more'} →
-                  </span>
-                </div>
-              </div>
-            </a>
+              <Card
+                title={writeup.data.title}
+                description={writeup.data.description}
+                date={writeup.data.pubDate}
+                image={writeup.data.heroImage}
+                href={`/${lang}/writeup/hackthebox/${machineName}`}
+                tags={writeup.data.tags}
+              />
             );
           })}
         </div>
       ) : (
         <div class="empty-state">
-          <p>{lang === 'es' ? 'No hay writeups disponibles aún' : 'No writeups available yet'}</p>
+          <div class="empty-icon">📭</div>
+          <p>{lang === 'es' ? 'No hay writeups de máquinas disponibles aún' : 'No machine writeups available yet'}</p>
         </div>
       )}
     </div>
@@ -123,314 +95,440 @@ const difficultyColors = {
 </Layout>
 
 <style>
-  .htb-category {
+  .machines-page {
     min-height: 100vh;
     padding: 2rem 0 4rem;
     background: var(--bg-color);
+    position: relative;
+  }
+
+  /* Grid de fondo estilo hacker - sutil */
+  .machines-page::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      linear-gradient(rgba(159, 239, 0, 0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(159, 239, 0, 0.015) 1px, transparent 1px);
+    background-size: 50px 50px;
+    opacity: 0.5;
+    z-index: 0;
+    pointer-events: none;
   }
 
   .container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 0 1.5rem;
+    position: relative;
+    z-index: 1;
   }
 
-  .category-header {
-    margin-bottom: 3rem;
-  }
-
-  .back-link {
-    display: inline-flex;
+  .breadcrumb {
+    display: flex;
     align-items: center;
-    color: var(--accent-color);
-    text-decoration: none;
-    font-size: 0.95rem;
+    gap: 0.5rem;
     margin-bottom: 2rem;
-    transition: all 0.2s ease;
-    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.875rem 1.25rem;
+    background: linear-gradient(135deg, 
+      rgba(159, 239, 0, 0.08), 
+      rgba(159, 239, 0, 0.04)
+    );
+    border-radius: 12px;
+    border: 1px solid rgba(159, 239, 0, 0.2);
+    animation: fadeInDown 0.5s ease-out;
+    width: fit-content;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
   }
 
-  .back-link:hover {
-    color: var(--accent-hover);
-    transform: translateX(-4px);
-  }
-
-  .category-info {
-    display: flex;
-    align-items: center;
-    gap: 1.75rem;
-  }
-
-  .category-logo {
-    width: 90px;
-    height: 90px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--card-bg);
-    border: 2px solid var(--border-color);
-    border-radius: 0.75rem;
-    padding: 0.875rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  }
-
-  .category-logo img {
+  .breadcrumb::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(159, 239, 0, 0.15),
+      transparent
+    );
+    transition: left 0.5s;
   }
 
-  .category-fallback {
-    display: none;
-    font-size: 2.75rem;
+  .breadcrumb:hover::before {
+    left: 100%;
   }
 
-  .category-title {
-    font-size: 2.75rem;
-    font-weight: 800;
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .breadcrumb a {
+    color: #9fef00;
+    text-decoration: none;
+    transition: all 0.2s;
+    font-weight: 600;
+    position: relative;
+  }
+
+  .breadcrumb a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #9fef00;
+    transition: width 0.3s ease;
+  }
+
+  .breadcrumb a:hover::after {
+    width: 100%;
+  }
+
+  .breadcrumb a:hover {
+    color: #c1ff3d;
+  }
+
+  .separator {
+    color: rgba(159, 239, 0, 0.4);
+    opacity: 0.7;
+  }
+
+  .current {
+    font-weight: 600;
     color: var(--text-color);
-    margin-bottom: 0.5rem;
-    letter-spacing: -0.02em;
   }
 
-  .category-subtitle {
+  .page-header {
+    margin-bottom: 3rem;
+    animation: fadeInUp 0.6s ease-out;
+    background: linear-gradient(135deg, 
+      rgba(159, 239, 0, 0.06), 
+      rgba(159, 239, 0, 0.02)
+    );
+    border: 2px solid rgba(159, 239, 0, 0.25);
+    border-radius: 24px;
+    padding: 3rem 2rem;
+    box-shadow: 
+      0 8px 24px rgba(159, 239, 0, 0.1),
+      inset 0 1px 0 rgba(159, 239, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+  }
+
+  /* Borde lateral animado */
+  .page-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      #9fef00 50%,
+      transparent 100%
+    );
+    animation: borderScan 2s ease-in-out infinite;
+  }
+
+  @keyframes borderScan {
+    0%, 100% {
+      opacity: 0.4;
+      transform: scaleY(0.8);
+    }
+    50% {
+      opacity: 1;
+      transform: scaleY(1);
+    }
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(159, 239, 0, 0.12),
+      transparent
+    );
+    animation: shimmer 4s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .header-content {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    display: inline-block;
+    animation: float 3s ease-in-out infinite;
+    filter: drop-shadow(0 4px 8px rgba(159, 239, 0, 0.2));
+    transition: filter 0.3s ease;
+  }
+
+  .icon:hover {
+    filter: drop-shadow(0 8px 16px rgba(159, 239, 0, 0.3));
+    animation: bounce 0.6s ease;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    25% { transform: translateY(-15px); }
+    50% { transform: translateY(0); }
+    75% { transform: translateY(-8px); }
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    color: #9fef00;
+    position: relative;
+    display: inline-block;
+    animation: titleAppear 0.8s ease-out;
+  }
+
+  @keyframes titleAppear {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  h1::after {
+    content: '';
+    position: absolute;
+    bottom: -0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, 
+      transparent, 
+      rgba(159, 239, 0, 0.6), 
+      transparent
+    );
+    animation: underlineExpand 1s ease-out 0.3s forwards;
+  }
+
+  @keyframes underlineExpand {
+    to {
+      width: 80%;
+    }
+  }
+
+  .subtitle {
+    font-size: 1.125rem;
     color: var(--text-muted);
-    font-size: 1.05rem;
-    font-weight: 500;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .stat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, rgba(159, 239, 0, 0.15), rgba(159, 239, 0, 0.08));
+    border: 2px solid rgba(159, 239, 0, 0.3);
+    border-radius: 14px;
+    font-weight: 700;
+    color: #9fef00;
+    box-shadow: 0 4px 12px rgba(159, 239, 0, 0.12);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-badge::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(159, 239, 0, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  .stat-badge:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  .stat-badge:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 8px 24px rgba(159, 239, 0, 0.25);
+    border-color: #9fef00;
   }
 
   .writeups-grid {
     display: grid;
-    gap: 1.75rem;
-    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+    animation: fadeIn 0.8s ease-out;
   }
 
-  .writeup-card {
-    background: var(--card-bg);
-    border: 2px solid var(--border-color);
-    border-radius: 0.875rem;
-    padding: 1.75rem;
-    text-decoration: none;
-    color: inherit;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    gap: 1.25rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  /* Animación escalonada para las cards */
+  .writeups-grid > :global(*) {
+    animation: slideInUp 0.6s ease-out both;
   }
 
-  .writeup-card:hover {
-    transform: translateY(-6px);
-    border-color: var(--accent-color);
-    box-shadow: 0 12px 32px -8px rgba(59, 130, 246, 0.25);
+  .writeups-grid > :global(*:nth-child(1)) { animation-delay: 0.1s; }
+  .writeups-grid > :global(*:nth-child(2)) { animation-delay: 0.2s; }
+  .writeups-grid > :global(*:nth-child(3)) { animation-delay: 0.3s; }
+  .writeups-grid > :global(*:nth-child(4)) { animation-delay: 0.4s; }
+  .writeups-grid > :global(*:nth-child(5)) { animation-delay: 0.5s; }
+  .writeups-grid > :global(*:nth-child(6)) { animation-delay: 0.6s; }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
-  .writeup-icon {
-    width: 80px;
-    height: 80px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--bg-color);
-    border: 2px solid var(--border-color);
-    border-radius: 0.625rem;
-    padding: 0.75rem;
-    transition: all 0.3s ease;
-  }
-
-  .writeup-logo {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    transition: transform 0.3s ease;
-  }
-
-  .writeup-card:hover .writeup-icon {
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-  }
-
-  .writeup-card:hover .writeup-logo {
-    transform: scale(1.1);
-  }
-
-  .writeup-content {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 1.125rem;
-  }
-
-  .writeup-header {
-    display: flex;
-    flex-direction: column;
-    gap: 0.875rem;
-  }
-
-  .writeup-title {
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: var(--text-color);
-    line-height: 1.4;
-    transition: color 0.2s ease;
-  }
-
-  .writeup-card:hover .writeup-title {
-    color: var(--accent-color);
-  }
-
-  .writeup-badges {
-    display: flex;
-    gap: 0.625rem;
-    flex-wrap: wrap;
-  }
-
-  .badge {
-    padding: 0.375rem 0.875rem;
-    border-radius: 0.5rem;
-    font-size: 0.8125rem;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    text-transform: capitalize;
-  }
-
-  .badge-os {
-    background: var(--badge-bg);
-    color: var(--badge-text);
-    border: 1px solid var(--border-color);
-  }
-
-  .writeup-description {
-    color: var(--text-muted);
-    font-size: 0.9375rem;
-    line-height: 1.7;
-    flex: 1;
-  }
-
-  .writeup-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 1.125rem;
-    border-top: 1px solid var(--border-color);
-    margin-top: auto;
-  }
-
-  .writeup-tags {
-    display: flex;
-    gap: 0.625rem;
-    flex-wrap: wrap;
-    flex: 1;
-  }
-
-  .tag {
-    color: var(--accent-color);
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: color 0.2s ease;
-  }
-
-  .writeup-card:hover .tag {
-    color: var(--accent-hover);
-  }
-
-  .read-more {
-    color: var(--accent-color);
-    font-size: 0.9375rem;
-    font-weight: 600;
-    white-space: nowrap;
-    transition: all 0.2s ease;
-  }
-
-  .writeup-card:hover .read-more {
-    color: var(--accent-hover);
-    transform: translateX(4px);
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   .empty-state {
     text-align: center;
-    padding: 5rem 2rem;
-    color: var(--text-muted);
-    font-size: 1.125rem;
+    padding: 4rem 2rem;
+    animation: fadeIn 0.6s ease-out;
+    background: linear-gradient(135deg, 
+      rgba(159, 239, 0, 0.04), 
+      rgba(159, 239, 0, 0.02)
+    );
+    border: 2px dashed rgba(159, 239, 0, 0.25);
+    border-radius: 24px;
+    position: relative;
+    overflow: hidden;
   }
 
-  @media (max-width: 1024px) {
-    .writeups-grid {
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 1.5rem;
-    }
+  .empty-state::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(159, 239, 0, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(159, 239, 0, 0.02) 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.5;
+  }
+
+  .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+    animation: float 3s ease-in-out infinite;
+    position: relative;
+    z-index: 1;
+  }
+
+  .empty-state p {
+    font-size: 1.125rem;
+    color: var(--text-muted);
+    position: relative;
+    z-index: 1;
   }
 
   @media (max-width: 768px) {
-    .container {
-      padding: 0 1rem;
+    .page-header {
+      padding: 2rem 1.5rem;
     }
 
-    .category-header {
-      margin-bottom: 2rem;
+    h1 {
+      font-size: 2rem;
     }
 
-    .category-title {
-      font-size: 2.25rem;
+    .icon {
+      font-size: 3rem;
     }
 
-    .category-subtitle {
-      font-size: 0.95rem;
+    .breadcrumb {
+      font-size: 0.8rem;
+      padding: 0.625rem 1rem;
     }
 
     .writeups-grid {
       grid-template-columns: 1fr;
-      gap: 1.25rem;
-    }
-
-    .writeup-card {
-      padding: 1.5rem;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
-
-    .writeup-icon {
-      width: 70px;
-      height: 70px;
-    }
-
-    .writeup-content {
-      width: 100%;
-    }
-
-    .category-info {
-      gap: 1.25rem;
-    }
-
-    .category-logo {
-      width: 70px;
-      height: 70px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .category-title {
-      font-size: 1.875rem;
-    }
-
-    .writeup-card {
-      padding: 1.25rem;
-    }
-
-    .writeup-title {
-      font-size: 1.125rem;
-    }
-
-    .writeup-footer {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.75rem;
-    }
-
-    .read-more {
-      align-self: flex-end;
+      gap: 1.5rem;
     }
   }
 </style>

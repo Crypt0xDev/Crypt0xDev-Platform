@@ -1,0 +1,70 @@
+{
+  "name": "Crypt0xDev - Cybersecurity Blog & Writeups",
+  "short_name": "Crypt0xDev",
+  "description": "Blog y writeups sobre ciberseguridad, pentesting y hacking ético. Tutoriales de HackTheBox, TryHackMe, VulnHub y HackMyVM en español.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#1e293b",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicons/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "education",
+    "productivity",
+    "security"
+  ],
+  "lang": "es",
+  "dir": "ltr",
+  "shortcuts": [
+    {
+      "name": "Blog",
+      "short_name": "Blog",
+      "description": "Ver artículos del blog",
+      "url": "/es/blog",
+      "icons": [{ "src": "/favicons/favicon.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Writeups",
+      "short_name": "Writeups",
+      "description": "Ver writeups de CTF",
+      "url": "/es/writeup",
+      "icons": [{ "src": "/favicons/favicon.svg", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Crypt0xDev Desktop View"
+    },
+    {
+      "src": "/screenshot-mobile.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Crypt0xDev Mobile View"
+    }
+  ]
+}

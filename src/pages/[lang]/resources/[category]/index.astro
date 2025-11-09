@@ -1,0 +1,157 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../../../layouts/Layout.astro';
+import { useTranslations } from '../../../../i18n/core';
+import { filterByLang } from '../../../../i18n/utils';
+import { RESOURCE_CATEGORIES, getCategoryById, type ResourceCategory } from '../../../../i18n/constants/resources';
+
+export async function getStaticPaths() {
+  const categories = RESOURCE_CATEGORIES.map(cat => cat.id);
+  const paths = [];
+  
+  for (const category of categories) {
+    paths.push({ params: { lang: 'es', category } });
+    paths.push({ params: { lang: 'en', category } });
+  }
+  
+  return paths;
+}
+
+const { lang, category: categoryId } = Astro.params;
+const t = useTranslations(lang as 'es' | 'en');
+
+// Obtener configuración de la categoría
+const category = getCategoryById(categoryId);
+
+if (!category) {
+  return Astro.redirect('/404');
+}
+
+// Obtener todos los recursos de esta categoría
+const allResources = await getCollection('resources');
+
+// Filtrar por idioma (basado en el slug: es/category/file o en/category/file)
+// y por categoría
+const categoryResources = allResources.filter(r => {
+  const slugParts = r.slug.split('/');
+  const resourceLang = (slugParts[0] === 'es' || slugParts[0] === 'en') ? slugParts[0] : 'es';
+  const resourceCategory = (slugParts[0] === 'es' || slugParts[0] === 'en') ? slugParts[1] : slugParts[0];
+  
+  return resourceLang === lang && resourceCategory === categoryId;
+});
+
+const categoryName = category.name[lang as 'es' | 'en'];
+const categoryDescription = category.description[lang as 'es' | 'en'];
+---
+
+<Layout
+  title={`${categoryName} - Resources`}
+  description={categoryDescription}
+  lang={lang}
+>
+  <main class={`min-h-[calc(100vh-16rem)] bg-gradient-to-br from-white via-white to-${category.bgColor.split('bg-')[1].split('/')[0]}-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-${category.bgColor.split('bg-')[1].split('/')[0]}-950/10`}>
+    <div class="container max-w-7xl mx-auto px-4 py-12">
+      <!-- Breadcrumb -->
+      <nav class="flex items-center gap-2 text-sm mb-8 text-slate-600 dark:text-slate-400">
+        <a href={`/${lang}/resources`} class={`hover:${category.textColor} transition-colors`}>
+          {lang === 'es' ? 'Recursos' : 'Resources'}
+        </a>
+        <span>/</span>
+        <span class="text-slate-900 dark:text-white font-semibold">{categoryName}</span>
+      </nav>
+
+      <!-- Header -->
+      <header class="mb-12">
+        <div class="flex items-center gap-4 mb-4">
+          <div class={`w-16 h-16 ${category.bgColor} rounded-xl flex items-center justify-center`}>
+            <span class="text-4xl">{category.icon}</span>
+          </div>
+          <div>
+            <h1 class="text-4xl font-bold text-slate-900 dark:text-white">
+              {categoryName}
+            </h1>
+            <p class="text-slate-600 dark:text-slate-400 mt-1">
+              {categoryDescription}
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 mt-6">
+          <div class={`px-4 py-2 ${category.bgColor} ${category.textColor} rounded-lg font-semibold`}>
+            📦 {categoryResources.length} {lang === 'es' ? 'recursos' : 'resources'}
+          </div>
+        </div>
+      </header>
+
+      <!-- Grid de recursos -->
+      {categoryResources.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {categoryResources.map((resource) => {
+            const slugParts = resource.slug.split('/');
+            const actualSlug = (slugParts[0] === 'es' || slugParts[0] === 'en')
+              ? slugParts.slice(1).join('/')
+              : resource.slug;
+            
+            return (
+              <a 
+                href={resource.data.url || `/${lang}/resources/${categoryId}/${actualSlug.split('/').pop()}`}
+                target={resource.data.url ? '_blank' : undefined}
+                rel={resource.data.url ? 'noopener noreferrer' : undefined}
+                class={`group bg-white dark:bg-slate-800 rounded-xl overflow-hidden border ${category.borderColor} hover:border-${category.textColor.split('text-')[1]} transition-all duration-300 hover:shadow-xl hover:-translate-y-1`}
+              >
+                <div class={`relative h-48 overflow-hidden bg-gradient-to-br ${category.gradient}`}>
+                  <div class="w-full h-full flex items-center justify-center">
+                    <span class="text-6xl transform group-hover:scale-110 transition-transform">{category.icon}</span>
+                  </div>
+                  {resource.data.url && (
+                    <div class="absolute top-3 right-3 bg-white/90 dark:bg-slate-900/90 rounded-full p-2">
+                      <svg class="w-4 h-4 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                      </svg>
+                    </div>
+                  )}
+                </div>
+                
+                <div class="p-6">
+                  <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-${category.textColor.split('text-')[1]} transition-colors">
+                    {resource.data.title}
+                  </h3>
+                  
+                  <p class="text-slate-600 dark:text-slate-400 text-sm mb-4 line-clamp-2">
+                    {resource.data.description}
+                  </p>
+                  
+                  {resource.data.tags && resource.data.tags.length > 0 && (
+                    <div class="flex flex-wrap gap-2">
+                      {resource.data.tags.slice(0, 3).map((tag: string) => (
+                        <span class={`text-xs px-2 py-1 ${category.bgColor} ${category.textColor} rounded-md`}>
+                          {tag}
+                        </span>
+                      ))}
+                      {resource.data.tags.length > 3 && (
+                        <span class="text-xs px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-md">
+                          +{resource.data.tags.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      ) : (
+        <div class="text-center py-20">
+          <div class="text-6xl mb-4">📭</div>
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+            {lang === 'es' ? 'No hay recursos disponibles' : 'No resources available'}
+          </h2>
+          <p class="text-slate-600 dark:text-slate-400">
+            {lang === 'es' 
+              ? 'Pronto agregaremos recursos en esta categoría.' 
+              : 'We will add resources in this category soon.'}
+          </p>
+        </div>
+      )}
+    </div>
+  </main>
+</Layout>

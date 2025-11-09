@@ -6,7 +6,7 @@ platform: "vulnhub"
 category: "machines"
 difficulty: "medium"
 os: "linux"
-lang: en
+language: en
 tags: ["buffer-overflow", "binary-exploitation", "ret2libc"]
 retired: false
 heroImage: "/images/writeups/vulnhub/brainpan-card.png"

@@ -1,0 +1,235 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import { useTranslations } from '../../../i18n/core';
+import { filterByLang } from '../../../i18n/utils';
+import { RESOURCE_CATEGORIES } from '../../../i18n/constants/resources';
+
+export async function getStaticPaths() {
+  return [
+    { params: { lang: 'es' } },
+    { params: { lang: 'en' } }
+  ];
+}
+
+const { lang } = Astro.params;
+const t = useTranslations(lang as 'es' | 'en');
+
+// Obtener todos los recursos
+const allResources = await getCollection('resources');
+
+// Filtrar por idioma basado en el slug (es/category/file o en/category/file)
+const resources = allResources.filter(r => {
+  const slugParts = r.slug.split('/');
+  const resourceLang = (slugParts[0] === 'es' || slugParts[0] === 'en') ? slugParts[0] : 'es';
+  return resourceLang === lang;
+});
+
+// Contar recursos por categoría usando la configuración centralizada
+const categoryCounts = RESOURCE_CATEGORIES.map(category => {
+  const categorySlug = category.id;
+  const count = resources.filter(r => {
+    const slugParts = r.slug.split('/');
+    const resourceCategory = (slugParts[0] === 'es' || slugParts[0] === 'en') ? slugParts[1] : slugParts[0];
+    return resourceCategory === categorySlug;
+  }).length;
+  
+  return {
+    ...category,
+    name: category.name[lang as 'es' | 'en'],
+    description: category.description[lang as 'es' | 'en'],
+    count
+  };
+});
+
+// Mapeo de IDs a rutas de carpetas
+const categoryRoutes: { [key: string]: string } = {
+  'tools': 'tools',
+  'cheatsheets': 'cheatsheets',
+  'labs': 'labs',
+  'videos': 'videos',
+  'challenges': 'challenges',
+  'projects': 'projects',
+  'vulnerabilities': 'vulnerabilities'
+};
+
+// Recursos recientes (últimos 6 por orden alfabético)
+const recentResources = resources.slice(0, 6);
+---
+
+<Layout
+  title={lang === 'es' ? 'Recursos - Crypt0xDev' : 'Resources - Crypt0xDev'}
+  description={lang === 'es' 
+    ? 'Recursos, herramientas, guías y materiales para aprender ciberseguridad y hacking ético' 
+    : 'Resources, tools, guides and materials to learn cybersecurity and ethical hacking'}
+  lang={lang}
+>
+  <main class="min-h-[calc(100vh-16rem)] bg-gradient-to-br from-white via-slate-50 to-blue-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950">
+    <div class="container max-w-7xl mx-auto px-4 py-16">
+      
+      <!-- Hero Section -->
+      <header class="text-center mb-16">
+        <div class="inline-block mb-6">
+          <div class="w-24 h-24 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-3xl flex items-center justify-center shadow-2xl">
+            <span class="text-5xl">📚</span>
+          </div>
+        </div>
+        
+        <h1 class="text-5xl md:text-6xl font-bold mb-6">
+          <span class="bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-600 dark:from-blue-400 dark:via-cyan-400 dark:to-teal-400 bg-clip-text text-transparent">
+            {lang === 'es' ? 'Recursos' : 'Resources'}
+          </span>
+        </h1>
+        
+        <p class="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
+          {lang === 'es' 
+            ? 'Herramientas, guías, tutoriales y recursos esenciales para tu camino en ciberseguridad'
+            : 'Tools, guides, tutorials and essential resources for your cybersecurity journey'}
+        </p>
+      </header>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border-2 border-slate-200 dark:border-slate-700 shadow-lg">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+              <span class="text-2xl">📦</span>
+            </div>
+            <div>
+              <p class="text-3xl font-bold text-slate-900 dark:text-white">{resources.length}</p>
+              <p class="text-sm text-slate-600 dark:text-slate-400">
+                {lang === 'es' ? 'Recursos totales' : 'Total resources'}
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border-2 border-slate-200 dark:border-slate-700 shadow-lg">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center">
+              <span class="text-2xl">📂</span>
+            </div>
+            <div>
+              <p class="text-3xl font-bold text-slate-900 dark:text-white">{RESOURCE_CATEGORIES.length}</p>
+              <p class="text-sm text-slate-600 dark:text-slate-400">
+                {lang === 'es' ? 'Categorías' : 'Categories'}
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border-2 border-slate-200 dark:border-slate-700 shadow-lg">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
+              <span class="text-2xl">🎯</span>
+            </div>
+            <div>
+              <p class="text-3xl font-bold text-slate-900 dark:text-white">
+                {categoryCounts.reduce((acc, cat) => acc + cat.count, 0)}
+              </p>
+              <p class="text-sm text-slate-600 dark:text-slate-400">
+                {lang === 'es' ? 'Items disponibles' : 'Available items'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categories Section -->
+      <section class="mb-16">
+        <h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-8 flex items-center gap-3">
+          <span class="text-4xl">🗂️</span>
+          {lang === 'es' ? 'Explorar Categorías' : 'Explore Categories'}
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          {categoryCounts.map((category) => {
+            const route = category.id;
+            
+            return (
+              <a 
+                href={`/${lang}/resources/${route}`}
+                class={`group relative overflow-hidden rounded-2xl border-2 ${category.borderColor} ${category.bgColor} p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl`}
+              >
+                <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br opacity-10 rounded-full blur-2xl -translate-y-8 translate-x-8 group-hover:opacity-20 transition-opacity" style={`background: linear-gradient(to bottom right, ${category.gradient.split(' ')[1]}, ${category.gradient.split(' ')[3]})`}></div>
+                
+                <div class="relative z-10">
+                  <div class="text-5xl mb-4 transform group-hover:scale-110 transition-transform">
+                    {category.icon}
+                  </div>
+                  
+                  <h3 class={`text-xl font-bold mb-2 ${category.textColor} group-hover:underline`}>
+                    {category.name}
+                  </h3>
+                  
+                  <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 line-clamp-2">
+                    {category.description}
+                  </p>
+                  
+                  <div class="flex items-center justify-between">
+                    <span class={`px-3 py-1 ${category.bgColor} ${category.textColor} rounded-full text-sm font-semibold`}>
+                      {category.count} {lang === 'es' ? 'items' : 'items'}
+                    </span>
+                    <span class={`${category.textColor} group-hover:translate-x-1 transition-transform`}>
+                      →
+                    </span>
+                  </div>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+
+      <!-- Recent Resources Section -->
+      {recentResources.length > 0 && (
+        <section>
+          <h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-8 flex items-center gap-3">
+            <span class="text-4xl">⭐</span>
+            {lang === 'es' ? 'Recursos Recientes' : 'Recent Resources'}
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {recentResources.map((resource) => {
+              const category = RESOURCE_CATEGORIES.find((c) => c.id === resource.data.category);
+              const slugParts = resource.slug.split('/');
+              const actualSlug = (slugParts[0] === 'es' || slugParts[0] === 'en')
+                ? slugParts.slice(1).join('/')
+                : resource.slug;
+              
+              return (
+                <a 
+                  href={`/${lang}/resources/${actualSlug}`}
+                  class="group bg-white dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                >
+                  <div class={`relative h-48 overflow-hidden bg-gradient-to-br ${category?.gradient || 'from-blue-400 to-cyan-600'}`}>
+                    <div class="w-full h-full flex items-center justify-center">
+                      <span class="text-6xl">{category?.icon || '📚'}</span>
+                    </div>
+                  </div>
+                  
+                  <div class="p-5">
+                    <div class="flex items-center gap-2 mb-3">
+                      <span class="text-2xl">{category?.icon || '📚'}</span>
+                      <span class={`text-sm font-semibold ${category?.textColor || 'text-blue-600 dark:text-blue-400'}`}>
+                        {category?.name[lang as 'es' | 'en'] || resource.data.category}
+                      </span>
+                    </div>
+                    
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      {resource.data.title}
+                    </h3>
+                    
+                    <p class="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
+                      {resource.data.description}
+                    </p>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        </section>
+      )}
+    </div>
+  </main>
+</Layout>

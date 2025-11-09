@@ -1,0 +1,55 @@
+---
+/**
+ * Componente Badge reutilizable
+ * Para etiquetas, dificultades, estados, etc.
+ */
+interface Props {
+  text: string;
+  variant?: 'default' | 'success' | 'warning' | 'error' | 'info' | 'primary' | 'secondary';
+  size?: 'sm' | 'md' | 'lg';
+  icon?: string; // Emoji o icono
+  class?: string;
+}
+
+const {
+  text,
+  variant = 'default',
+  size = 'md',
+  icon,
+  class: className = '',
+} = Astro.props;
+
+const sizeClasses = {
+  sm: 'px-2 py-0.5 text-xs',
+  md: 'px-3 py-1 text-sm',
+  lg: 'px-4 py-1.5 text-base',
+};
+
+const variantClasses = {
+  default: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
+  success: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+  warning: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+  error: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+  info: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+  primary: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
+  secondary: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400',
+};
+---
+
+<span
+  class:list={[
+    'inline-flex',
+    'items-center',
+    'gap-1',
+    'rounded-full',
+    'font-medium',
+    'whitespace-nowrap',
+    sizeClasses[size],
+    variantClasses[variant],
+    className,
+  ]}
+>
+  {icon && <span class="flex-shrink-0">{icon}</span>}
+  <span>{text}</span>
+  <slot />
+</span>

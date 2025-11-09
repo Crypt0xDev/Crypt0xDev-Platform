@@ -1,6 +1,48 @@
-# robots.txt
+# robots.txt - Optimized for SEO
 User-agent: *
 Allow: /
 
-# Sitemap
+# Block search engines from indexing these paths
+Disallow: /api/
+Disallow: /_astro/
+Disallow: /404
+
+# Allow crawling of main content
+Allow: /es/
+Allow: /en/
+Allow: /blog/
+Allow: /writeup/
+Allow: /ctf/
+
+# Crawl-delay to prevent aggressive crawling
+Crawl-delay: 0.5
+
+# Sitemaps - Multiple formats for better indexing
 Sitemap: https://crypt0xdev.com/sitemap-index.xml
+Sitemap: https://crypt0-six.vercel.app/sitemap-index.xml
+
+# Additional directives for specific bots
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot  
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+# Block AI crawlers (optional - comment out if you want AI training)
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /

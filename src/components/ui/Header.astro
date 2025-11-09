@@ -1,7 +1,8 @@
 ---
-import { getLangFromUrl, useTranslations } from '../../utils/i18n';
+import { getLangFromUrl, useTranslations } from '../../i18n/core';
 import LanguageSwitcher from './LanguageSwitcher.astro';
 import ThemeToggle from './ThemeToggle.astro';
+import PagefindSearch from '../common/PagefindSearch.astro';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
@@ -10,157 +11,395 @@ const currentPath = Astro.url.pathname;
 
 // Helper function to check if a nav item is active
 const isActive = (href: string, path: string) => {
-  // Exact match for home
   if (href === `/${lang}` || href === `/${lang}/`) {
     return path === `/${lang}` || path === `/${lang}/`;
   }
-  // For other pages, check if path starts with href
   return path.startsWith(href);
 };
 
-const navItems = [
-  { label: t('nav.ctf'), href: `/${lang}/ctf` },
-  { label: t('nav.writeups'), href: `/${lang}/writeup` },
-  { label: t('nav.blog'), href: `/${lang}/blog` },
+// Writeups dropdown items
+const writeupPlatforms = [
+  { label: 'HackTheBox', href: `/${lang}/writeup/hackthebox` },
+  { label: 'TryHackMe', href: `/${lang}/writeup/tryhackme` },
+  { label: 'HackMyVM', href: `/${lang}/writeup/hackmyvm` },
+  { label: 'VulnHub', href: `/${lang}/writeup/vulnhub` },
+];
+
+// Resources dropdown items
+const resourcesItems = [
+  { label: t('nav.tools'), href: `/${lang}/resources/tools` },
+  { label: t('nav.cheatsheets'), href: `/${lang}/resources/cheatsheets` },
+  { label: t('nav.labs'), href: `/${lang}/resources/labs` },
+  { label: t('nav.projects'), href: `/${lang}/resources/projects` },
+  { label: t('nav.vulnerabilities') || 'Vulnerabilities (CVEs)', href: `/${lang}/resources/vulnerabilities` },
   { label: t('nav.archive'), href: `/${lang}/archive` },
-  { label: t('nav.about'), href: `/${lang}/about` },
 ];
 ---
 
-<header class="header">
-  <div class="container">
-    <nav class="nav">
-      <div class="nav-left">
-        <a href={`/${lang}`} class="logo">
-          <span class="logo-text">Crypt0xDev</span>
+<header class="sticky top-0 z-[100] bg-white/95 dark:bg-slate-900/95 border-b border-slate-200 dark:border-slate-800 backdrop-blur-md transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+    <nav class="flex items-center justify-between h-14 sm:h-16 lg:h-18 gap-2 sm:gap-4 lg:gap-8">
+      <!-- Logo -->
+      <div class="flex-shrink-0">
+        <a href={`/${lang}`} class="transition-transform duration-200 hover:scale-105">
+          <span class="text-lg sm:text-xl lg:text-2xl font-extrabold gradient-text tracking-tight">
+            Crypt0xDev
+          </span>
         </a>
-        
-        <ul class="nav-links">
-          {navItems.map(item => (
-            <li>
-              <a 
-                href={item.href}
-                class:list={['nav-link', { active: isActive(item.href, currentPath) }]}
-              >
-                {item.label}
-              </a>
-            </li>
-          ))}
-        </ul>
       </div>
 
-      <div class="nav-actions">
+      <!-- Desktop Navigation -->
+      <ul class="hidden lg:flex list-none m-0 p-0 gap-1 flex-1 justify-center">
+        <!-- Blog -->
+        <li>
+          <a 
+            href={`/${lang}/blog`}
+            class={`flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+              isActive(`/${lang}/blog`, currentPath)
+                ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400'
+            }`}
+          >
+            <span>{t('nav.blog')}</span>
+          </a>
+        </li>
+
+        <!-- Writeups -->
+        <li>
+          <a
+            href={`/${lang}/writeup`}
+            class={`flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+              currentPath.includes('/writeup')
+                ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400'
+            }`}
+          >
+            <span>{t('nav.writeups')}</span>
+          </a>
+        </li>
+
+        <!-- CTF -->
+        <li>
+          <a 
+            href={`/${lang}/ctf`}
+            class={`flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+              isActive(`/${lang}/ctf`, currentPath)
+                ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400'
+            }`}
+          >
+            <span>{t('nav.ctf')}</span>
+          </a>
+        </li>
+
+        <!-- Resources -->
+        <li>
+          <a
+            href={`/${lang}/resources`}
+            class={`flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+              currentPath.includes('/resources') || currentPath.includes('/tools') || currentPath.includes('/cheatsheets') || currentPath.includes('/labs') || currentPath.includes('/projects') || currentPath.includes('/vulnerabilities') || currentPath.includes('/archive')
+                ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400'
+            }`}
+          >
+            <span>{t('nav.resources') || 'Resources'}</span>
+          </a>
+        </li>
+
+        <!-- About -->
+        <li>
+          <a 
+            href={`/${lang}/about`}
+            class={`flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+              isActive(`/${lang}/about`, currentPath)
+                ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400'
+            }`}
+          >
+            <span>{t('nav.about')}</span>
+          </a>
+        </li>
+      </ul>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-2 lg:gap-3">
+        <!-- Search Button -->
+        <button 
+          class="flex items-center justify-center w-10 h-10 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200"
+          id="search-toggle"
+          aria-label={t('nav.search')}
+          title={t('nav.search')}
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+            <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+
         <ThemeToggle />
         <LanguageSwitcher currentLang={lang} />
+
+        <!-- Mobile Menu Button -->
+        <button 
+          class="lg:hidden flex items-center justify-center w-10 h-10 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all duration-200"
+          id="mobile-menu-toggle"
+          aria-label={t('nav.menu')}
+        >
+          <svg class="w-5 h-5 menu-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <svg class="w-5 h-5 close-icon hidden" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
       </div>
     </nav>
+
+    <!-- Mobile Menu -->
+    <div class="hidden max-h-0 overflow-hidden transition-all duration-300 ease-in-out" id="mobile-menu">
+      <ul class="flex flex-col gap-2 py-4 border-t border-slate-200 dark:border-slate-800">
+        <!-- Blog -->
+        <li>
+          <a 
+            href={`/${lang}/blog`}
+            class={`block px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
+              isActive(`/${lang}/blog`, currentPath)
+                ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400'
+            }`}
+          >
+            {t('nav.blog')}
+          </a>
+        </li>
+
+        <!-- Writeups -->
+        <li>
+          <a 
+            href={`/${lang}/writeup`}
+            class={`block px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
+              isActive(`/${lang}/writeup`, currentPath)
+                ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400'
+            }`}
+          >
+            {t('nav.writeups')}
+          </a>
+        </li>
+
+        <!-- CTF -->
+        <li>
+          <a 
+            href={`/${lang}/ctf`}
+            class={`block px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
+              isActive(`/${lang}/ctf`, currentPath)
+                ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400'
+            }`}
+          >
+            {t('nav.ctf')}
+          </a>
+        </li>
+
+        <!-- Resources -->
+        <li>
+          <a 
+            href={`/${lang}/resources`}
+            class={`block px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
+              currentPath.includes('/resources') || currentPath.includes('/tools') || currentPath.includes('/cheatsheets') || currentPath.includes('/labs') || currentPath.includes('/projects') || currentPath.includes('/vulnerabilities') || currentPath.includes('/archive')
+                ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400'
+            }`}
+          >
+            {t('nav.resources') || 'Resources'}
+          </a>
+        </li>
+
+        <!-- About -->
+        <li>
+          <a 
+            href={`/${lang}/about`}
+            class={`block px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
+              isActive(`/${lang}/about`, currentPath)
+                ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400'
+            }`}
+          >
+            {t('nav.about')}
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Search Modal -->
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200] opacity-0 invisible transition-all duration-300 flex items-start justify-center p-4 lg:p-8 pt-20" id="search-modal">
+      <div class="w-full max-w-3xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden transform -translate-y-8 transition-transform duration-300">
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100">
+              {t('common.search')}
+            </h2>
+            <button 
+              class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors" 
+              id="search-close" 
+              aria-label="Close"
+            >
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+          
+          <PagefindSearch lang={lang} />
+          
+          <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+            <div class="flex items-center gap-4">
+              <span class="flex items-center gap-1">
+                <kbd class="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded border border-slate-300 dark:border-slate-600">↩</kbd>
+                para seleccionar
+              </span>
+              <span class="flex items-center gap-1">
+                <kbd class="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded border border-slate-300 dark:border-slate-600">↑↓</kbd>
+                para navegar
+              </span>
+              <span class="flex items-center gap-1">
+                <kbd class="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded border border-slate-300 dark:border-slate-600">esc</kbd>
+                para cerrar
+              </span>
+            </div>
+            <span class="text-slate-400">Búsqueda por <span class="font-semibold text-indigo-600 dark:text-indigo-400">Pagefind</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </header>
 
+<script>
+  // Mobile menu toggle
+  const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const menuIcon = mobileMenuToggle?.querySelector('.menu-icon');
+  const closeIcon = mobileMenuToggle?.querySelector('.close-icon');
+
+  if (mobileMenuToggle && mobileMenu) {
+    mobileMenuToggle.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.contains('block');
+      
+      if (isOpen) {
+        mobileMenu.classList.remove('block', 'max-h-screen');
+        mobileMenu.classList.add('hidden', 'max-h-0');
+        menuIcon?.classList.remove('hidden');
+        closeIcon?.classList.add('hidden');
+      } else {
+        mobileMenu.classList.remove('hidden', 'max-h-0');
+        mobileMenu.classList.add('block', 'max-h-screen');
+        menuIcon?.classList.add('hidden');
+        closeIcon?.classList.remove('hidden');
+      }
+    });
+
+    // Close mobile menu when clicking on a link
+    const mobileLinks = mobileMenu.querySelectorAll('a');
+    mobileLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('block', 'max-h-screen');
+        mobileMenu.classList.add('hidden', 'max-h-0');
+        menuIcon?.classList.remove('hidden');
+        closeIcon?.classList.add('hidden');
+      });
+    });
+  }
+
+  // Search modal
+  const searchToggle = document.getElementById('search-toggle');
+  const searchModal = document.getElementById('search-modal');
+  const searchClose = document.getElementById('search-close');
+
+  function openSearchModal() {
+    if (searchModal) {
+      searchModal.classList.remove('opacity-0', 'invisible');
+      searchModal.querySelector('div')?.classList.remove('-translate-y-8');
+      document.body.style.overflow = 'hidden';
+      
+      // Focus on search input after animation
+      setTimeout(() => {
+        const searchInput = searchModal.querySelector('.pagefind-ui__search-input') as HTMLInputElement;
+        searchInput?.focus();
+      }, 100);
+    }
+  }
+
+  function closeSearchModal() {
+    if (searchModal) {
+      searchModal.classList.add('opacity-0', 'invisible');
+      searchModal.querySelector('div')?.classList.add('-translate-y-8');
+      document.body.style.overflow = '';
+    }
+  }
+
+  if (searchToggle) {
+    searchToggle.addEventListener('click', openSearchModal);
+  }
+
+  if (searchClose) {
+    searchClose.addEventListener('click', closeSearchModal);
+  }
+
+  // Close modal on overlay click
+  if (searchModal) {
+    searchModal.addEventListener('click', (e) => {
+      if (e.target === searchModal) {
+        closeSearchModal();
+      }
+    });
+  }
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    // Cmd+K or Ctrl+K to open search
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      openSearchModal();
+    }
+    
+    // ESC to close search
+    if (e.key === 'Escape' && searchModal && !searchModal.classList.contains('invisible')) {
+      closeSearchModal();
+    }
+  });
+</script>
+
 <style>
-  .header {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    background-color: var(--bg-color, white);
-    border-bottom: 1px solid var(--border-color, #e5e7eb);
-    backdrop-filter: blur(8px);
+  /* Ensure dropdown stays visible on hover and transitions smoothly */
+  .group:hover > div[role="menu"],
+  .group:hover > div.absolute {
+    pointer-events: auto;
   }
 
-  .container {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 1rem;
+  /* Prevent dropdown from disappearing when moving mouse to it */
+  .group > div[role="menu"],
+  .group > div.absolute {
+    pointer-events: none;
   }
 
-  .nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 4rem;
-    gap: 2rem;
+  .group:hover > div[role="menu"],
+  .group:hover > div.absolute {
+    pointer-events: auto;
   }
 
-  .nav-left {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    flex: 1;
-  }
-
-  .logo {
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .logo-text {
-    font-size: 1.5rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #4f46e5 0%, #818cf8 100%);
+  /* Gradient text effect */
+  .gradient-text {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  .nav-links {
-    display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    gap: 2rem;
-  }
-
-  .nav-link {
-    text-decoration: none;
-    color: var(--text-color, #4b5563);
-    font-weight: 500;
-    transition: color 0.2s ease;
-    position: relative;
-  }
-
-  .nav-link:hover {
-    color: var(--accent-color);
-  }
-
-  .nav-link.active {
-    color: var(--accent-color);
-  }
-
-  .nav-link.active::after {
-    content: '';
-    position: absolute;
-    bottom: -0.5rem;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background-color: var(--accent-color);
-  }
-
-  .nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  :global(.dark) .header {
-    --bg-color: rgba(15, 20, 25, 0.8);
-    --border-color: #1e293b;
-    --text-color: #cbd5e1;
-  }
-
-  @media (max-width: 768px) {
-    .nav-links {
-      display: none;
-    }
-
-    .nav-left {
-      gap: 1rem;
-    }
-
-    .nav {
-      gap: 1rem;
-    }
+  /* Dark mode gradient */
+  :global(.dark) .gradient-text {
+    background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 </style>

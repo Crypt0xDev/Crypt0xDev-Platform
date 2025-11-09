@@ -1,23 +1,32 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { useTranslations, getLangFromUrl } from '../utils/i18n';
+import { useTranslations, getLangFromUrl } from '../i18n/core';
 
 // Detectar idioma de la URL actual
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 ---
 
-<Layout title={`404 - ${t('common.404')}`} description={t('common.404')} lang={lang}>
-  <main class="error-page">
-    <div class="container">
-      <div class="error-content">
-        <div class="error-code">404</div>
-        <h1 class="error-title">{t('common.404_title')}</h1>
-        <p class="error-description">
+<Layout title={`404`} description={t('common.404')} lang={lang}>
+  <main class="min-h-[calc(100vh-8rem)] flex items-center justify-center py-8">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="text-center max-w-[600px] mx-auto">
+        <div class="text-[8rem] font-black leading-none bg-gradient-to-br from-indigo-600 to-pink-600 dark:from-indigo-400 dark:to-pink-400 bg-clip-text text-transparent mb-4 animate-float">
+          404
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-slate-100 mb-4">
+          {t('common.404_title')}
+        </h1>
+        <p class="text-lg text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
           {t('common.404_description')}
         </p>
-        <div class="error-actions">
-          <a href={`/${lang}`} class="btn-primary">{t('common.404_button')}</a>
+        <div class="flex gap-4 justify-center flex-wrap">
+          <a 
+            href={`/${lang}`} 
+            class="inline-block py-3 px-6 rounded-lg font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/50"
+          >
+            {t('common.404_button')}
+          </a>
         </div>
       </div>
     </div>
@@ -25,94 +34,6 @@ const t = useTranslations(lang);
 </Layout>
 
 <style>
-  .error-page {
-    min-height: calc(100vh - 8rem);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem 0;
-  }
-
-  .container {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 1rem;
-  }
-
-  .error-content {
-    text-align: center;
-    max-width: 600px;
-    margin: 0 auto;
-  }
-
-  .error-code {
-    font-size: 8rem;
-    font-weight: 900;
-    line-height: 1;
-    background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 1rem;
-    animation: float 3s ease-in-out infinite;
-  }
-
-  .error-title {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: var(--text-color);
-    margin-bottom: 1rem;
-  }
-
-  .error-description {
-    font-size: 1.125rem;
-    color: var(--text-muted);
-    margin-bottom: 2rem;
-    line-height: 1.6;
-  }
-
-  .error-actions {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .btn-primary,
-  .btn-secondary {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.3s ease;
-  }
-
-  .btn-primary {
-    background: var(--accent-color);
-    color: white;
-    border: none;
-  }
-
-  .btn-primary:hover {
-    background: var(--accent-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px var(--shadow-accent);
-  }
-
-  .btn-secondary {
-    background: transparent;
-    color: var(--accent-color);
-    border: 2px solid var(--accent-color);
-  }
-
-  .btn-secondary:hover {
-    background: var(--accent-color);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px var(--shadow-accent);
-  }
-
   @keyframes float {
     0%, 100% {
       transform: translateY(0px);
@@ -122,23 +43,7 @@ const t = useTranslations(lang);
     }
   }
 
-  @media (max-width: 768px) {
-    .error-code {
-      font-size: 6rem;
-    }
-
-    .error-title {
-      font-size: 2rem;
-    }
-
-    .error-actions {
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    .btn-primary,
-    .btn-secondary {
-      width: 100%;
-    }
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
   }
 </style>

@@ -1,0 +1,221 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Layout from '../../../../layouts/Layout.astro';
+import TOC from '../../../../components/common/TOC.astro';
+import { getCategoryById } from '../../../../i18n/constants/resources';
+
+interface Props {
+  resource: CollectionEntry<'resources'>;
+}
+
+export async function getStaticPaths() {
+  const allResources = await getCollection('resources');
+  
+  const paths: Array<{
+    params: { lang: string; category: string; slug: string };
+    props: { resource: CollectionEntry<'resources'> };
+  }> = [];
+  
+  for (const resource of allResources) {
+    const slugParts = resource.slug.split('/');
+    
+    // Determinar el idioma y el slug del archivo
+    let lang: string;
+    let category: string;
+    let slug: string;
+    
+    if (slugParts[0] === 'es' || slugParts[0] === 'en') {
+      lang = slugParts[0];
+      category = slugParts[1];
+      slug = slugParts[2];
+    } else {
+      // Si no hay idioma en el slug, usar español por defecto
+      lang = 'es';
+      category = slugParts[0];
+      slug = slugParts[1];
+    }
+    
+    // Solo generar páginas para recursos que NO tienen URL externa
+    if (!resource.data.url) {
+      paths.push({
+        params: { 
+          lang, 
+          category,
+          slug 
+        },
+        props: { resource }
+      });
+    }
+  }
+  
+  return paths;
+}
+
+const { resource } = Astro.props as Props;
+const { lang, category: categoryId } = Astro.params;
+
+// Obtener configuración de la categoría
+const category = getCategoryById(categoryId);
+
+if (!category) {
+  return Astro.redirect('/404');
+}
+
+const categoryName = category.name[lang as 'es' | 'en'];
+const { Content, headings } = await resource.render();
+---
+
+<Layout
+  title={`${resource.data.title} - ${categoryName}`}
+  description={resource.data.description}
+  lang={lang}
+>
+  <main class="min-h-screen bg-white dark:bg-slate-900">
+    <div class="resource-article">
+      <!-- Breadcrumb -->
+      <nav class="flex items-center gap-2 text-sm mb-8 text-slate-600 dark:text-slate-400">
+        <a href={`/${lang}/resources`} class={`hover:${category.textColor} transition-colors`}>
+          {lang === 'es' ? 'Recursos' : 'Resources'}
+        </a>
+        <span>/</span>
+        <a href={`/${lang}/resources/${categoryId}`} class={`hover:${category.textColor} transition-colors`}>
+          {categoryName}
+        </a>
+        <span>/</span>
+        <span class="text-slate-900 dark:text-white font-semibold">
+          {resource.data.title}
+        </span>
+      </nav>
+
+      <!-- Header -->
+      <header class="mb-12">
+        <div class="flex items-center gap-3 mb-4">
+          <span class={`px-3 py-1 ${category.bgColor} ${category.textColor} rounded-lg text-sm font-semibold flex items-center gap-2`}>
+            <span>{category.icon}</span>
+            {categoryName}
+          </span>
+        </div>
+        
+        <h1 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4">
+          {resource.data.title}
+        </h1>
+        
+        <p class="text-xl text-slate-600 dark:text-slate-400">
+          {resource.data.description}
+        </p>
+
+        {resource.data.tags && resource.data.tags.length > 0 && (
+          <div class="flex flex-wrap gap-2 mt-6">
+            {resource.data.tags.map((tag: string) => (
+              <span class="text-sm px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-full">
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </header>
+
+      <!-- Content & TOC -->
+      <div class="content-container">
+        <div class="content-wrapper">
+          <article class="main-content prose prose-lg dark:prose-invert
+            prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-white
+            prose-p:text-slate-700 dark:prose-p:text-slate-300
+            prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline
+            prose-strong:text-slate-900 dark:prose-strong:text-white
+            prose-code:text-blue-600 dark:prose-code:text-blue-400 prose-code:bg-slate-100 dark:prose-code:bg-slate-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-[''] prose-code:after:content-['']
+            prose-pre:bg-slate-900 dark:prose-pre:bg-slate-950 prose-pre:border prose-pre:border-slate-800
+            prose-ul:text-slate-700 dark:prose-ul:text-slate-300
+            prose-ol:text-slate-700 dark:prose-ol:text-slate-300
+            prose-li:text-slate-700 dark:prose-li:text-slate-300
+            prose-blockquote:border-l-blue-600 dark:prose-blockquote:border-l-blue-400 prose-blockquote:text-slate-700 dark:prose-blockquote:text-slate-300
+            prose-hr:border-slate-200 dark:prose-hr:border-slate-800
+            prose-table:text-slate-700 dark:prose-table:text-slate-300
+            prose-th:text-slate-900 dark:prose-th:text-white
+            prose-img:rounded-lg prose-img:shadow-lg
+          ">
+            <Content />
+          </article>
+        </div>
+      </div>
+
+      <!-- TOC Fixed (fuera del flujo) -->
+      {headings.length > 0 && (
+        <aside class="toc-wrapper">
+          <TOC headings={headings} title={lang === 'es' ? 'Tabla de Contenidos' : 'Table of Contents'} inline={false} platform="default" />
+        </aside>
+      )}
+
+      <!-- Back to category -->
+      <div class="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800">
+        <a 
+          href={`/${lang}/resources/${categoryId}`}
+          class={`inline-flex items-center gap-2 ${category.textColor} hover:underline font-semibold`}
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          {lang === 'es' ? `Volver a ${categoryName}` : `Back to ${categoryName}`}
+        </a>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  /* Article principal - Usa todo el ancho */
+  .resource-article {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  /* Content Layout - Contenido a 1280px, TOC por fuera */
+  .content-container {
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+
+  .content-wrapper {
+    width: 100%;
+  }
+
+  .main-content {
+    width: 100%;
+    max-width: none !important;
+  }
+
+  /* Ajustar prose para usar todo el ancho */
+  .main-content :global(.prose) {
+    max-width: none !important;
+  }
+
+  /* TOC Wrapper - Fijo a la derecha, fuera del contenedor de 1280px */
+  .toc-wrapper {
+    position: fixed;
+    top: 6rem;
+    right: max(1rem, calc((100vw - 1280px) / 2 - 300px));
+    width: 280px;
+    max-height: calc(100vh - 8rem);
+    overflow-y: auto;
+    z-index: 10;
+  }
+
+  .toc-wrapper > :global(*) {
+    position: sticky;
+    top: 0;
+  }
+
+  /* Responsive: Ocultar TOC en pantallas pequeñas */
+  @media (max-width: 1600px) {
+    .toc-wrapper {
+      display: none;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .resource-article {
+      padding: 1.5rem 1rem;
+    }
+  }
+</style>

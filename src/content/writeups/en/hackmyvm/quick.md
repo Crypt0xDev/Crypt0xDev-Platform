@@ -6,10 +6,11 @@ platform: "hackmyvm"
 category: "machines"
 difficulty: "medium"
 os: "linux"
-lang: en
+language: en
 tags: ["code-review", "command-injection", "cron"]
 retired: false
-heroImage: "/images/writeups/hackmyvm/quick/portada.png"
+logo: "/images/writeups/hackmyvm/quick/logo.png"
+heroImage: "/images/writeups/hackmyvm/quick/card.png"
 ---
 
 # Quick - HackMyVM Writeup

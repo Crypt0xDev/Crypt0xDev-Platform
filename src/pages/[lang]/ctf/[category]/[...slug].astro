@@ -1,0 +1,376 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Layout from '../../../../layouts/Layout.astro';
+import TOC from '../../../../components/common/TOC.astro';
+import { getCTFCategoryById, getCTFCategoryName } from '../../../../i18n/constants';
+import type { Language } from '../../../../i18n/types';
+
+export async function getStaticPaths() {
+  const allCTFs = await getCollection('ctf');
+  
+  return allCTFs.map((ctf) => {
+    const slugParts = ctf.slug.split('/');
+    const lang = (slugParts[0] === 'es' || slugParts[0] === 'en') ? slugParts[0] : 'es';
+    const category = ctf.data.category;
+    
+    // El slug debe ser solo la parte después de lang (sin incluir lang/)
+    // Ejemplo: "es/picoctf-web-scraping" -> slug = "picoctf-web-scraping"
+    const slug = slugParts.slice(1).join('/');
+    
+    return {
+      params: { 
+        lang,
+        category,
+        slug 
+      },
+      props: { ctf }
+    };
+  });
+}
+
+type Props = {
+  ctf: CollectionEntry<'ctf'>;
+};
+
+const { ctf } = Astro.props;
+const { lang, category: categoryId } = Astro.params;
+const currentLang = lang as Language;
+
+const { Content, headings } = await ctf.render();
+
+const categoryInfo = getCTFCategoryById(categoryId);
+const categoryName = getCTFCategoryName(categoryId, currentLang);
+
+// Traducciones
+const t = {
+  es: {
+    breadcrumbHome: 'Inicio',
+    breadcrumbCTF: 'CTF',
+    difficulty: 'Dificultad',
+    platform: 'Plataforma',
+    points: 'Puntos',
+    publishedOn: 'Publicado el',
+    solvedOn: 'Resuelto el',
+    tags: 'Etiquetas',
+    tools: 'Herramientas',
+    ctfEvent: 'Evento CTF',
+    machine: 'Máquina',
+    os: 'Sistema Operativo',
+    ip: 'IP',
+    flags: 'Flags',
+    userFlag: 'User',
+    rootFlag: 'Root'
+  },
+  en: {
+    breadcrumbHome: 'Home',
+    breadcrumbCTF: 'CTF',
+    difficulty: 'Difficulty',
+    platform: 'Platform',
+    points: 'Points',
+    publishedOn: 'Published on',
+    solvedOn: 'Solved on',
+    tags: 'Tags',
+    tools: 'Tools',
+    ctfEvent: 'CTF Event',
+    machine: 'Machine',
+    os: 'Operating System',
+    ip: 'IP',
+    flags: 'Flags',
+    userFlag: 'User',
+    rootFlag: 'Root'
+  }
+}[currentLang];
+
+const difficultyColors = {
+  easy: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+  medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+  hard: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
+  insane: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+};
+
+const difficultyLabels = {
+  es: {
+    easy: 'Fácil',
+    medium: 'Medio',
+    hard: 'Difícil',
+    insane: 'Insano'
+  },
+  en: {
+    easy: 'Easy',
+    medium: 'Medium',
+    hard: 'Hard',
+    insane: 'Insane'
+  }
+};
+---
+
+<Layout title={ctf.data.title} description={ctf.data.description}>
+  <article class="ctf-article">
+    <!-- Breadcrumbs -->
+    <nav class="flex mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="inline-flex items-center space-x-1 md:space-x-3">
+        <li class="inline-flex items-center">
+          <a href={`/${currentLang}`} class="text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">
+            {t.breadcrumbHome}
+          </a>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <span class="mx-2 text-gray-400">/</span>
+            <a href={`/${currentLang}/ctf`} class="text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">
+              {t.breadcrumbCTF}
+            </a>
+          </div>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <span class="mx-2 text-gray-400">/</span>
+            <a href={`/${currentLang}/ctf/${categoryId}`} class="text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">
+              {categoryName}
+            </a>
+          </div>
+        </li>
+        <li aria-current="page">
+          <div class="flex items-center">
+            <span class="mx-2 text-gray-400">/</span>
+            <span class="text-gray-500 dark:text-gray-400 truncate max-w-xs">{ctf.data.title}</span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+
+    <!-- Hero Image -->
+    {ctf.data.heroImage && (
+      <div class="mb-8 rounded-2xl overflow-hidden">
+        <img 
+          src={ctf.data.heroImage} 
+          alt={ctf.data.title}
+          class="w-full h-auto"
+        />
+      </div>
+    )}
+
+    <!-- Header -->
+    <header class="mb-8">
+      <div class="flex items-center gap-2 mb-4 flex-wrap">
+        {categoryInfo && (
+          <span class={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${categoryInfo.textColor} ${categoryInfo.bgColor} ${categoryInfo.borderColor} border`}>
+            {categoryInfo.icon} {categoryName}
+          </span>
+        )}
+        <span class={`px-3 py-1 rounded-full text-sm font-medium ${difficultyColors[ctf.data.difficulty]}`}>
+          {difficultyLabels[currentLang][ctf.data.difficulty]}
+        </span>
+        {ctf.data.platform && (
+          <span class="px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+            {ctf.data.platform}
+          </span>
+        )}
+        {ctf.data.points && (
+          <span class="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+            {ctf.data.points} {t.points}
+          </span>
+        )}
+      </div>
+
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+        {ctf.data.title}
+      </h1>
+
+      <p class="text-xl text-gray-600 dark:text-gray-400 mb-6">
+        {ctf.data.description}
+      </p>
+
+      <div class="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
+        <div>
+          <strong>{t.publishedOn}:</strong>
+          <time datetime={ctf.data.pubDate.toISOString()} class="ml-1">
+            {ctf.data.pubDate.toLocaleDateString(currentLang, {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </time>
+        </div>
+        {ctf.data.solvedDate && (
+          <div>
+            <strong>{t.solvedOn}:</strong>
+            <time datetime={ctf.data.solvedDate.toISOString()} class="ml-1">
+              {ctf.data.solvedDate.toLocaleDateString(currentLang, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </time>
+          </div>
+        )}
+      </div>
+    </header>
+
+    <!-- CTF Info Sidebar -->
+    <aside class="mb-8 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {ctf.data.ctfName && (
+          <div>
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">{t.ctfEvent}</h3>
+            <p class="text-gray-600 dark:text-gray-400">{ctf.data.ctfName}</p>
+          </div>
+        )}
+        
+        {ctf.data.machine && (
+          <>
+            <div>
+              <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">{t.machine}</h3>
+              <p class="text-gray-600 dark:text-gray-400">{ctf.data.machine.name}</p>
+            </div>
+            {ctf.data.machine.os && (
+              <div>
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">{t.os}</h3>
+                <p class="text-gray-600 dark:text-gray-400 capitalize">{ctf.data.machine.os}</p>
+              </div>
+            )}
+            {ctf.data.machine.ip && (
+              <div>
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">{t.ip}</h3>
+                <code class="text-gray-600 dark:text-gray-400 bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">
+                  {ctf.data.machine.ip}
+                </code>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      {ctf.data.flags && (ctf.data.flags.user || ctf.data.flags.root) && (
+        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">{t.flags}</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {ctf.data.flags.user && (
+              <div>
+                <span class="text-xs text-gray-500 dark:text-gray-400">{t.userFlag}:</span>
+                <code class="block text-xs text-gray-600 dark:text-gray-400 bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded mt-1 break-all">
+                  {ctf.data.flags.user}
+                </code>
+              </div>
+            )}
+            {ctf.data.flags.root && (
+              <div>
+                <span class="text-xs text-gray-500 dark:text-gray-400">{t.rootFlag}:</span>
+                <code class="block text-xs text-gray-600 dark:text-gray-400 bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded mt-1 break-all">
+                  {ctf.data.flags.root}
+                </code>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </aside>
+
+    <!-- Content & TOC -->
+    <div class="content-container">
+      <div class="content-wrapper">
+        <div class="main-content prose prose-lg dark:prose-invert prose-headings:text-gray-900 dark:prose-headings:text-white prose-pre:bg-gray-900 dark:prose-pre:bg-gray-950">
+          <Content />
+        </div>
+      </div>
+    </div>
+
+    <!-- TOC Fixed (fuera del flujo) -->
+    {headings.length > 0 && (
+      <aside class="toc-wrapper">
+        <TOC headings={headings} title={currentLang === 'es' ? 'Tabla de Contenidos' : 'Table of Contents'} inline={false} platform="ctf" />
+      </aside>
+    )}
+
+    <!-- Tags & Tools -->
+    <footer class="border-t border-gray-200 dark:border-gray-700 pt-8">
+      {(ctf.data.tags.length > 0 || ctf.data.tools.length > 0) && (
+        <div class="space-y-4">
+          {ctf.data.tags.length > 0 && (
+            <div>
+              <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">{t.tags}</h3>
+              <div class="flex flex-wrap gap-2">
+                {ctf.data.tags.map((tag) => (
+                  <span class="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {ctf.data.tools.length > 0 && (
+            <div>
+              <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">{t.tools}</h3>
+              <div class="flex flex-wrap gap-2">
+                {ctf.data.tools.map((tool) => (
+                  <span class="px-3 py-1 rounded-full text-sm bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+                    {tool}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </footer>
+  </article>
+</Layout>
+
+<style>
+  /* Article principal - Usa todo el ancho */
+  .ctf-article {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  /* Content Layout - Contenido a 1280px, TOC por fuera */
+  .content-container {
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+
+  .content-wrapper {
+    width: 100%;
+  }
+
+  .main-content {
+    width: 100%;
+    max-width: none !important;
+  }
+
+  /* Ajustar prose para usar todo el ancho */
+  .main-content :global(.prose) {
+    max-width: none !important;
+  }
+
+  /* TOC Wrapper - Fijo a la derecha, fuera del contenedor de 1280px */
+  .toc-wrapper {
+    position: fixed;
+    top: 6rem;
+    right: max(1rem, calc((100vw - 1280px) / 2 - 300px));
+    width: 280px;
+    max-height: calc(100vh - 8rem);
+    overflow-y: auto;
+    z-index: 10;
+  }
+
+  .toc-wrapper > :global(*) {
+    position: sticky;
+    top: 0;
+  }
+
+  /* Responsive: Ocultar TOC en pantallas pequeñas */
+  @media (max-width: 1600px) {
+    .toc-wrapper {
+      display: none;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .ctf-article {
+      padding: 1rem;
+    }
+  }
+</style>

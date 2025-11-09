@@ -1,6 +1,6 @@
 ---
 import Layout from './Layout.astro';
-import { useTranslations } from '../utils/i18n';
+import { useTranslations } from '../i18n/core';
 
 interface Props {
   title: string;
@@ -22,51 +22,25 @@ const t = useTranslations(lang as 'es' | 'en');
   lang={lang}
   image={image}
   canonical={Astro.url.href}
+  type="article"
+  pubDate={pubDate}
+  modDate={updatedDate}
+  section="Cybersecurity"
+  tags={tags}
+  keywords={tags?.join(', ')}
 >
-  <article class="blog-layout">
+  <article class="min-h-[calc(100vh-16rem)]">
     <slot />
     
-    <footer class="article-footer">
-      <div class="article-nav">
-        <a href={`/${lang}/blog`} class="back-link">
+    <footer class="max-w-[1000px] mx-auto mt-12 p-8 border-t border-slate-200 dark:border-slate-700">
+      <div class="flex justify-between items-center">
+        <a 
+          href={`/${lang}/blog`} 
+          class="text-indigo-600 dark:text-indigo-400 no-underline font-semibold transition-colors duration-200 hover:text-indigo-700 dark:hover:text-indigo-300 hover:underline"
+        >
           ← {t('blog.back_to_blog')}
         </a>
       </div>
     </footer>
   </article>
 </Layout>
-
-<style>
-  .blog-layout {
-    min-height: calc(100vh - 16rem);
-  }
-
-  .article-footer {
-    max-width: 1000px;
-    margin: 3rem auto 0;
-    padding: 2rem 1rem;
-    border-top: 1px solid var(--border-color, #e5e7eb);
-  }
-
-  .article-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .back-link {
-    color: var(--accent-color);
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.2s ease;
-  }
-
-  .back-link:hover {
-    color: var(--accent-hover);
-    text-decoration: underline;
-  }
-
-  :global(.dark) .article-footer {
-    border-color: #374151;
-  }
-</style>

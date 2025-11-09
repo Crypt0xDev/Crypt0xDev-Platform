@@ -1,8 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import Layout from '../../../layouts/Layout.astro';
-import { useTranslations } from '../../../utils/i18n';
-import { formatDate } from '../../../utils/helpers';
+import { useTranslations } from '../../../i18n/core';
+import { formatDate } from '../../../i18n/utils';
 
 export async function getStaticPaths() {
   const blogEntries = await getCollection('blog');
@@ -35,11 +35,11 @@ const t = useTranslations(lang as 'es' | 'en');
 
 // Obtener todas las entradas con este tag
 const blogEntries = await getCollection('blog', ({ data }) => {
-  return data.lang === lang && data.tags?.some(t => t.toLowerCase().replace(/\s+/g, '-') === tag.toLowerCase().replace(/\s+/g, '-'));
+  return data.language === lang && data.tags?.some(t => t.toLowerCase().replace(/\s+/g, '-') === tag.toLowerCase().replace(/\s+/g, '-'));
 });
 
 const writeupEntries = await getCollection('writeups', ({ data }) => {
-  return data.lang === lang && data.tags?.some(t => t.toLowerCase().replace(/\s+/g, '-') === tag.toLowerCase().replace(/\s+/g, '-'));
+  return data.language === lang && data.tags?.some(t => t.toLowerCase().replace(/\s+/g, '-') === tag.toLowerCase().replace(/\s+/g, '-'));
 });
 
 // Combinar y ordenar por fecha
@@ -291,33 +291,24 @@ const originalTag = allEntries[0]?.data.tags?.find(t =>
   }
 
   .card-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+    /* Using global tag container styles from global.css */
   }
 
   .tag {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    background: var(--tag-bg);
-    color: var(--tag-text);
-    border-radius: 0.375rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    text-decoration: none;
-    transition: all 0.2s ease;
-  }
-
-  .tag:hover {
-    background: var(--accent-color);
-    color: white;
-    transform: translateY(-2px);
+    /* Using global tag styles from global.css */
   }
 
   .tag.active {
-    background: var(--accent-color);
+    background: rgba(99, 102, 241, 0.9);
     color: white;
     font-weight: 700;
+    border-color: rgb(99, 102, 241);
+  }
+
+  :global(.dark) .tag.active {
+    background: rgba(129, 140, 248, 0.9);
+    color: rgb(17, 24, 39);
+    border-color: rgb(129, 140, 248);
   }
 
   .back-link-wrapper {

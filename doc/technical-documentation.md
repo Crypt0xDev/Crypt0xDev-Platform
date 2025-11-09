@@ -510,7 +510,7 @@ export function useTranslations(lang: keyof typeof ui) {
 ```astro
 ---
 // Header.astro
-import { getLangFromUrl, useTranslations } from '../utils/i18n';
+import { getLangFromUrl, useTranslations } from '../i18n/core';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
@@ -546,7 +546,7 @@ const t = useTranslations(lang);
 ```astro
 ---
 // src/components/ui/Header.astro
-import { getLangFromUrl, useTranslations } from '../../utils/i18n';
+import { getLangFromUrl, useTranslations } from '../../i18n/core';
 import LanguageSwitcher from './LanguageSwitcher.astro';
 import ThemeToggle from './ThemeToggle.astro';
 
@@ -1406,7 +1406,7 @@ const {
 ---
 // src/pages/[lang]/nueva-pagina.astro
 import Layout from '../../layouts/Layout.astro';
-import { getLangFromUrl, useTranslations } from '../../utils/i18n';
+import { getLangFromUrl, useTranslations } from '../../i18n/core';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);

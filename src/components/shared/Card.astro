@@ -1,0 +1,150 @@
+---
+/**
+ * Componente Card reutilizable
+ * Base para tarjetas de blog, writeups, CTF, etc.
+ */
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  imageAlt?: string;
+  href?: string;
+  date?: Date;
+  tags?: string[];
+  badge?: {
+    text: string;
+    variant?: 'default' | 'success' | 'warning' | 'error' | 'info';
+  };
+  footer?: boolean;
+  class?: string;
+}
+
+const {
+  title,
+  description,
+  image,
+  imageAlt = title,
+  href,
+  date,
+  tags = [],
+  badge,
+  footer = true,
+  class: className = '',
+} = Astro.props;
+
+const CardTag = href ? 'a' : 'div';
+---
+
+<CardTag
+  href={href}
+  class:list={[
+    'card',
+    'group',
+    'relative',
+    'overflow-hidden',
+    'rounded-lg',
+    'border',
+    'border-gray-200',
+    'dark:border-gray-800',
+    'bg-white',
+    'dark:bg-gray-900',
+    'shadow-sm',
+    'hover:shadow-md',
+    'transition-all',
+    'duration-300',
+    href && 'hover:-translate-y-1',
+    className,
+  ]}
+>
+  {/* Imagen */}
+  {image && (
+    <div class="aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800">
+      <img
+        src={image}
+        alt={imageAlt}
+        loading="lazy"
+        class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+      />
+    </div>
+  )}
+
+  {/* Contenido */}
+  <div class="p-6">
+    {/* Badge */}
+    {badge && (
+      <div class="mb-3">
+        <span
+          class:list={[
+            'inline-flex',
+            'items-center',
+            'rounded-full',
+            'px-3',
+            'py-1',
+            'text-xs',
+            'font-medium',
+            badge.variant === 'success' && 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+            badge.variant === 'warning' && 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+            badge.variant === 'error' && 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+            badge.variant === 'info' && 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+            (!badge.variant || badge.variant === 'default') && 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400',
+          ]}
+        >
+          {badge.text}
+        </span>
+      </div>
+    )}
+
+    {/* Título */}
+    <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+      {title}
+    </h3>
+
+    {/* Descripción */}
+    {description && (
+      <p class="mb-4 text-gray-600 dark:text-gray-400 line-clamp-3">
+        {description}
+      </p>
+    )}
+
+    {/* Tags */}
+    {tags.length > 0 && (
+      <div class="flex flex-wrap gap-2 mb-4">
+        {tags.slice(0, 3).map((tag) => (
+          <span class="inline-flex items-center rounded-md bg-gray-50 dark:bg-gray-800 px-2 py-1 text-xs font-medium text-gray-600 dark:text-gray-400 ring-1 ring-inset ring-gray-500/10 dark:ring-gray-700">
+            #{tag}
+          </span>
+        ))}
+        {tags.length > 3 && (
+          <span class="inline-flex items-center rounded-md bg-gray-50 dark:bg-gray-800 px-2 py-1 text-xs font-medium text-gray-600 dark:text-gray-400">
+            +{tags.length - 3}
+          </span>
+        )}
+      </div>
+    )}
+
+    {/* Footer con fecha */}
+    {footer && date && (
+      <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-800">
+        <time
+          datetime={date.toISOString()}
+          class="text-sm text-gray-500 dark:text-gray-500"
+        >
+          {date.toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}
+        </time>
+      </div>
+    )}
+
+    {/* Slot para contenido adicional */}
+    <slot />
+  </div>
+</CardTag>
+
+<style>
+  .card {
+    will-change: transform;
+  }
+</style>

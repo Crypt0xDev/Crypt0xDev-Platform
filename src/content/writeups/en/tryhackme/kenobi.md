@@ -6,7 +6,7 @@ platform: "tryhackme"
 category: "rooms"
 difficulty: "easy"
 os: "linux"
-lang: en
+language: en
 tags: ["samba", "proftpd", "suid", "nfs"]
 retired: false
 heroImage: "/images/writeups/tryhackme/kenobi.jpg"

@@ -1,8 +1,8 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-import { getLangFromUrl, useTranslations } from '../../utils/i18n';
-import { filterByLang } from '../../utils/helpers';
+import { getLangFromUrl, useTranslations } from '../../i18n/core';
+import { filterByLang } from '../../i18n/utils';
 
 export function getStaticPaths() {
   return [
@@ -14,18 +14,14 @@ export function getStaticPaths() {
 const { lang } = Astro.params;
 const t = useTranslations(lang as 'es' | 'en');
 
-// Obtener estadísticas
 const allWriteups = await getCollection('writeups');
 const allBlog = await getCollection('blog');
 const allCtf = await getCollection('ctf');
-const allArchive = await getCollection('archive');
 
 const writeups = filterByLang(allWriteups, lang as string);
 const blog = filterByLang(allBlog, lang as string);
 const ctf = filterByLang(allCtf, lang as string);
-const archive = filterByLang(allArchive, lang as string);
 
-// Plataformas de writeups
 const platforms = {
   htb: writeups.filter(w => w.data.platform === 'htb').length,
   tryhackme: writeups.filter(w => w.data.platform === 'tryhackme').length,
@@ -37,1403 +33,189 @@ const totalPlatforms = Object.values(platforms).filter(v => v > 0).length;
 ---
 
 <Layout title={t('nav.about')} description="About Crypt0xDev - Cybersecurity Blog" lang={lang}>
-  <main class="about">
-    <div class="container">
-      <header class="page-header">
-        <h1 class="page-title">{t('nav.about')}</h1>
-        <p class="page-description">
-          {lang === 'es' 
-            ? 'Plataforma integral de conocimiento en ciberseguridad, pentesting y desarrollo seguro'
-            : 'Comprehensive platform for cybersecurity knowledge, pentesting and secure development'
-          }
-        </p>
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+    <!-- Animated Background -->
+    <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+      <div class="absolute top-1/4 -left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse"></div>
+      <div class="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+    </div>
+
+    <div class="relative">
+      <!-- Header -->
+      <header class="text-center mb-16">
+        <h1 class="text-4xl sm:text-5xl md:text-6xl font-black mb-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent leading-tight">
+          About @Crypt0xDev
+        </h1>
+        
+        <!-- Social Links -->
+        <div class="flex justify-center gap-4 mb-8">
+          <a href="https://github.com/Crypt0xDev" target="_blank" rel="noopener noreferrer" 
+             class="group p-3 bg-gray-100 dark:bg-gray-800 hover:bg-indigo-500 dark:hover:bg-indigo-600 rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-indigo-500/50" 
+             aria-label="GitHub">
+            <svg class="w-6 h-6 text-gray-700 dark:text-gray-300 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+          </a>
+          <a href="https://twitter.com/Crypt0xDev" target="_blank" rel="noopener noreferrer" 
+             class="group p-3 bg-gray-100 dark:bg-gray-800 hover:bg-indigo-500 dark:hover:bg-indigo-600 rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-indigo-500/50" 
+             aria-label="Twitter">
+            <svg class="w-6 h-6 text-gray-700 dark:text-gray-300 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+          </a>
+          <a href="https://www.youtube.com/@Crypt0xDev" target="_blank" rel="noopener noreferrer" 
+             class="group p-3 bg-gray-100 dark:bg-gray-800 hover:bg-red-500 dark:hover:bg-red-600 rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-red-500/50" 
+             aria-label="YouTube">
+            <svg class="w-6 h-6 text-gray-700 dark:text-gray-300 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+          </a>
+          <a href="https://www.instagram.com/crypt0xdev" target="_blank" rel="noopener noreferrer" 
+             class="group p-3 bg-gray-100 dark:bg-gray-800 hover:bg-gradient-to-br hover:from-purple-500 hover:to-pink-500 rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-pink-500/50" 
+             aria-label="Instagram">
+            <svg class="w-6 h-6 text-gray-700 dark:text-gray-300 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+          </a>
+        </div>
       </header>
 
-      <!-- Estadísticas Generales -->
-      <section class="stats-section">
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-icon">📝</div>
-            <div class="stat-value">{blog.length}</div>
-            <div class="stat-label">{lang === 'es' ? 'Artículos' : 'Articles'}</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">🔐</div>
-            <div class="stat-value">{writeups.length}</div>
-            <div class="stat-label">Writeups</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">🚩</div>
-            <div class="stat-value">{ctf.length}</div>
-            <div class="stat-label">CTF</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">📚</div>
-            <div class="stat-value">{archive.length}</div>
-            <div class="stat-label">{lang === 'es' ? 'Recursos' : 'Resources'}</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">🌐</div>
-            <div class="stat-value">{totalPlatforms}</div>
-            <div class="stat-label">{lang === 'es' ? 'Plataformas' : 'Platforms'}</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">🌍</div>
-            <div class="stat-value">2</div>
-            <div class="stat-label">{lang === 'es' ? 'Idiomas' : 'Languages'}</div>
-          </div>
+      <!-- Quién Soy -->
+      <section class="mb-12 p-8 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30 rounded-3xl border border-indigo-200/50 dark:border-indigo-800/50 hover:border-indigo-300 dark:hover:border-indigo-700 transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/10">
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-full text-sm font-bold mb-6 shadow-lg">
+          <span>👨‍💻</span>
+          <span>{lang === 'es' ? 'Quién Soy' : 'Who I Am'}</span>
+        </div>
+        
+        <h2 class="text-3xl font-bold mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
+          Alexis — Security Researcher 👋
+        </h2>
+        
+        <div class="space-y-3 text-gray-700 dark:text-gray-300">
+          <p class="text-lg leading-relaxed">
+            {lang === 'es'
+              ? 'Estudiante de Ingeniería en Sistemas especializado en ciberseguridad. Mi pasión es encontrar vulnerabilidades, entender cómo funcionan los sistemas y crear herramientas que ayuden a protegerlos.'
+              : 'Systems Engineering student specialized in cybersecurity. My passion is finding vulnerabilities, understanding how systems work and creating tools to help protect them.'
+            }
+          </p>
+          <p class="flex items-center gap-2 text-base font-medium">
+            <span>🎯</span>
+            <span>{lang === 'es' ? 'Enfoque:' : 'Focus:'}</span>
+            <span class="text-indigo-600 dark:text-indigo-400">WiFi Security · Web AppSec · Pentesting Tools</span>
+          </p>
+          <p class="flex items-center gap-2 text-base font-medium">
+            <span>🎓</span>
+            <span>{lang === 'es' ? 'Camino:' : 'Path:'}</span>
+            <span class="text-purple-600 dark:text-purple-400">eJPT (Q1 2025) → OSCP (Q2-Q3 2025)</span>
+          </p>
         </div>
       </section>
 
-      <div class="content">
-        <!-- Sección Principal -->
-        <section class="section hero-section">
-          <h2>
-            {lang === 'es' ? '🎯 ¿Qué es Crypt0xDev?' : '🎯 What is Crypt0xDev?'}
-          </h2>
-          <p>
+      <!-- Portfolio -->
+      <section class="mb-12 p-8 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 rounded-3xl border border-purple-200/50 dark:border-purple-800/50 hover:border-purple-300 dark:hover:border-purple-700 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/10">
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-full text-sm font-bold mb-6 shadow-lg">
+          <span>🎯</span>
+          <span>{lang === 'es' ? 'Portfolio' : 'Portfolio'}</span>
+        </div>
+        
+        <h2 class="text-3xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+          {lang === 'es' ? 'Proyectos & Herramientas' : 'Projects & Tools'}
+        </h2>
+        
+        <div class="space-y-3 text-gray-700 dark:text-gray-300">
+          <p class="text-lg leading-relaxed">
             {lang === 'es'
-              ? 'Crypt0xDev es una plataforma integral dedicada al aprendizaje y práctica de ciberseguridad. Ofrecemos contenido de alta calidad en español e inglés, cubriendo desde conceptos básicos hasta técnicas avanzadas de pentesting y hacking ético.'
-              : 'Crypt0xDev is a comprehensive platform dedicated to learning and practicing cybersecurity. We offer high-quality content in Spanish and English, covering from basic concepts to advanced pentesting and ethical hacking techniques.'
+              ? 'Desarrollo frameworks de pentesting, plataformas educativas y herramientas open-source. Cada proyecto resuelve un problema real de la comunidad de seguridad.'
+              : 'I develop pentesting frameworks, educational platforms and open-source tools. Each project solves a real problem for the security community.'
             }
           </p>
-          <p>
+          <p class="flex items-start gap-2 text-base">
+            <span class="mt-1">📝</span>
+            <span>
+              {lang === 'es'
+                ? 'Comparto writeups detallados, tutoriales prácticos y análisis de herramientas para ayudar a otros a aprender pentesting de forma efectiva.'
+                : 'I share detailed writeups, practical tutorials and tool analysis to help others learn pentesting effectively.'
+              }
+            </span>
+          </p>
+        </div>
+      </section>
+
+      <!-- La Plataforma -->
+      <section class="mb-12 p-8 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30 rounded-3xl border border-blue-200/50 dark:border-blue-800/50 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10">
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-full text-sm font-bold mb-6 shadow-lg">
+          <span>🌐</span>
+          <span>{lang === 'es' ? 'La Plataforma' : 'The Platform'}</span>
+        </div>
+        
+        <h2 class="text-3xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent">
+          Crypt0xDev Platform
+        </h2>
+        
+        <div class="space-y-3 text-gray-700 dark:text-gray-300">
+          <p class="text-lg leading-relaxed">
             {lang === 'es'
-              ? 'Nuestro enfoque práctico combina teoría sólida con ejemplos del mundo real, writeups detallados de máquinas vulnerables y tutoriales paso a paso que te ayudarán a desarrollar habilidades concretas en seguridad informática.'
-              : 'Our practical approach combines solid theory with real-world examples, detailed writeups of vulnerable machines, and step-by-step tutorials that will help you develop concrete skills in computer security.'
+              ? 'Hub centralizado de contenido técnico en español e inglés. Writeups de HTB, TryHackMe, VulnHub y más. Cada solución incluye metodología completa, comandos explicados y lecciones aprendidas.'
+              : 'Centralized hub for technical content in Spanish and English. Writeups from HTB, TryHackMe, VulnHub and more. Each solution includes complete methodology, explained commands and lessons learned.'
             }
           </p>
-        </section>
-
-        <!-- Secciones del Sitio -->
-        <section class="section">
-          <h2>
-            {lang === 'es' ? '📂 Contenido del Sitio' : '📂 Site Content'}
-          </h2>
-          <div class="content-grid">
-            <div class="content-card">
-              <div class="card-icon">📝</div>
-              <h3>Blog</h3>
-              <p>
-                {lang === 'es'
-                  ? 'Artículos técnicos sobre ciberseguridad, análisis de vulnerabilidades, metodologías de pentesting, herramientas, y conceptos fundamentales de seguridad.'
-                  : 'Technical articles about cybersecurity, vulnerability analysis, pentesting methodologies, tools, and fundamental security concepts.'
-                }
-              </p>
-              <div class="card-stats">
-                <span class="badge">{blog.length} {lang === 'es' ? 'artículos' : 'articles'}</span>
-              </div>
-              <a href={`/${lang}/blog`} class="card-link">{lang === 'es' ? 'Ver blog' : 'View blog'} →</a>
-            </div>
-
-            <div class="content-card">
-              <div class="card-icon">🔐</div>
-              <h3>Writeups</h3>
-              <p>
-                {lang === 'es'
-                  ? 'Soluciones detalladas de máquinas de HackTheBox, TryHackMe, VulnHub y HackMyVM. Cada writeup incluye reconocimiento, explotación y escalada de privilegios.'
-                  : 'Detailed solutions for machines from HackTheBox, TryHackMe, VulnHub and HackMyVM. Each writeup includes reconnaissance, exploitation and privilege escalation.'
-                }
-              </p>
-              <div class="card-stats">
-                <span class="badge">{writeups.length} writeups</span>
-                <span class="badge">{totalPlatforms} {lang === 'es' ? 'plataformas' : 'platforms'}</span>
-              </div>
-              <a href={`/${lang}/writeup`} class="card-link">{lang === 'es' ? 'Ver writeups' : 'View writeups'} →</a>
-            </div>
-
-            <div class="content-card">
-              <div class="card-icon">🚩</div>
-              <h3>CTF Writeups</h3>
-              <p>
-                {lang === 'es'
-                  ? 'Soluciones de retos de Capture The Flag en categorías como Web, Pwn, Crypto, Forensics, Reversing y más. Aprende técnicas específicas de cada categoría.'
-                  : 'Solutions for Capture The Flag challenges in categories like Web, Pwn, Crypto, Forensics, Reversing and more. Learn specific techniques for each category.'
-                }
-              </p>
-              <div class="card-stats">
-                <span class="badge">{ctf.length} {lang === 'es' ? 'retos' : 'challenges'}</span>
-                <span class="badge">8 {lang === 'es' ? 'categorías' : 'categories'}</span>
-              </div>
-              <a href={`/${lang}/ctf`} class="card-link">{lang === 'es' ? 'Ver CTF' : 'View CTF'} →</a>
-            </div>
-
-            <div class="content-card">
-              <div class="card-icon">📚</div>
-              <h3>{lang === 'es' ? 'Archivo de Conocimiento' : 'Knowledge Archive'}</h3>
-              <p>
-                {lang === 'es'
-                  ? 'Tutoriales, cheatsheets, guías y recursos sobre herramientas, metodologías y técnicas de pentesting. Una biblioteca completa de conocimiento práctico.'
-                  : 'Tutorials, cheatsheets, guides and resources on tools, methodologies and pentesting techniques. A complete library of practical knowledge.'
-                }
-              </p>
-              <div class="card-stats">
-                <span class="badge">{archive.length} {lang === 'es' ? 'recursos' : 'resources'}</span>
-                <span class="badge">14 {lang === 'es' ? 'tópicos' : 'topics'}</span>
-              </div>
-              <a href={`/${lang}/archive`} class="card-link">{lang === 'es' ? 'Ver archivo' : 'View archive'} →</a>
-            </div>
-          </div>
-        </section>
-
-        <!-- Plataformas Cubiertas -->
-        <section class="section">
-          <h2>
-            {lang === 'es' ? '🌐 Plataformas Cubiertas' : '🌐 Covered Platforms'}
-          </h2>
-          <div class="platforms-grid">
-            <div class="platform-item">
-              <img src="/images/platforms/htb.png" alt="HackTheBox" class="platform-logo" />
-              <h4>HackTheBox</h4>
-              <span class="platform-count">{platforms.htb} writeups</span>
-            </div>
-            <div class="platform-item">
-              <img src="/images/platforms/tryhackme.jpg" alt="TryHackMe" class="platform-logo" />
-              <h4>TryHackMe</h4>
-              <span class="platform-count">{platforms.tryhackme} writeups</span>
-            </div>
-            <div class="platform-item">
-              <img src="/images/platforms/vulnhub.png" alt="VulnHub" class="platform-logo" />
-              <h4>VulnHub</h4>
-              <span class="platform-count">{platforms.vulnhub} writeups</span>
-            </div>
-            <div class="platform-item">
-              <img src="/images/platforms/hackmyvm.png" alt="HackMyVM" class="platform-logo" />
-              <h4>HackMyVM</h4>
-              <span class="platform-count">{platforms.hackmyvm} writeups</span>
-            </div>
-          </div>
-        </section>
-
-        <!-- Características -->
-        <section class="section">
-          <h2>
-            {lang === 'es' ? '✨ Características' : '✨ Features'}
-          </h2>
-          <div class="features-grid">
-            <div class="feature-item">
-              <div class="feature-icon">🌍</div>
-              <h4>{lang === 'es' ? 'Multiidioma' : 'Multilingual'}</h4>
-              <p>{lang === 'es' ? 'Contenido en español e inglés' : 'Content in Spanish and English'}</p>
-            </div>
-            <div class="feature-item">
-              <div class="feature-icon">🎯</div>
-              <h4>{lang === 'es' ? 'Contenido Práctico' : 'Practical Content'}</h4>
-              <p>{lang === 'es' ? 'Ejemplos reales y ejecutables' : 'Real and executable examples'}</p>
-            </div>
-            <div class="feature-item">
-              <div class="feature-icon">📖</div>
-              <h4>{lang === 'es' ? 'Documentación Completa' : 'Complete Documentation'}</h4>
-              <p>{lang === 'es' ? 'Explicaciones detalladas paso a paso' : 'Detailed step-by-step explanations'}</p>
-            </div>
-            <div class="feature-item">
-              <div class="feature-icon">🔄</div>
-              <h4>{lang === 'es' ? 'Actualizado' : 'Updated'}</h4>
-              <p>{lang === 'es' ? 'Contenido nuevo regularmente' : 'New content regularly'}</p>
-            </div>
-            <div class="feature-item">
-              <div class="feature-icon">🏷️</div>
-              <h4>{lang === 'es' ? 'Categorizado' : 'Categorized'}</h4>
-              <p>{lang === 'es' ? 'Organizado por dificultad y tema' : 'Organized by difficulty and topic'}</p>
-            </div>
-            <div class="feature-item">
-              <div class="feature-icon">🔍</div>
-              <h4>{lang === 'es' ? 'Búsqueda por Tags' : 'Search by Tags'}</h4>
-              <p>{lang === 'es' ? 'Encuentra contenido específico fácilmente' : 'Find specific content easily'}</p>
-            </div>
-          </div>
-        </section>
-
-        <!-- Tecnologías -->
-        <section class="section">
-          <h2>
-            {lang === 'es' ? '🛠️ Tecnologías y Stack' : '🛠️ Technologies and Stack'}
-          </h2>
-          <p>
-            {lang === 'es'
-              ? 'Este sitio está construido con tecnologías modernas que garantizan rendimiento, accesibilidad y una excelente experiencia de usuario:'
-              : 'This site is built with modern technologies that ensure performance, accessibility and an excellent user experience:'
-            }
+          <p class="flex items-center gap-2 text-base font-medium">
+            <span>⚡</span>
+            <span class="text-cyan-600 dark:text-cyan-400">Astro + TypeScript · Lighthouse 100/100 · {lang === 'es' ? 'Diseñada para aprendizaje rápido' : 'Designed for fast learning'}</span>
           </p>
-          <div class="tech-grid">
-            <div class="tech-item">
-              <span class="tech-icon">🚀</span>
-              <span class="tech-name">Astro</span>
-              <span class="tech-desc">{lang === 'es' ? 'Framework estático' : 'Static framework'}</span>
-            </div>
-            <div class="tech-item">
-              <span class="tech-icon">📘</span>
-              <span class="tech-name">TypeScript</span>
-              <span class="tech-desc">{lang === 'es' ? 'Type safety' : 'Type safety'}</span>
-            </div>
-            <div class="tech-item">
-              <span class="tech-icon">📝</span>
-              <span class="tech-name">Markdown</span>
-              <span class="tech-desc">{lang === 'es' ? 'Contenido' : 'Content'}</span>
-            </div>
-            <div class="tech-item">
-              <span class="tech-icon">🎨</span>
-              <span class="tech-name">CSS</span>
-              <span class="tech-desc">{lang === 'es' ? 'Estilos modernos' : 'Modern styles'}</span>
-            </div>
-            <div class="tech-item">
-              <span class="tech-icon">🌐</span>
-              <span class="tech-name">i18n</span>
-              <span class="tech-desc">{lang === 'es' ? 'Internacionalización' : 'Internationalization'}</span>
-            </div>
-            <div class="tech-item">
-              <span class="tech-icon">⚡</span>
-              <span class="tech-name">SSG</span>
-              <span class="tech-desc">{lang === 'es' ? 'Generación estática' : 'Static generation'}</span>
-            </div>
-          </div>
-        </section>
+        </div>
+      </section>
 
-        <!-- Metodología -->
-        <section class="section">
-          <h2>
-            {lang === 'es' ? '� Metodología de Contenido' : '� Content Methodology'}
-          </h2>
-          <p>
-            {lang === 'es'
-              ? 'Todo el contenido sigue una estructura consistente para facilitar el aprendizaje:'
-              : 'All content follows a consistent structure to facilitate learning:'
-            }
-          </p>
-          <div class="methodology-list">
-            <div class="methodology-item">
-              <span class="step-number">1</span>
-              <div class="step-content">
-                <h4>{lang === 'es' ? 'Reconocimiento' : 'Reconnaissance'}</h4>
-                <p>{lang === 'es' ? 'Análisis inicial y recopilación de información' : 'Initial analysis and information gathering'}</p>
-              </div>
+      <!-- Estadísticas -->
+      <section class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <div class="group relative overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-indigo-400 dark:hover:border-indigo-600 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-indigo-500/20">
+          <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/0 to-purple-500/0 group-hover:from-indigo-500/10 group-hover:to-purple-500/10 transition-all duration-300"></div>
+          <div class="relative text-center">
+            <div class="text-4xl md:text-5xl font-black bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent mb-2">
+              {writeups.length}
             </div>
-            <div class="methodology-item">
-              <span class="step-number">2</span>
-              <div class="step-content">
-                <h4>{lang === 'es' ? 'Enumeración' : 'Enumeration'}</h4>
-                <p>{lang === 'es' ? 'Identificación de servicios y vectores de ataque' : 'Service identification and attack vector discovery'}</p>
-              </div>
-            </div>
-            <div class="methodology-item">
-              <span class="step-number">3</span>
-              <div class="step-content">
-                <h4>{lang === 'es' ? 'Explotación' : 'Exploitation'}</h4>
-                <p>{lang === 'es' ? 'Ejecución de exploits y obtención de acceso' : 'Exploit execution and gaining access'}</p>
-              </div>
-            </div>
-            <div class="methodology-item">
-              <span class="step-number">4</span>
-              <div class="step-content">
-                <h4>{lang === 'es' ? 'Post-Explotación' : 'Post-Exploitation'}</h4>
-                <p>{lang === 'es' ? 'Escalada de privilegios y persistencia' : 'Privilege escalation and persistence'}</p>
-              </div>
-            </div>
-            <div class="methodology-item">
-              <span class="step-number">5</span>
-              <div class="step-content">
-                <h4>{lang === 'es' ? 'Lecciones' : 'Lessons'}</h4>
-                <p>{lang === 'es' ? 'Conceptos aprendidos y mitigaciones' : 'Learned concepts and mitigations'}</p>
-              </div>
+            <div class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+              Writeups
             </div>
           </div>
-        </section>
+        </div>
 
-        <!-- Call to Action -->
-        <section class="section cta-section">
-          <h2>
-            {lang === 'es' ? '🚀 ¡Comienza a Aprender!' : '🚀 Start Learning!'}
-          </h2>
-          <p>
-            {lang === 'es'
-              ? 'Explora nuestro contenido y mejora tus habilidades en ciberseguridad. Desde principiante hasta avanzado, tenemos algo para ti.'
-              : 'Explore our content and improve your cybersecurity skills. From beginner to advanced, we have something for you.'
-            }
-          </p>
-          <div class="cta-buttons">
-            <a href={`/${lang}/blog`} class="btn btn-primary">
-              {lang === 'es' ? '📝 Leer Blog' : '📝 Read Blog'}
-            </a>
-            <a href={`/${lang}/writeup`} class="btn btn-primary">
-              {lang === 'es' ? '🔐 Ver Writeups' : '🔐 View Writeups'}
-            </a>
-            <a href={`/${lang}/ctf`} class="btn btn-secondary">
-              {lang === 'es' ? '🚩 CTF' : '🚩 CTF'}
-            </a>
-            <a href={`/${lang}/archive`} class="btn btn-secondary">
-              {lang === 'es' ? '📚 Archivo' : '📚 Archive'}
-            </a>
+        <div class="group relative overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-purple-400 dark:hover:border-purple-600 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-purple-500/20">
+          <div class="absolute inset-0 bg-gradient-to-br from-purple-500/0 to-pink-500/0 group-hover:from-purple-500/10 group-hover:to-pink-500/10 transition-all duration-300"></div>
+          <div class="relative text-center">
+            <div class="text-4xl md:text-5xl font-black bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent mb-2">
+              {blog.length}
+            </div>
+            <div class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+              {lang === 'es' ? 'Artículos' : 'Articles'}
+            </div>
           </div>
-        </section>
-      </div>
+        </div>
+
+        <div class="group relative overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-600 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/20">
+          <div class="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-cyan-500/0 group-hover:from-blue-500/10 group-hover:to-cyan-500/10 transition-all duration-300"></div>
+          <div class="relative text-center">
+            <div class="text-4xl md:text-5xl font-black bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent mb-2">
+              {ctf.length}
+            </div>
+            <div class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+              CTF
+            </div>
+          </div>
+        </div>
+
+        <div class="group relative overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-pink-400 dark:hover:border-pink-600 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-pink-500/20">
+          <div class="absolute inset-0 bg-gradient-to-br from-pink-500/0 to-red-500/0 group-hover:from-pink-500/10 group-hover:to-red-500/10 transition-all duration-300"></div>
+          <div class="relative text-center">
+            <div class="text-4xl md:text-5xl font-black bg-gradient-to-r from-pink-600 to-red-600 dark:from-pink-400 dark:to-red-400 bg-clip-text text-transparent mb-2">
+              {totalPlatforms}
+            </div>
+            <div class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+              {lang === 'es' ? 'Plataformas' : 'Platforms'}
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   </main>
 </Layout>
-
-<style>
-  /* ===== ANIMACIONES ===== */
-  @keyframes fadeInDown {
-    from {
-      opacity: 0;
-      transform: translateY(-30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes scaleIn {
-    from {
-      opacity: 0;
-      transform: scale(0.9);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  @keyframes slideInRight {
-    from {
-      opacity: 0;
-      transform: translateX(-30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-
-  @keyframes float {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
-  }
-
-  @keyframes pulse {
-    0%, 100% {
-      box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4);
-    }
-    50% {
-      box-shadow: 0 0 0 20px rgba(79, 70, 229, 0);
-    }
-  }
-
-  /* ===== LAYOUT PRINCIPAL ===== */
-  .about {
-    min-height: calc(100vh - 16rem);
-    padding: 4rem 0;
-    background: 
-      radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.05) 0%, transparent 50%),
-      radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
-      radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.03) 0%, transparent 50%),
-      var(--bg-color);
-    position: relative;
-  }
-
-  .about::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, 
-      transparent 0%, 
-      rgba(79, 70, 229, 0.3) 50%, 
-      transparent 100%
-    );
-  }
-
-  /* ===== CONTAINER ===== */
-  .container {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 2rem;
-  }
-
-  /* ===== HEADER ===== */
-  .page-header {
-    text-align: center;
-    margin-bottom: 4rem;
-    animation: fadeInDown 1s ease-out;
-    padding-bottom: 3rem;
-    position: relative;
-  }
-
-  .page-header::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100px;
-    height: 4px;
-    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
-    border-radius: 2px;
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.5);
-  }
-
-  .page-title {
-    font-size: 4rem;
-    font-weight: 900;
-    margin: 0 0 1.5rem;
-    background: linear-gradient(135deg, 
-      #3b82f6 0%, 
-      #8b5cf6 50%, 
-      #ec4899 100%
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-    text-shadow: 0 0 60px rgba(139, 92, 246, 0.3);
-  }
-
-  .page-description {
-    font-size: 1.375rem;
-    color: var(--text-muted);
-    margin: 0 auto;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    font-weight: 500;
-    max-width: 800px;
-    line-height: 1.6;
-  }
-
-  /* ===== ESTADÍSTICAS ===== */
-  .stats-section {
-    margin-bottom: 4rem;
-    animation: fadeInUp 1s ease-out 0.2s backwards;
-  }
-
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .stat-card {
-    background: linear-gradient(135deg, 
-      var(--card-bg) 0%, 
-      color-mix(in srgb, var(--card-bg) 95%, var(--accent-color) 5%) 100%
-    );
-    border: 2px solid var(--border-color);
-    border-radius: 1.25rem;
-    padding: 2.5rem 1.5rem;
-    text-align: center;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-  }
-
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, 
-      rgba(79, 70, 229, 0.1) 0%, 
-      rgba(139, 92, 246, 0.05) 100%
-    );
-    opacity: 0;
-    transition: opacity 0.4s ease;
-  }
-
-  .stat-card:hover::before {
-    opacity: 1;
-  }
-
-  .stat-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 
-      0 20px 40px rgba(79, 70, 229, 0.2),
-      0 0 0 1px rgba(79, 70, 229, 0.1) inset;
-    border-color: var(--accent-color);
-  }
-
-  .stat-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    display: block;
-    filter: drop-shadow(0 4px 8px rgba(79, 70, 229, 0.2));
-    transition: transform 0.4s ease;
-  }
-
-  .stat-card:hover .stat-icon {
-    transform: scale(1.15);
-    animation: float 2s ease-in-out infinite;
-  }
-
-  .stat-value {
-    font-size: 3rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    display: block;
-    margin-bottom: 0.5rem;
-    font-family: 'Inter', sans-serif;
-    letter-spacing: -0.02em;
-  }
-
-  .stat-label {
-    font-size: 0.875rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    font-weight: 700;
-    font-family: 'Inter', sans-serif;
-  }
-
-  /* ===== SECCIONES DE CONTENIDO ===== */
-  .content {
-    display: flex;
-    flex-direction: column;
-    gap: 2.5rem;
-  }
-
-  .section {
-    background: var(--card-bg);
-    padding: 3rem;
-    border-radius: 1.5rem;
-    border: 2px solid var(--border-color);
-    box-shadow: 
-      0 4px 20px rgba(0, 0, 0, 0.05),
-      0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    animation: scaleIn 0.6s ease-out backwards;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, 
-      transparent 0%,
-      #3b82f6 25%, 
-      #8b5cf6 50%, 
-      #ec4899 75%,
-      transparent 100%
-    );
-    opacity: 0;
-    transition: opacity 0.4s ease;
-  }
-
-  .section:hover::before {
-    opacity: 1;
-  }
-
-  .section:nth-child(1) { animation-delay: 0.1s; }
-  .section:nth-child(2) { animation-delay: 0.15s; }
-  .section:nth-child(3) { animation-delay: 0.2s; }
-  .section:nth-child(4) { animation-delay: 0.25s; }
-  .section:nth-child(5) { animation-delay: 0.3s; }
-  .section:nth-child(6) { animation-delay: 0.35s; }
-  .section:nth-child(7) { animation-delay: 0.4s; }
-
-  .section:hover {
-    transform: translateY(-4px);
-    box-shadow: 
-      0 20px 50px rgba(79, 70, 229, 0.15),
-      0 0 0 1px rgba(79, 70, 229, 0.1) inset;
-    border-color: rgba(79, 70, 229, 0.5);
-  }
-
-  .section h2 {
-    font-size: 2.25rem;
-    font-weight: 800;
-    margin: 0 0 1.75rem;
-    color: var(--text-color);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    letter-spacing: -0.01em;
-    line-height: 1.2;
-  }
-
-  .section p {
-    color: var(--text-muted);
-    line-height: 1.8;
-    margin: 0 0 1.25rem;
-    font-size: 1.0625rem;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  }
-
-  .section p:last-child {
-    margin-bottom: 0;
-  }
-
-  .hero-section {
-    background: linear-gradient(135deg, 
-      rgba(79, 70, 229, 0.08) 0%, 
-      rgba(139, 92, 246, 0.05) 50%,
-      rgba(236, 72, 153, 0.03) 100%
-    );
-    border-color: rgba(79, 70, 229, 0.2);
-  }
-
-  .hero-section:hover {
-    background: linear-gradient(135deg, 
-      rgba(79, 70, 229, 0.12) 0%, 
-      rgba(139, 92, 246, 0.08) 50%,
-      rgba(236, 72, 153, 0.05) 100%
-    );
-  }
-
-  /* ===== GRID DE CONTENIDO ===== */
-  .content-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-  }
-
-  .content-card {
-    background: linear-gradient(135deg,
-      var(--bg-color) 0%,
-      color-mix(in srgb, var(--bg-color) 98%, var(--accent-color) 2%) 100%
-    );
-    padding: 2.5rem;
-    border-radius: 1.25rem;
-    border: 2px solid var(--border-color);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .content-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100px;
-    height: 100px;
-    background: radial-gradient(circle, 
-      rgba(79, 70, 229, 0.1) 0%, 
-      transparent 70%
-    );
-    opacity: 0;
-    transition: opacity 0.4s ease;
-  }
-
-  .content-card:hover::after {
-    opacity: 1;
-  }
-
-  .content-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 
-      0 20px 40px rgba(79, 70, 229, 0.15),
-      0 0 0 1px rgba(79, 70, 229, 0.1) inset;
-    border-color: var(--accent-color);
-  }
-
-  .card-icon {
-    font-size: 3rem;
-    margin-bottom: 1.25rem;
-    filter: drop-shadow(0 4px 8px rgba(79, 70, 229, 0.2));
-    transition: transform 0.4s ease;
-  }
-
-  .content-card:hover .card-icon {
-    transform: scale(1.1) rotate(-5deg);
-  }
-
-  .content-card h3 {
-    font-size: 1.5rem;
-    font-weight: 800;
-    margin: 0 0 1.25rem;
-    color: var(--text-color);
-    font-family: 'Inter', sans-serif;
-    letter-spacing: -0.01em;
-  }
-
-  .content-card p {
-    font-size: 1rem;
-    flex-grow: 1;
-    line-height: 1.7;
-  }
-
-  .card-stats {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    margin-top: 1.5rem;
-  }
-
-  .badge {
-    padding: 0.5rem 1rem;
-    background: linear-gradient(135deg,
-      rgba(79, 70, 229, 0.1) 0%,
-      rgba(139, 92, 246, 0.08) 100%
-    );
-    border: 1px solid rgba(79, 70, 229, 0.3);
-    border-radius: 0.625rem;
-    font-size: 0.8125rem;
-    font-weight: 700;
-    color: var(--accent-color);
-    transition: all 0.3s ease;
-    font-family: 'Inter', sans-serif;
-  }
-
-  .badge:hover {
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-  }
-
-  .card-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 1.5rem;
-    color: var(--accent-color);
-    font-weight: 700;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    font-size: 0.9375rem;
-    font-family: 'Inter', sans-serif;
-  }
-
-  .card-link:hover {
-    transform: translateX(6px);
-    gap: 0.75rem;
-  }
-
-  /* ===== PLATAFORMAS ===== */
-  .platforms-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-  }
-
-  .platform-item {
-    background: linear-gradient(135deg,
-      var(--bg-color) 0%,
-      color-mix(in srgb, var(--bg-color) 98%, var(--accent-color) 2%) 100%
-    );
-    padding: 2rem;
-    border-radius: 1.25rem;
-    border: 2px solid var(--border-color);
-    text-align: center;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .platform-item::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle,
-      rgba(79, 70, 229, 0.1) 0%,
-      transparent 70%
-    );
-    opacity: 0;
-    transition: opacity 0.4s ease;
-  }
-
-  .platform-item:hover::before {
-    opacity: 1;
-  }
-
-  .platform-item:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 
-      0 20px 40px rgba(79, 70, 229, 0.2),
-      0 0 0 1px rgba(79, 70, 229, 0.1) inset;
-    border-color: var(--accent-color);
-  }
-
-  .platform-logo {
-    width: 90px;
-    height: 90px;
-    object-fit: contain;
-    margin-bottom: 1.25rem;
-    border-radius: 0.75rem;
-    transition: transform 0.4s ease;
-    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
-  }
-
-  .platform-item:hover .platform-logo {
-    transform: scale(1.1) rotate(5deg);
-  }
-
-  .platform-item h4 {
-    font-size: 1.25rem;
-    font-weight: 800;
-    margin: 0 0 0.75rem;
-    color: var(--text-color);
-    font-family: 'Inter', sans-serif;
-    letter-spacing: -0.01em;
-  }
-
-  .platform-count {
-    font-size: 1rem;
-    color: var(--text-muted);
-    font-weight: 700;
-    font-family: 'Inter', sans-serif;
-  }
-
-  /* ===== CARACTERÍSTICAS ===== */
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.75rem;
-    margin-top: 2rem;
-  }
-
-  .feature-item {
-    background: linear-gradient(135deg,
-      var(--bg-color) 0%,
-      color-mix(in srgb, var(--bg-color) 98%, var(--accent-color) 2%) 100%
-    );
-    padding: 2rem;
-    border-radius: 1.25rem;
-    border: 2px solid var(--border-color);
-    text-align: center;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .feature-item::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.4s ease;
-  }
-
-  .feature-item:hover::after {
-    transform: scaleX(1);
-  }
-
-  .feature-item:hover {
-    transform: translateY(-6px);
-    box-shadow: 
-      0 16px 32px rgba(79, 70, 229, 0.15),
-      0 0 0 1px rgba(79, 70, 229, 0.1) inset;
-    border-color: var(--accent-color);
-  }
-
-  .feature-icon {
-    font-size: 3rem;
-    margin-bottom: 1.25rem;
-    filter: drop-shadow(0 4px 8px rgba(79, 70, 229, 0.2));
-    transition: all 0.4s ease;
-  }
-
-  .feature-item:hover .feature-icon {
-    transform: scale(1.15) translateY(-4px);
-  }
-
-  .feature-item h4 {
-    font-size: 1.125rem;
-    font-weight: 800;
-    margin: 0 0 0.75rem;
-    color: var(--text-color);
-    font-family: 'Inter', sans-serif;
-    letter-spacing: -0.01em;
-  }
-
-  .feature-item p {
-    font-size: 0.9375rem;
-    margin: 0;
-    line-height: 1.6;
-  }
-
-  /* ===== TECNOLOGÍAS ===== */
-  .tech-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 1.5rem;
-    margin-top: 2rem;
-  }
-
-  .tech-item {
-    background: linear-gradient(135deg,
-      var(--bg-color) 0%,
-      color-mix(in srgb, var(--bg-color) 98%, var(--accent-color) 2%) 100%
-    );
-    padding: 2rem 1.5rem;
-    border-radius: 1.25rem;
-    border: 2px solid var(--border-color);
-    text-align: center;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .tech-item::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at center,
-      rgba(79, 70, 229, 0.1) 0%,
-      transparent 70%
-    );
-    opacity: 0;
-    transition: opacity 0.4s ease;
-  }
-
-  .tech-item:hover::before {
-    opacity: 1;
-  }
-
-  .tech-item:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 28px rgba(79, 70, 229, 0.15);
-    border-color: var(--accent-color);
-  }
-
-  .tech-icon {
-    font-size: 2.5rem;
-    transition: transform 0.4s ease;
-  }
-
-  .tech-item:hover .tech-icon {
-    transform: scale(1.2);
-  }
-
-  .tech-name {
-    font-weight: 800;
-    color: var(--text-color);
-    font-size: 1.0625rem;
-    font-family: 'Inter', sans-serif;
-    letter-spacing: -0.01em;
-  }
-
-  .tech-desc {
-    font-size: 0.8125rem;
-    color: var(--text-muted);
-    font-family: 'Inter', sans-serif;
-  }
-
-  /* ===== METODOLOGÍA ===== */
-  .methodology-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    margin-top: 2rem;
-  }
-
-  .methodology-item {
-    display: flex;
-    align-items: start;
-    gap: 2rem;
-    background: linear-gradient(135deg,
-      var(--bg-color) 0%,
-      color-mix(in srgb, var(--bg-color) 98%, var(--accent-color) 2%) 100%
-    );
-    padding: 2rem;
-    border-radius: 1.25rem;
-    border: 2px solid var(--border-color);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    animation: slideInRight 0.6s ease-out backwards;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .methodology-item::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 4px;
-    height: 100%;
-    background: linear-gradient(180deg, #3b82f6, #8b5cf6, #ec4899);
-    transform: scaleY(0);
-    transform-origin: top;
-    transition: transform 0.4s ease;
-  }
-
-  .methodology-item:hover::before {
-    transform: scaleY(1);
-  }
-
-  .methodology-item:nth-child(1) { animation-delay: 0.1s; }
-  .methodology-item:nth-child(2) { animation-delay: 0.15s; }
-  .methodology-item:nth-child(3) { animation-delay: 0.2s; }
-  .methodology-item:nth-child(4) { animation-delay: 0.25s; }
-  .methodology-item:nth-child(5) { animation-delay: 0.3s; }
-
-  .methodology-item:hover {
-    transform: translateX(8px);
-    box-shadow: 0 12px 28px rgba(79, 70, 229, 0.15);
-    border-color: var(--accent-color);
-  }
-
-  .step-number {
-    flex-shrink: 0;
-    width: 56px;
-    height: 56px;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 1.5rem;
-    font-family: 'Inter', sans-serif;
-    box-shadow: 
-      0 8px 20px rgba(79, 70, 229, 0.3),
-      0 0 0 4px rgba(79, 70, 229, 0.1);
-    transition: all 0.4s ease;
-  }
-
-  .methodology-item:hover .step-number {
-    transform: scale(1.1) rotate(360deg);
-    box-shadow: 
-      0 12px 28px rgba(79, 70, 229, 0.4),
-      0 0 0 6px rgba(79, 70, 229, 0.15);
-  }
-
-  .step-content h4 {
-    font-size: 1.25rem;
-    font-weight: 800;
-    margin: 0 0 0.75rem;
-    color: var(--text-color);
-    font-family: 'Inter', sans-serif;
-    letter-spacing: -0.01em;
-  }
-
-  .step-content p {
-    font-size: 1rem;
-    margin: 0;
-    line-height: 1.7;
-  }
-
-  /* ===== SECCIÓN CTA ===== */
-  .cta-section {
-    text-align: center;
-    background: linear-gradient(135deg, 
-      rgba(79, 70, 229, 0.12) 0%, 
-      rgba(139, 92, 246, 0.08) 50%,
-      rgba(236, 72, 153, 0.08) 100%
-    );
-    border-color: rgba(79, 70, 229, 0.3);
-    position: relative;
-  }
-
-  .cta-section::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 1.5rem;
-    padding: 2px;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
-    -webkit-mask: 
-      linear-gradient(#fff 0 0) content-box, 
-      linear-gradient(#fff 0 0);
-    mask: 
-      linear-gradient(#fff 0 0) content-box, 
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    pointer-events: none;
-  }
-
-  .cta-section:hover::after {
-    opacity: 0.6;
-  }
-
-  .cta-buttons {
-    display: flex;
-    gap: 1.25rem;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 2.5rem;
-  }
-
-  .btn {
-    padding: 1.125rem 2.5rem;
-    border-radius: 0.875rem;
-    font-weight: 800;
-    text-decoration: none;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    font-size: 1.0625rem;
-    position: relative;
-    overflow: hidden;
-    letter-spacing: -0.01em;
-  }
-
-  .btn::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: rgba(255, 255, 255, 0.25);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: width 0.6s ease, height 0.6s ease;
-  }
-
-  .btn:hover::before {
-    width: 400px;
-    height: 400px;
-  }
-
-  .btn-primary {
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
-    color: white;
-    box-shadow: 
-      0 10px 30px rgba(79, 70, 229, 0.3),
-      0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-    border: none;
-  }
-
-  .btn-primary:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 
-      0 20px 50px rgba(79, 70, 229, 0.4),
-      0 0 0 1px rgba(255, 255, 255, 0.2) inset;
-  }
-
-  .btn-primary:active {
-    transform: translateY(-2px) scale(1.01);
-  }
-
-  .btn-secondary {
-    background: transparent;
-    color: var(--accent-color);
-    border: 2px solid var(--accent-color);
-    box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.1) inset;
-  }
-
-  .btn-secondary:hover {
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
-    color: white;
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 
-      0 20px 50px rgba(79, 70, 229, 0.35),
-      0 0 0 1px rgba(255, 255, 255, 0.2) inset;
-    border-color: transparent;
-  }
-
-  .btn-secondary:active {
-    transform: translateY(-2px) scale(1.01);
-  }
-
-  /* ===== RESPONSIVE ===== */
-  @media (max-width: 1024px) {
-    .container {
-      padding: 0 1.5rem;
-    }
-
-    .page-title {
-      font-size: 3rem;
-    }
-
-    .stats-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
-  @media (max-width: 768px) {
-    .about {
-      padding: 2.5rem 0;
-    }
-
-    .container {
-      padding: 0 1rem;
-    }
-
-    .page-header {
-      margin-bottom: 2.5rem;
-      padding-bottom: 2rem;
-    }
-
-    .page-title {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .page-description {
-      font-size: 1.125rem;
-    }
-
-    .stats-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-    }
-
-    .stat-card {
-      padding: 1.5rem 1rem;
-    }
-
-    .stat-icon {
-      font-size: 2.5rem;
-    }
-
-    .stat-value {
-      font-size: 2.25rem;
-    }
-
-    .section {
-      padding: 2rem;
-    }
-
-    .section h2 {
-      font-size: 1.75rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .section p {
-      font-size: 1rem;
-    }
-
-    .content-grid,
-    .platforms-grid,
-    .features-grid {
-      grid-template-columns: 1fr;
-      gap: 1.25rem;
-    }
-
-    .tech-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-    }
-
-    .methodology-item {
-      gap: 1.25rem;
-      padding: 1.5rem;
-    }
-
-    .step-number {
-      width: 48px;
-      height: 48px;
-      font-size: 1.25rem;
-    }
-
-    .step-content h4 {
-      font-size: 1.125rem;
-    }
-
-    .cta-buttons {
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .btn {
-      width: 100%;
-      padding: 1rem 2rem;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .page-title {
-      font-size: 2rem;
-    }
-
-    .stats-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .section {
-      padding: 1.5rem;
-    }
-
-    .section h2 {
-      font-size: 1.5rem;
-    }
-
-    .tech-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .methodology-item {
-      flex-direction: column;
-      text-align: center;
-      gap: 1rem;
-    }
-
-    .step-number {
-      margin: 0 auto;
-    }
-  }
-
-  /* ===== MODO OSCURO ===== */
-  @media (prefers-color-scheme: dark) {
-    .stat-card,
-    .content-card,
-    .platform-item,
-    .feature-item,
-    .tech-item,
-    .methodology-item {
-      box-shadow: 
-        0 4px 20px rgba(0, 0, 0, 0.3),
-        0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-    }
-
-    .stat-card:hover,
-    .content-card:hover,
-    .platform-item:hover,
-    .feature-item:hover,
-    .tech-item:hover,
-    .methodology-item:hover {
-      box-shadow: 
-        0 20px 50px rgba(79, 70, 229, 0.3),
-        0 0 0 1px rgba(79, 70, 229, 0.2) inset;
-    }
-  }
-
-  /* ===== ACCESIBILIDAD ===== */
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
-  }
-</style>

@@ -9,15 +9,35 @@
     "type": "git",
     "url": "https://github.com/Crypt0xDev/Crypt0.git"
   },
-  "keywords": ["cybersecurity", "ctf", "writeups", "astro", "typescript", "blog"],
+  "keywords": [
+    "cybersecurity",
+    "ctf",
+    "writeups",
+    "astro",
+    "typescript",
+    "blog"
+  ],
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.6.0",
+    "@vercel/speed-insights": "^1.2.0",
     "astro": "^5.15.3"
+  },
+  "devDependencies": {
+    "@astrojs/tailwind": "^6.0.2",
+    "@testing-library/dom": "^10.4.1",
+    "@vitest/ui": "^4.0.8",
+    "happy-dom": "^20.0.10",
+    "pagefind": "^1.4.0",
+    "tailwindcss": "^3.4.18",
+    "vitest": "^4.0.8"
   }
 }

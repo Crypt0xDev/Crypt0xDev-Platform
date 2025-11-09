@@ -1,18 +1,18 @@
 ---
-import { formatDate } from '../../utils/helpers';
+import { formatDate } from '../../i18n/utils';
 
 interface Post {
+  id?: string;
   slug: string;
-  data: {
-    title: string;
-    description: string;
-    pubDate: Date;
-    tags?: string[];
-    lang: string;
-    difficulty?: string;
-    platform?: string;
-    heroImage?: string;
-  };
+  title: string;
+  description: string;
+  pubDate: Date;
+  tags?: string[];
+  language?: string;
+  difficulty?: string;
+  platform?: string;
+  heroImage?: string;
+  readTime?: number;
 }
 
 interface Props {
@@ -41,43 +41,59 @@ const getPostUrl = (post: Post) => {
 ---
 
 {posts.length > 0 && (
-  <aside class="related-posts">
-    <h2 class="related-title">{title}</h2>
-    <div class="related-grid">
+  <aside class="my-16 py-8 border-t-2 border-slate-200 dark:border-slate-700">
+    <h2 class="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-8 text-center">
+      {title}
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {posts.map((post) => (
-        <article class="related-card">
-          <a href={getPostUrl(post)} class="related-link">
-            {post.data.heroImage && (
-              <div class="related-image">
-                <img src={post.data.heroImage} alt={post.data.title} loading="lazy" />
+        <article class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-indigo-500 dark:hover:border-indigo-400 h-full">
+          <a href={getPostUrl(post)} class="no-underline text-inherit flex flex-col h-full">
+            {post.heroImage && (
+              <div class="w-full h-48 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 relative">
+                <img 
+                  src={post.heroImage} 
+                  alt={post.title} 
+                  loading="lazy"
+                  class="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-105 block"
+                />
               </div>
             )}
             
-            <div class="related-content">
-              <div class="related-header">
-                {type === 'writeup' && post.data.platform && (
-                  <span class={`platform-badge platform-${post.data.platform}`}>
-                    {post.data.platform.toUpperCase()}
+            <div class="p-6 flex flex-col flex-grow">
+              <div class="flex gap-2 mb-4 flex-wrap">
+                {type === 'writeup' && post.platform && (
+                  <span class={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase platform-${post.platform}`}>
+                    {post.platform.toUpperCase()}
                   </span>
                 )}
-                {type === 'writeup' && post.data.difficulty && (
-                  <span class={`difficulty-badge difficulty-${post.data.difficulty}`}>
-                    {post.data.difficulty.toUpperCase()}
+                {type === 'writeup' && post.difficulty && (
+                  <span class={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase difficulty-${post.difficulty}`}>
+                    {post.difficulty.toUpperCase()}
                   </span>
                 )}
               </div>
               
-              <h3 class="related-post-title">{post.data.title}</h3>
-              <p class="related-description">{post.data.description}</p>
+              <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 mb-3 leading-snug line-clamp-2">
+                {post.title}
+              </h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed line-clamp-3 flex-grow">
+                {post.description}
+              </p>
               
-              <div class="related-meta">
-                <time datetime={post.data.pubDate.toISOString()}>
-                  {formatDate(post.data.pubDate, lang)}
+              <div class="flex flex-col gap-3 mt-auto">
+                <time 
+                  datetime={post.pubDate.toISOString()}
+                  class="text-xs text-slate-500 dark:text-slate-400"
+                >
+                  {formatDate(post.pubDate, lang)}
                 </time>
-                {post.data.tags && post.data.tags.length > 0 && (
-                  <div class="related-tags">
-                    {post.data.tags.slice(0, 3).map((tag) => (
-                      <span class="tag">{tag}</span>
+                {post.tags && post.tags.length > 0 && (
+                  <div class="flex flex-wrap gap-2">
+                    {post.tags.slice(0, 3).map((tag: string) => (
+                      <span class="inline-block px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded text-xs font-medium">
+                        {tag}
+                      </span>
                     ))}
                   </div>
                 )}
@@ -89,215 +105,3 @@ const getPostUrl = (post: Post) => {
     </div>
   </aside>
 )}
-
-<style>
-  .related-posts {
-    margin: 4rem 0 2rem;
-    padding: 2rem 0;
-    border-top: 2px solid var(--border-color, #e5e7eb);
-  }
-
-  .related-title {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--heading-color, #1e293b);
-    margin-bottom: 2rem;
-    text-align: center;
-  }
-
-  .related-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .related-card {
-    background: var(--card-bg, #ffffff);
-    border: 1px solid var(--border-color, #e5e7eb);
-    border-radius: 12px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    height: 100%;
-  }
-
-  .related-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    border-color: var(--accent-color, #4f46e5);
-  }
-
-  .related-link {
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-
-  .related-image {
-    width: 100%;
-    height: 200px;
-    overflow: hidden;
-    background: var(--image-bg, #f1f5f9);
-    position: relative;
-  }
-
-  .related-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    transition: transform 0.3s ease;
-    display: block;
-  }
-
-  .related-card:hover .related-image img {
-    transform: scale(1.05);
-  }
-
-  .related-content {
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-  }
-
-  .related-header {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-  }
-
-  .platform-badge,
-  .difficulty-badge {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-
-  .platform-badge {
-    background: var(--platform-bg, #dbeafe);
-    color: var(--platform-text, #1e40af);
-  }
-
-  .platform-htb { background: #9fef00; color: #1a1a1a; }
-  .platform-tryhackme { background: #212c42; color: #ffffff; }
-  .platform-vulnhub { background: #ff6b6b; color: #ffffff; }
-  .platform-hackmyvm { background: #4ecdc4; color: #1a1a1a; }
-  .platform-portswigger { background: #ff6633; color: #ffffff; }
-
-  .difficulty-badge {
-    background: var(--difficulty-bg, #f3f4f6);
-    color: var(--difficulty-text, #374151);
-  }
-
-  .difficulty-easy { background: #d1fae5; color: #065f46; }
-  .difficulty-medium { background: #fef3c7; color: #92400e; }
-  .difficulty-hard { background: #fee2e2; color: #991b1b; }
-  .difficulty-insane { background: #ddd6fe; color: #5b21b6; }
-
-  .related-post-title {
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: var(--heading-color, #1e293b);
-    margin: 0 0 0.75rem 0;
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .related-description {
-    font-size: 0.875rem;
-    color: var(--text-secondary, #64748b);
-    margin: 0 0 1rem 0;
-    line-height: 1.6;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    flex-grow: 1;
-  }
-
-  .related-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    margin-top: auto;
-  }
-
-  .related-meta time {
-    font-size: 0.8125rem;
-    color: var(--text-tertiary, #94a3b8);
-  }
-
-  .related-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .tag {
-    display: inline-block;
-    padding: 0.25rem 0.625rem;
-    background: var(--tag-bg, #f1f5f9);
-    color: var(--tag-text, #475569);
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 500;
-  }
-
-  /* Dark mode */
-  :global(.dark) .related-posts {
-    border-color: #374151;
-  }
-
-  :global(.dark) .related-title {
-    color: #f1f5f9;
-  }
-
-  :global(.dark) .related-card {
-    background: rgba(30, 41, 59, 0.5);
-    border-color: #334155;
-  }
-
-  :global(.dark) .related-card:hover {
-    background: rgba(30, 41, 59, 0.8);
-    border-color: var(--accent-color, #4f46e5);
-  }
-
-  :global(.dark) .related-post-title {
-    color: #f1f5f9;
-  }
-
-  :global(.dark) .related-description {
-    color: #94a3b8;
-  }
-
-  :global(.dark) .tag {
-    background: rgba(51, 65, 85, 0.8);
-    color: #cbd5e1;
-  }
-
-  /* Responsive */
-  @media (max-width: 768px) {
-    .related-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .related-title {
-      font-size: 1.5rem;
-    }
-  }
-
-  @media (min-width: 768px) and (max-width: 1024px) {
-    .related-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-</style>

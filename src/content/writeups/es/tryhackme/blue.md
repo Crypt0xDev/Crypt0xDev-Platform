@@ -6,7 +6,7 @@ platform: "tryhackme"
 category: "rooms"
 difficulty: "easy"
 os: "windows"
-lang: es
+language: es
 tags: ["eternalblue", "ms17-010", "smb", "exploit"]
 retired: false
 heroImage: "/images/writeups/tryhackme/blue.jpg"

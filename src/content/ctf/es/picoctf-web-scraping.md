@@ -6,7 +6,7 @@ category: "web"
 difficulty: "easy"
 points: 100
 pubDate: 2024-11-02
-heroImage: "/images/ctf/picoctf-web-scraping.png"
+heroImage: "/images/ctf/default-ctf.png"
 tags: ["web", "python", "scraping", "automation"]
 lang: es
 solves: 1523

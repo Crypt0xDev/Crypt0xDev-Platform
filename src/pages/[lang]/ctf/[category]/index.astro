@@ -1,0 +1,244 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../../../layouts/Layout.astro';
+import { 
+  DYNAMIC_CTF_CATEGORIES as CTF_CATEGORIES, 
+  getCTFCategoryById, 
+  getCTFCategoryName, 
+  getCTFCategoryDescription 
+} from '../../../../i18n/constants';
+import type { Language } from '../../../../i18n/types';
+
+export async function getStaticPaths() {
+  const categories = CTF_CATEGORIES.map(cat => cat.id);
+  const paths = [];
+
+  for (const category of categories) {
+    paths.push({ 
+      params: { lang: 'es', category } 
+    });
+    paths.push({ 
+      params: { lang: 'en', category } 
+    });
+  }
+
+  return paths;
+}
+
+const { lang, category: categoryId } = Astro.params;
+const currentLang = lang as Language;
+
+// Obtener información de la categoría
+const categoryInfo = getCTFCategoryById(categoryId);
+if (!categoryInfo) {
+  return Astro.redirect('/404');
+}
+
+const categoryName = getCTFCategoryName(categoryId, currentLang);
+const categoryDescription = getCTFCategoryDescription(categoryId, currentLang);
+
+// Obtener todos los CTFs y filtrar por idioma y categoría
+const allCTFs = await getCollection('ctf');
+
+const categoryCTFs = allCTFs.filter(ctf => {
+  // Extraer idioma y categoría del slug
+  const slugParts = ctf.slug.split('/');
+  
+  // Determinar el idioma del CTF
+  const ctfLang = (slugParts[0] === 'es' || slugParts[0] === 'en') 
+    ? slugParts[0] 
+    : 'es';
+  
+  // Determinar la categoría del CTF desde el frontmatter
+  const ctfCategory = ctf.data.category;
+  
+  return ctfLang === currentLang && ctfCategory === categoryId;
+});
+
+// Función helper para obtener el slug limpio (sin idioma)
+const getCleanSlug = (fullSlug: string) => {
+  const parts = fullSlug.split('/');
+  // Si empieza con es/ o en/, quitarlo
+  if (parts[0] === 'es' || parts[0] === 'en') {
+    return parts.slice(1).join('/');
+  }
+  return fullSlug;
+};
+
+// Ordenar por fecha de publicación (más recientes primero)
+categoryCTFs.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const pageTitle = currentLang === 'es' 
+  ? `CTF - ${categoryName}` 
+  : `CTF - ${categoryName}`;
+
+const pageDescription = categoryDescription;
+
+// Traducciones
+const t = {
+  es: {
+    breadcrumbHome: 'Inicio',
+    breadcrumbCTF: 'CTF',
+    ctfCount: (n: number) => n === 1 ? '1 reto' : `${n} retos`,
+    noCTFs: 'No hay retos CTF en esta categoría todavía.',
+    difficulty: 'Dificultad',
+    platform: 'Plataforma',
+    points: 'Puntos',
+    readMore: 'Leer más'
+  },
+  en: {
+    breadcrumbHome: 'Home',
+    breadcrumbCTF: 'CTF',
+    ctfCount: (n: number) => n === 1 ? '1 challenge' : `${n} challenges`,
+    noCTFs: 'No CTF challenges in this category yet.',
+    difficulty: 'Difficulty',
+    platform: 'Platform',
+    points: 'Points',
+    readMore: 'Read more'
+  }
+}[currentLang];
+
+const difficultyColors = {
+  easy: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+  medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+  hard: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
+  insane: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+};
+
+const difficultyLabels = {
+  es: {
+    easy: 'Fácil',
+    medium: 'Medio',
+    hard: 'Difícil',
+    insane: 'Insano'
+  },
+  en: {
+    easy: 'Easy',
+    medium: 'Medium',
+    hard: 'Hard',
+    insane: 'Insane'
+  }
+};
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumbs -->
+    <nav class="flex mb-8 text-sm" aria-label="Breadcrumb">
+      <ol class="inline-flex items-center space-x-1 md:space-x-3">
+        <li class="inline-flex items-center">
+          <a href={`/${currentLang}`} class="text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">
+            {t.breadcrumbHome}
+          </a>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <span class="mx-2 text-gray-400">/</span>
+            <a href={`/${currentLang}/ctf`} class="text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">
+              {t.breadcrumbCTF}
+            </a>
+          </div>
+        </li>
+        <li aria-current="page">
+          <div class="flex items-center">
+            <span class="mx-2 text-gray-400">/</span>
+            <span class="text-gray-500 dark:text-gray-400">{categoryName}</span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="mb-12">
+      <div class="flex items-center gap-4 mb-4">
+        <div class={`p-4 rounded-2xl bg-gradient-to-br ${categoryInfo.gradient} text-white text-4xl`}>
+          {categoryInfo.icon}
+        </div>
+        <div>
+          <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+            {categoryName}
+          </h1>
+          <p class="text-lg text-gray-600 dark:text-gray-400">
+            {categoryDescription}
+          </p>
+        </div>
+      </div>
+      <div class="mt-4">
+        <span class={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${categoryInfo.textColor} ${categoryInfo.bgColor} ${categoryInfo.borderColor} border`}>
+          {t.ctfCount(categoryCTFs.length)}
+        </span>
+      </div>
+    </div>
+
+    <!-- CTFs Grid -->
+    {categoryCTFs.length > 0 ? (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {categoryCTFs.map((ctf) => (
+          <article class="group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+            {ctf.data.heroImage && (
+              <a href={`/${currentLang}/ctf/${categoryId}/${getCleanSlug(ctf.slug)}`} class="block">
+                <div class="aspect-video overflow-hidden bg-gray-100 dark:bg-gray-900">
+                  <img 
+                    src={ctf.data.heroImage} 
+                    alt={ctf.data.title}
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+              </a>
+            )}
+            
+            <div class="p-6">
+              <div class="flex items-center gap-2 mb-3 flex-wrap">
+                <span class={`px-2 py-1 rounded-md text-xs font-medium ${difficultyColors[ctf.data.difficulty]}`}>
+                  {difficultyLabels[currentLang][ctf.data.difficulty]}
+                </span>
+                {ctf.data.platform && (
+                  <span class="px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                    {ctf.data.platform}
+                  </span>
+                )}
+                {ctf.data.points && (
+                  <span class="px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                    {ctf.data.points} pts
+                  </span>
+                )}
+              </div>
+
+              <a href={`/${currentLang}/ctf/${categoryId}/${getCleanSlug(ctf.slug)}`} class="block mb-2">
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  {ctf.data.title}
+                </h2>
+              </a>
+
+              <p class="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
+                {ctf.data.description}
+              </p>
+
+              <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                <time datetime={ctf.data.pubDate.toISOString()}>
+                  {ctf.data.pubDate.toLocaleDateString(currentLang, {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                  })}
+                </time>
+                <a 
+                  href={`/${currentLang}/ctf/${categoryId}/${getCleanSlug(ctf.slug)}`}
+                  class="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                >
+                  {t.readMore} →
+                </a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    ) : (
+      <div class="text-center py-12">
+        <p class="text-gray-500 dark:text-gray-400 text-lg">
+          {t.noCTFs}
+        </p>
+      </div>
+    )}
+  </div>
+</Layout>

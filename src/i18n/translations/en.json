@@ -5,8 +5,20 @@
     "writeups": "Writeups",
     "blog": "Blog",
     "archive": "Archive",
+    "tools": "Tools",
+    "certifications": "Certifications",
+    "labs": "Labs",
+    "cheatsheets": "Cheatsheets",
+    "videos": "Videos",
+    "achievements": "Achievements",
+    "projects": "Projects",
+    "vulnerabilities": "Vulnerabilities (CVEs)",
     "about": "About",
-    "contact": "Contact"
+    "contact": "Contact",
+    "search": "Search",
+    "menu": "Menu",
+    "resources": "Resources",
+    "allWriteups": "View All Writeups"
   },
   "footer": {
     "rights": "All rights reserved",

@@ -1,0 +1,249 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../../../../layouts/Layout.astro';
+import Card from '../../../../../components/shared/Card.astro';
+import { useTranslations } from '../../../../../i18n/core';
+import { sortByDate, filterByLang } from '../../../../../i18n/utils';
+
+export async function getStaticPaths() {
+  return [
+    { params: { lang: 'es' } },
+    { params: { lang: 'en' } }
+  ];
+}
+
+const { lang } = Astro.params;
+const t = useTranslations(lang as 'es' | 'en');
+
+// Obtener writeups de TryHackMe Paths
+const allWriteups = await getCollection('writeups');
+const pathsWriteups = sortByDate(
+  filterByLang(allWriteups, lang as string).filter(w => 
+    w.data.platform === 'tryhackme' && w.data.category === 'paths'
+  )
+);
+---
+
+<Layout
+  title={lang === 'es' ? 'TryHackMe - Paths' : 'TryHackMe - Paths'}
+  description={lang === 'es' ? 'Writeups de paths de TryHackMe' : 'TryHackMe paths writeups'}
+  lang={lang}
+>
+  <main class="paths-page">
+    <div class="container">
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb">
+        <a href={`/${lang}/writeup`}>{t('writeups.title')}</a>
+        <span class="separator">/</span>
+        <a href={`/${lang}/writeup/tryhackme`}>TryHackMe</a>
+        <span class="separator">/</span>
+        <span class="current">Paths</span>
+      </nav>
+
+      <!-- Header -->
+      <header class="page-header">
+        <div class="header-content">
+          <div class="icon">🛤️</div>
+          <h1>TryHackMe Paths</h1>
+          <p class="subtitle">
+            {lang === 'es' 
+              ? 'Writeups de rutas de aprendizaje de TryHackMe' 
+              : 'TryHackMe learning paths writeups'
+            }
+          </p>
+          <div class="stats">
+            <span class="stat-badge">
+              🛤️ {pathsWriteups.length} Paths
+            </span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Grid de writeups -->
+      {pathsWriteups.length > 0 ? (
+        <div class="writeups-grid">
+          {pathsWriteups.map((writeup) => (
+            <Card
+              title={writeup.data.title}
+              description={writeup.data.description}
+              date={writeup.data.pubDate}
+              image={writeup.data.heroImage}
+              href={`/${lang}/writeup/tryhackme/${writeup.slug.split('/').slice(1).join('/')}`}
+              tags={writeup.data.tags}
+            />
+          ))}
+        </div>
+      ) : (
+        <div class="empty-state">
+          <div class="empty-icon">🛤️</div>
+          <p>{lang === 'es' ? 'No hay writeups de paths disponibles aún' : 'No path writeups available yet'}</p>
+        </div>
+      )}
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .paths-page {
+    min-height: 100vh;
+    padding: 2rem 0 4rem;
+    background: linear-gradient(135deg, 
+      var(--bg-color) 0%, 
+      color-mix(in srgb, var(--bg-color) 97%, #7c3aed 3%) 100%
+    );
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    animation: fadeInDown 0.5s ease-out;
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .breadcrumb a {
+    color: #7c3aed;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .breadcrumb a:hover {
+    color: #6d28d9;
+  }
+
+  .separator {
+    color: var(--text-muted);
+    opacity: 0.5;
+  }
+
+  .current {
+    font-weight: 600;
+  }
+
+  .page-header {
+    margin-bottom: 3rem;
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .header-content {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 20px rgba(124, 58, 237, 0.3));
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--text-color), #7c3aed);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    font-size: 1.125rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .stat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(124, 58, 237, 0.05));
+    border: 2px solid rgba(124, 58, 237, 0.3);
+    border-radius: 12px;
+    font-weight: 700;
+    color: #7c3aed;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+  }
+
+  .writeups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+    animation: fadeIn 0.8s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  .empty-state p {
+    font-size: 1.125rem;
+    color: var(--text-muted);
+  }
+
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 2rem;
+    }
+
+    .writeups-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+</style>

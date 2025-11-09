@@ -1,8 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import Layout from '../../../../layouts/Layout.astro';
-import { useTranslations } from '../../../../utils/i18n';
-import { sortByDate, filterByLang } from '../../../../utils/helpers';
+import { useTranslations } from '../../../../i18n/core';
+import { sortByDate, filterByLang } from '../../../../i18n/utils';
 
 export async function getStaticPaths() {
   return [
@@ -54,8 +54,11 @@ const difficultyColors = {
     <div class="container">
       <!-- Header -->
       <header class="platform-header">
-        <a href={`/${lang}/writeup`} class="back-link">
-          ← {lang === 'es' ? 'Volver a Writeups' : 'Back to Writeups'}
+        <a href={`/${lang}/writeup`} class="back-link inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-semibold rounded-lg transition-all duration-200 no-underline mb-6">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          {lang === 'es' ? 'Volver a Writeups' : 'Back to Writeups'}
         </a>
         <div class="platform-info">
           <div class="platform-logo">
@@ -114,16 +117,38 @@ const difficultyColors = {
   .htb-writeups {
     min-height: 100vh;
     padding: 2rem 0 4rem;
-    background: linear-gradient(135deg, 
-      var(--bg-color) 0%, 
-      color-mix(in srgb, var(--bg-color) 97%, var(--accent-color) 3%) 100%
-    );
+    background: var(--bg-color);
+    position: relative;
+  }
+
+  /* Grid de fondo estilo hacker - más sutil */
+  .htb-writeups::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      linear-gradient(rgba(159, 239, 0, 0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(159, 239, 0, 0.015) 1px, transparent 1px);
+    background-size: 50px 50px;
+    opacity: 0.5;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  @keyframes gridPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.5; }
   }
 
   .container {
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 1.5rem;
+    position: relative;
+    z-index: 1;
   }
 
   .platform-header {
@@ -172,7 +197,7 @@ const difficultyColors = {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--accent-color);
+    color: #9fef00;
     text-decoration: none;
     font-size: 0.95rem;
     margin-bottom: 2rem;
@@ -181,13 +206,15 @@ const difficultyColors = {
     align-self: flex-start;
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
-    background: rgba(79, 70, 229, 0.08);
+    background: rgba(159, 239, 0, 0.08);
+    border: 1px solid rgba(159, 239, 0, 0.2);
   }
 
   .back-link:hover {
-    color: var(--accent-hover);
+    color: #9fef00;
     transform: translateX(-4px);
-    background: rgba(79, 70, 229, 0.15);
+    background: rgba(159, 239, 0, 0.15);
+    border-color: rgba(159, 239, 0, 0.4);
   }
 
   .platform-info {
@@ -200,15 +227,21 @@ const difficultyColors = {
   .platform-name {
     font-size: 3rem;
     font-weight: 900;
-    background: linear-gradient(135deg, var(--text-color), var(--accent-color));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #9fef00;
     text-align: center;
     font-family: 'Inter', sans-serif;
     letter-spacing: -0.02em;
     position: relative;
     margin: 0;
+  }
+
+  @keyframes titleGlow {
+    0%, 100% {
+      filter: drop-shadow(0 0 20px rgba(159, 239, 0, 0.4));
+    }
+    50% {
+      filter: drop-shadow(0 0 35px rgba(159, 239, 0, 0.6));
+    }
   }
 
   .platform-name::after {
@@ -218,14 +251,13 @@ const difficultyColors = {
     left: 50%;
     transform: translateX(-50%);
     width: 60%;
-    height: 3px;
+    height: 2px;
     background: linear-gradient(90deg, 
       transparent, 
-      var(--accent-color), 
+      rgba(159, 239, 0, 0.5), 
       transparent
     );
     border-radius: 2px;
-    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
   }
 
   /* Menú de categorías */
@@ -267,8 +299,8 @@ const difficultyColors = {
     position: absolute;
     inset: -8px;
     background: linear-gradient(135deg, 
-      rgba(79, 70, 229, 0.1), 
-      rgba(139, 92, 246, 0.1)
+      rgba(159, 239, 0, 0.1), 
+      rgba(125, 216, 0, 0.1)
     );
     border-radius: 1.5rem;
     opacity: 0;
@@ -284,19 +316,19 @@ const difficultyColors = {
   }
 
   .category-btn:hover .category-icon-wrapper {
-    border-color: #3b82f6;
-    box-shadow: 0 12px 30px -8px rgba(59, 130, 246, 0.4);
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+    border-color: #9fef00;
+    box-shadow: 0 8px 20px rgba(159, 239, 0, 0.15);
+    background: rgba(159, 239, 0, 0.05);
   }
 
   .category-btn[data-active="true"] .category-icon-wrapper {
-    border-color: #3b82f6;
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15));
-    box-shadow: 0 8px 30px -8px rgba(59, 130, 246, 0.5);
+    border-color: #9fef00;
+    background: rgba(159, 239, 0, 0.08);
+    box-shadow: 0 6px 16px rgba(159, 239, 0, 0.2);
   }
 
   .category-btn[data-active="true"] .category-name {
-    color: #3b82f6;
+    color: #9fef00;
   }
 
   .category-icon-wrapper {
@@ -323,8 +355,8 @@ const difficultyColors = {
     position: absolute;
     inset: 0;
     background: linear-gradient(135deg, 
-      rgba(79, 70, 229, 0.1), 
-      rgba(139, 92, 246, 0.1)
+      rgba(159, 239, 0, 0.1), 
+      rgba(125, 216, 0, 0.1)
     );
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -335,8 +367,9 @@ const difficultyColors = {
   }
 
   .category-btn:hover .category-icon-wrapper {
-    border-color: var(--accent-color);
-    box-shadow: 0 12px 30px rgba(79, 70, 229, 0.2);
+    border-color: #9fef00;
+    box-shadow: 0 8px 20px rgba(159, 239, 0, 0.15);
+    background: rgba(159, 239, 0, 0.05);
     transform: scale(1.05);
   }
 
@@ -345,19 +378,16 @@ const difficultyColors = {
     height: 75%;
     object-fit: contain;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
   }
 
   .category-icon {
     font-size: 3.5rem;
     line-height: 1;
     display: none;
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
   }
 
   .category-btn:hover .category-image {
     transform: scale(1.1) rotate(3deg);
-    filter: drop-shadow(0 4px 12px rgba(79, 70, 229, 0.3));
   }
 
   .category-btn:hover .category-icon {
@@ -382,7 +412,7 @@ const difficultyColors = {
   }
 
   .category-btn:hover .category-name {
-    color: var(--accent-color);
+    color: #9fef00;
   }
 
   .category-stats {
@@ -422,34 +452,36 @@ const difficultyColors = {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, 
-      var(--card-bg) 0%, 
-      color-mix(in srgb, var(--card-bg) 95%, var(--accent-color) 5%) 100%
-    );
-    border: 3px solid var(--border-color);
+    background: var(--card-bg);
+    border: 2px solid rgba(159, 239, 0, 0.3);
     border-radius: 1.5rem;
     padding: 1.5rem;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(159, 239, 0, 0.08);
     transition: all 0.4s ease;
     animation: scaleIn 0.6s ease-out;
   }
 
+  @keyframes glowRotate {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
   .platform-logo:hover {
-    transform: scale(1.05) rotate(2deg);
-    box-shadow: 0 12px 40px rgba(79, 70, 229, 0.15);
-    border-color: var(--accent-color);
+    transform: scale(1.05);
+    box-shadow: 0 8px 24px rgba(159, 239, 0, 0.15);
+    border-color: #9fef00;
   }
 
   .platform-logo img {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
     transition: filter 0.3s ease;
   }
 
   .platform-logo:hover img {
-    filter: drop-shadow(0 4px 12px rgba(79, 70, 229, 0.3));
+    filter: brightness(1.1);
   }
 
   .platform-fallback {
@@ -556,21 +588,11 @@ const difficultyColors = {
   }
 
   .writeup-tags {
-    display: flex;
-    gap: 0.625rem;
-    flex-wrap: wrap;
-    flex: 1;
+    /* Using global tag container styles from global.css */
   }
 
   .tag {
-    color: var(--accent-color);
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: color 0.2s ease;
-  }
-
-  .writeup-card:hover .tag {
-    color: var(--accent-hover);
+    /* Using global tag styles from global.css */
   }
 
   .read-more {

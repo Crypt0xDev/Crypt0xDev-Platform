@@ -1,6 +1,6 @@
 ---
 import Layout from './Layout.astro';
-import { useTranslations } from '../utils/i18n';
+import { useTranslations } from '../i18n/core';
 
 interface Props {
   title: string;
@@ -26,51 +26,12 @@ const t = useTranslations(lang as 'es' | 'en');
   lang={lang}
   image={image}
   canonical={Astro.url.href}
+  type="article"
+  pubDate={pubDate}
+  modDate={updatedDate}
+  section={`${platform} - ${difficulty}`}
+  tags={tags}
+  keywords={tags ? `${platform}, ${difficulty}, ${os}, ${tags.join(', ')}` : `${platform}, ${difficulty}, ${os}`}
 >
-  <article class="writeup-layout">
-    <slot />
-    
-    <footer class="article-footer">
-      <div class="article-nav">
-        <a href={`/${lang}/writeup`} class="back-link">
-          ← {t('writeups.back_to_writeups')}
-        </a>
-      </div>
-    </footer>
-  </article>
+  <slot />
 </Layout>
-
-<style>
-  .writeup-layout {
-    min-height: calc(100vh - 16rem);
-  }
-
-  .article-footer {
-    max-width: 900px;
-    margin: 3rem auto 0;
-    padding: 2rem 1rem;
-    border-top: 1px solid var(--border-color, #e5e7eb);
-  }
-
-  .article-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .back-link {
-    color: var(--accent-color);
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.2s ease;
-  }
-
-  .back-link:hover {
-    color: var(--accent-hover);
-    text-decoration: underline;
-  }
-
-  :global(.dark) .article-footer {
-    border-color: #374151;
-  }
-</style>

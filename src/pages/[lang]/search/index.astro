@@ -1,0 +1,615 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { getLangFromUrl, useTranslations } from '../../../i18n/core';
+
+export function getStaticPaths() {
+  return [
+    { params: { lang: 'es' } },
+    { params: { lang: 'en' } }
+  ];
+}
+
+const { lang } = Astro.params;
+const t = useTranslations(lang as 'es' | 'en');
+---
+
+<Layout 
+  title={`${t('common.search')} | Crypt0xDev`}
+  description={t('common.search')}
+  lang={lang}
+>
+  <div class="search-page">
+    <div class="container">
+      <div class="search-header">
+        <h1>{t('common.search')}</h1>
+        <p class="subtitle">Busca en todo el contenido del sitio</p>
+      </div>
+
+      <div class="search-box">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+            <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <input 
+            type="text" 
+            id="main-search-input"
+            class="search-input"
+            placeholder={`${t('common.search')}...`}
+            autocomplete="off"
+            autofocus
+          />
+        </div>
+      </div>
+
+      <div class="filters">
+        <button class="filter-btn active" data-filter="all">
+          Todos
+        </button>
+        <button class="filter-btn" data-filter="blog">
+          📝 Blog
+        </button>
+        <button class="filter-btn" data-filter="writeups">
+          🎯 Writeups
+        </button>
+        <button class="filter-btn" data-filter="ctf">
+          🚩 CTF
+        </button>
+        <button class="filter-btn" data-filter="tools">
+          🛠️ Tools
+        </button>
+        <button class="filter-btn" data-filter="labs">
+          🔬 Labs
+        </button>
+        <button class="filter-btn" data-filter="cheatsheets">
+          📖 Cheatsheets
+        </button>
+        <button class="filter-btn" data-filter="projects">
+          💼 Projects
+        </button>
+      </div>
+
+      <div id="search-results" class="results">
+        <div class="search-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+            <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <p>Escribe para comenzar a buscar</p>
+          <p class="tip">Presiona <kbd>Ctrl</kbd> + <kbd>K</kbd> para buscar rápidamente</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .search-page {
+    min-height: calc(100vh - 4.5rem);
+    padding: 4rem 0;
+    background: linear-gradient(to bottom, #f8fafc 0%, #ffffff 100%);
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .search-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .search-header h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+  }
+
+  .subtitle {
+    font-size: 1.125rem;
+    color: #64748b;
+    margin: 0;
+  }
+
+  .search-box {
+    max-width: 42rem;
+    margin: 0 auto 2rem;
+  }
+
+  .search-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .search-input-wrapper:focus-within {
+    border-color: #4f46e5;
+    box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.1);
+  }
+
+  .search-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: #94a3b8;
+    flex-shrink: 0;
+  }
+
+  .search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 1.125rem;
+    color: #1e293b;
+    background: transparent;
+  }
+
+  .search-input::placeholder {
+    color: #94a3b8;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+    justify-content: center;
+  }
+
+  .filter-btn {
+    padding: 0.625rem 1.25rem;
+    border: 2px solid #e5e7eb;
+    background: white;
+    color: #64748b;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .filter-btn:hover {
+    border-color: #4f46e5;
+    color: #4f46e5;
+  }
+
+  .filter-btn.active {
+    background: #4f46e5;
+    border-color: #4f46e5;
+    color: white;
+  }
+
+  .results {
+    min-height: 20rem;
+  }
+
+  .search-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    color: #94a3b8;
+    text-align: center;
+  }
+
+  .search-placeholder svg {
+    width: 5rem;
+    height: 5rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.3;
+  }
+
+  .search-placeholder p {
+    font-size: 1.125rem;
+    margin: 0.5rem 0;
+  }
+
+  .tip {
+    font-size: 0.875rem;
+    color: #cbd5e1;
+  }
+
+  kbd {
+    padding: 0.25rem 0.5rem;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.25rem;
+    font-family: monospace;
+    font-size: 0.875rem;
+  }
+
+  .result-item {
+    padding: 1.5rem;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .result-item:hover {
+    border-color: #4f46e5;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .result-type {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 0.375rem;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+  }
+
+  .result-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+  }
+
+  .result-description {
+    color: #64748b;
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+  }
+
+  .result-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #94a3b8;
+  }
+
+  .result-tag {
+    padding: 0.25rem 0.75rem;
+    background: #f8fafc;
+    border-radius: 0.25rem;
+  }
+
+  /* Dark mode */
+  :global(.dark) .search-page {
+    background: linear-gradient(to bottom, #0f172a 0%, #1e293b 100%);
+  }
+
+  :global(.dark) .subtitle {
+    color: #94a3b8;
+  }
+
+  :global(.dark) .search-input-wrapper {
+    background: #1e293b;
+    border-color: #334155;
+  }
+
+  :global(.dark) .search-input-wrapper:focus-within {
+    border-color: #818cf8;
+    box-shadow: 0 10px 15px -3px rgba(129, 140, 248, 0.2);
+  }
+
+  :global(.dark) .search-input {
+    color: #e2e8f0;
+  }
+
+  :global(.dark) .filter-btn {
+    background: #1e293b;
+    border-color: #334155;
+    color: #94a3b8;
+  }
+
+  :global(.dark) .filter-btn:hover {
+    border-color: #818cf8;
+    color: #818cf8;
+  }
+
+  :global(.dark) .filter-btn.active {
+    background: #818cf8;
+    border-color: #818cf8;
+  }
+
+  :global(.dark) .result-item {
+    background: #1e293b;
+    border-color: #334155;
+  }
+
+  :global(.dark) .result-item:hover {
+    border-color: #818cf8;
+  }
+
+  :global(.dark) .result-type {
+    background: #334155;
+    color: #cbd5e1;
+  }
+
+  :global(.dark) .result-title {
+    color: #e2e8f0;
+  }
+
+  :global(.dark) .result-description {
+    color: #94a3b8;
+  }
+
+  :global(.dark) .result-tag {
+    background: #0f172a;
+    color: #cbd5e1;
+  }
+
+  :global(.dark) kbd {
+    background: #334155;
+    border-color: #475569;
+    color: #cbd5e1;
+  }
+
+  @media (max-width: 768px) {
+    .search-header h1 {
+      font-size: 2rem;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+    }
+
+    .search-input-wrapper {
+      padding: 1rem;
+    }
+
+    .search-input {
+      font-size: 1rem;
+    }
+
+    .filters {
+      gap: 0.5rem;
+    }
+
+    .filter-btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+    }
+  }
+</style>
+
+<script>
+  const searchInput = document.getElementById('main-search-input') as HTMLInputElement;
+  const resultsContainer = document.getElementById('search-results');
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  
+  let currentFilter = 'all';
+
+  // Funciones de búsqueda
+  function calculateRelevance(query: string, item: any): number {
+    let score = 0;
+    const queryLower = query.toLowerCase();
+    const titleLower = item.title.toLowerCase();
+    const descLower = (item.description || '').toLowerCase();
+    const contentLower = (item.content || '').toLowerCase();
+
+    // Coincidencia exacta en título
+    if (titleLower === queryLower) score += 300;
+    else if (titleLower.includes(queryLower)) score += 100;
+
+    // Palabras del título
+    const titleWords = titleLower.split(/\s+/);
+    if (titleWords.some((word: string) => word === queryLower)) score += 150;
+
+    // Tags
+    const matchingTags = item.tags.filter((tag: string) => tag.toLowerCase().includes(queryLower));
+    score += matchingTags.length * 50;
+    if (item.tags.some((tag: string) => tag.toLowerCase() === queryLower)) score += 100;
+
+    // Platform/Category
+    if (item.platform && item.platform.toLowerCase().includes(queryLower)) score += 60;
+    if (item.ctfName && item.ctfName.toLowerCase().includes(queryLower)) score += 60;
+    if (item.category && item.category.toLowerCase().includes(queryLower)) score += 40;
+
+    // Descripción
+    if (descLower.includes(queryLower)) score += 30;
+
+    // Contenido
+    const contentMatches = (contentLower.match(new RegExp(queryLower, 'g')) || []).length;
+    score += Math.min(contentMatches * 3, 50);
+
+    // Encabezados en el contenido
+    const headingRegex = new RegExp(`#+\\s+.*${queryLower}.*`, 'gi');
+    const headingMatches = ((item.content || '').match(headingRegex) || []).length;
+    score += headingMatches * 20;
+
+    return score;
+  }
+
+  function extractPreview(content: string, query: string, maxLength: number = 150): string {
+    const queryLower = query.toLowerCase();
+    const contentLower = content.toLowerCase();
+    const index = contentLower.indexOf(queryLower);
+
+    if (index === -1) {
+      return content.substring(0, maxLength).trim() + '...';
+    }
+
+    const start = Math.max(0, index - 60);
+    const end = Math.min(content.length, index + query.length + 90);
+    const preview = content.substring(start, end).trim();
+
+    return (start > 0 ? '...' : '') + preview + (end < content.length ? '...' : '');
+  }
+
+  // Filter functionality
+  filterButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.getAttribute('data-filter') || 'all';
+      
+      // Re-run search with new filter
+      if (searchInput.value.trim().length >= 2) {
+        performSearch(searchInput.value.trim());
+      }
+    });
+  });
+
+  // Search functionality
+  if (searchInput && resultsContainer) {
+    searchInput.addEventListener('input', (e) => {
+      const query = (e.target as HTMLInputElement).value.trim();
+      
+      if (query.length < 2) {
+        resultsContainer.innerHTML = `
+          <div class="search-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+              <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <p>Escribe para comenzar a buscar</p>
+            <p class="tip">Presiona <kbd>Ctrl</kbd> + <kbd>K</kbd> para buscar rápidamente</p>
+          </div>
+        `;
+        return;
+      }
+
+      performSearch(query);
+    });
+  }
+
+  async function performSearch(query: string) {
+    if (!resultsContainer) return;
+
+    // Show loading state
+    resultsContainer.innerHTML = `
+      <div class="search-placeholder">
+        <p>Buscando "${query}"...</p>
+      </div>
+    `;
+
+    try {
+      // Get current language from URL
+      const lang = window.location.pathname.split('/')[1] || 'es';
+      
+      // Cargar índice de búsqueda
+      const response = await fetch('/api/search.json');
+      if (!response.ok) {
+        throw new Error('Failed to load search index');
+      }
+      
+      const searchIndex = await response.json();
+      
+      // Filtrar por idioma
+      const items = searchIndex.filter((item: any) => item.language === lang && !item.draft);
+      
+      // Calcular relevancia y filtrar
+      const results = items
+        .map((item: any) => {
+          const score = calculateRelevance(query, item);
+          if (score === 0) return null;
+          
+          let url = '';
+          if (item.type === 'blog') {
+            url = `/${lang}/blog/${item.slug.split('/').pop()}`;
+          } else if (item.type === 'writeup') {
+            url = `/${lang}/writeup/${item.actualSlug || item.slug}`;
+          } else if (item.type === 'ctf') {
+            url = `/${lang}/ctf/${item.slug.split('/').pop()}`;
+          }
+          
+          return {
+            type: item.type,
+            title: item.title,
+            description: extractPreview(item.description || item.content, query, 120),
+            url,
+            tags: item.tags,
+            category: item.category,
+            difficulty: item.difficulty,
+            platform: item.platform,
+            ctfName: item.ctfName,
+            os: item.os,
+            date: item.date,
+            score
+          };
+        })
+        .filter((r: any) => r !== null)
+        .sort((a: any, b: any) => {
+          if (b.score !== a.score) return b.score - a.score;
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
+        })
+        .slice(0, 30);
+
+      // Filter by current filter if not 'all'
+      let filteredResults = results;
+      if (currentFilter !== 'all') {
+        filteredResults = results.filter((result: any) => {
+          if (currentFilter === 'writeups') return result.type === 'writeup';
+          if (currentFilter === 'tools' || currentFilter === 'labs' || 
+              currentFilter === 'cheatsheets' || currentFilter === 'projects') {
+            return result.type === 'blog' && result.tags.some((tag: string) => 
+              tag.toLowerCase().includes(currentFilter.toLowerCase())
+            );
+          }
+          return result.type === currentFilter;
+        });
+      }
+
+      if (filteredResults.length === 0) {
+        resultsContainer.innerHTML = `
+          <div class="search-placeholder">
+            <p>No se encontraron resultados para "${query}"</p>
+            <p class="tip">Intenta con otros términos o filtros</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Render results
+      resultsContainer.innerHTML = filteredResults.map((result: any) => {
+        const typeEmojiMap: Record<string, string> = {
+          'blog': '📝',
+          'writeup': '🎯',
+          'ctf': '🚩',
+          'archive': '📦'
+        };
+        const typeEmoji = typeEmojiMap[result.type] || '📄';
+
+        const metaInfo = [];
+        if (result.platform) metaInfo.push(`Platform: ${result.platform.toUpperCase()}`);
+        if (result.difficulty) metaInfo.push(`Difficulty: ${result.difficulty}`);
+        if (result.ctfName) metaInfo.push(`CTF: ${result.ctfName}`);
+        if (result.category) metaInfo.push(`Category: ${result.category}`);
+
+        return `
+          <a href="${result.url}" class="result-item">
+            <div class="result-type">${typeEmoji} ${result.type}</div>
+            <h3 class="result-title">${result.title}</h3>
+            <p class="result-description">${result.description}</p>
+            ${metaInfo.length > 0 ? `<p style="font-size: 0.875rem; color: #64748b; margin-bottom: 0.5rem;">${metaInfo.join(' • ')}</p>` : ''}
+            <div class="result-meta">
+              ${result.tags.map((tag: string) => `<span class="result-tag">#${tag}</span>`).join('')}
+            </div>
+          </a>
+        `;
+      }).join('');
+
+    } catch (error) {
+      console.error('Search error:', error);
+      resultsContainer.innerHTML = `
+        <div class="search-placeholder">
+          <p style="color: #ef4444;">Error al realizar la búsqueda</p>
+          <p class="tip">Por favor, inténtalo de nuevo</p>
+        </div>
+      `;
+    }
+  }
+</script>
+</Layout>
