@@ -1,8 +1,8 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
-import Layout from '../../../../layouts/Layout.astro';
-import TOC from '../../../../components/common/TOC.astro';
-import { getCategoryById } from '../../../../i18n/constants/resources';
+import Layout from '@layouts/Layout.astro';
+import TOC from '@components/common/TOC.astro';
+import { getCategoryById } from '@i18n/constants/resources';
 
 interface Props {
   resource: CollectionEntry<'resources'>;

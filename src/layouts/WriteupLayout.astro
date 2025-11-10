@@ -7,6 +7,7 @@ interface Props {
   description: string;
   lang: string;
   image?: string;
+  heroImage?: string;
   pubDate: Date;
   updatedDate?: Date;
   platform: string;
@@ -16,7 +17,7 @@ interface Props {
   retired: boolean;
 }
 
-const { title, description, lang, image, pubDate, updatedDate, platform, difficulty, os, tags, retired } = Astro.props;
+const { title, description, lang, image, heroImage, pubDate, updatedDate, platform, difficulty, os, tags, retired } = Astro.props;
 const t = useTranslations(lang as 'es' | 'en');
 ---
 

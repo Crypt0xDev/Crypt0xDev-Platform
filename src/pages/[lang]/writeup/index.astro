@@ -1,7 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
-import Layout from '../../../layouts/Layout.astro';
-import { getLangFromUrl, useTranslations } from '../../../i18n/core';
+import Layout from '@layouts/Layout.astro';
+import Breadcrumb from '@components/common/Breadcrumb.astro';
+import { getLangFromUrl, useTranslations } from '@i18n/core';
+import { PLATFORMS, getAllPlatforms } from '@i18n/constants/platforms';
 
 export async function getStaticPaths() {
   return [
@@ -13,91 +15,116 @@ export async function getStaticPaths() {
 const { lang } = Astro.params;
 const t = useTranslations(lang as 'es' | 'en');
 
-// Platform information
-const platforms = [
-  {
-    name: 'HackTheBox',
-    slug: 'hackthebox',
-    platformId: 'htb', // ID usado en los metadatos de los writeups
-    description: lang === 'es' ? 'Máquinas, Fortresses y Endgames de HTB' : 'Machines, Fortresses and Endgames from HTB',
-    color: 'from-green-500 to-emerald-600',
-    bgColor: 'bg-green-50 dark:bg-green-950/20',
-    borderColor: 'border-green-200 dark:border-green-900',
-    href: `/${lang}/writeup/hackthebox`,
-    logo: '/images/platforms/htb.png'
-  },
-  {
-    name: 'TryHackMe',
-    slug: 'tryhackme',
-    platformId: 'tryhackme',
-    description: lang === 'es' ? 'Máquinas y rooms de TryHackMe' : 'Machines and rooms from TryHackMe',
-    color: 'from-red-500 to-rose-600',
-    bgColor: 'bg-red-50 dark:bg-red-950/20',
-    borderColor: 'border-red-200 dark:border-red-900',
-    href: `/${lang}/writeup/tryhackme`,
-    logo: '/images/platforms/tryhackme.jpg'
-  },
-  {
-    name: 'HackMyVM',
-    slug: 'hackmyvm',
-    platformId: 'hackmyvm',
-    description: lang === 'es' ? 'Máquinas de HackMyVM' : 'Machines from HackMyVM',
-    color: 'from-blue-500 to-cyan-600',
-    bgColor: 'bg-blue-50 dark:bg-blue-950/20',
-    borderColor: 'border-blue-200 dark:border-blue-900',
-    href: `/${lang}/writeup/hackmyvm`,
-    logo: '/images/platforms/hackmyvm.png'
-  },
-  {
-    name: 'VulnHub',
-    slug: 'vulnhub',
-    platformId: 'vulnhub',
-    description: lang === 'es' ? 'Máquinas de VulnHub' : 'Machines from VulnHub',
-    color: 'from-purple-500 to-violet-600',
-    bgColor: 'bg-purple-50 dark:bg-purple-950/20',
-    borderColor: 'border-purple-200 dark:border-purple-900',
-    href: `/${lang}/writeup/vulnhub`,
-    logo: '/images/platforms/vulnhub.png'
-  }
-];
+// Obtener parámetros de filtro de la URL
+const url = Astro.url;
+const filterType = url.searchParams.get('filter'); // attackVector, technique, certification, vulnerability
+const filterValue = url.searchParams.get('value');
+
+// Platform information (usando configuración centralizada)
+const platforms = getAllPlatforms().map(p => ({
+  name: p.name,
+  slug: p.slug,
+  platformId: p.id,
+  description: p.description,
+  color: p.color.gradient,
+  bgColor: p.id === 'htb' ? 'bg-green-50 dark:bg-green-950/20' :
+           p.id === 'tryhackme' ? 'bg-red-50 dark:bg-red-950/20' :
+           p.id === 'hackmyvm' ? 'bg-blue-50 dark:bg-blue-950/20' :
+           p.id === 'vulnhub' ? 'bg-purple-50 dark:bg-purple-950/20' :
+           'bg-orange-50 dark:bg-orange-950/20',
+  borderColor: p.id === 'htb' ? 'border-green-200 dark:border-green-900' :
+               p.id === 'tryhackme' ? 'border-red-200 dark:border-red-900' :
+               p.id === 'hackmyvm' ? 'border-blue-200 dark:border-blue-900' :
+               p.id === 'vulnhub' ? 'border-purple-200 dark:border-purple-900' :
+               'border-orange-200 dark:border-orange-900',
+  href: `/${lang}/writeup/${p.slug}`,
+  logo: 'logo' in p ? p.logo : undefined,
+  icon: p.icon
+}));
 
 // Get all writeups
 const allWriteups = await getCollection('writeups', (writeup) => {
   return writeup.slug.startsWith(`${lang}/`);
 });
 
-// Sort by date and get the latest 3
-const recentWriteups = allWriteups
-  .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
-  .slice(0, 3);
+// Aplicar filtros si existen
+let filteredWriteups = allWriteups;
+if (filterType && filterValue) {
+  filteredWriteups = allWriteups.filter(w => {
+    switch (filterType) {
+      case 'attackVector':
+        return w.data.attackVectors?.some(v => v === filterValue);
+      case 'technique':
+        return w.data.techniques?.some(t => t === filterValue);
+      case 'certification':
+        return w.data.certifications?.some(c => c === filterValue);
+      case 'vulnerability':
+        return w.data.vulnerabilities?.some(vuln => vuln === filterValue);
+      case 'tag':
+        return w.data.tags?.some(tag => tag === filterValue);
+      default:
+        return true;
+    }
+  });
+}
 
-// Count writeups per platform
+// Count writeups per platform (usando filteredWriteups si hay filtro)
 const platformCounts = platforms.map(platform => ({
   ...platform,
-  count: allWriteups.filter(w => w.data.platform === platform.platformId).length
+  count: (filterType ? filteredWriteups : allWriteups).filter(w => w.data.platform === platform.platformId).length
 }));
 
-// Calculate global statistics
-const totalWriteups = allWriteups.length;
-const difficultyCounts = {
-  easy: allWriteups.filter(w => w.data.difficulty === 'easy').length,
-  medium: allWriteups.filter(w => w.data.difficulty === 'medium').length,
-  hard: allWriteups.filter(w => w.data.difficulty === 'hard').length,
-  insane: allWriteups.filter(w => w.data.difficulty === 'insane').length,
+// Traducciones para filtros
+const filterTranslations = {
+  attackVector: { es: 'Vector de Ataque', en: 'Attack Vector' },
+  technique: { es: 'Técnica MITRE', en: 'MITRE Technique' },
+  certification: { es: 'Certificación', en: 'Certification' },
+  vulnerability: { es: 'Vulnerabilidad', en: 'Vulnerability' },
+  tag: { es: 'Etiqueta', en: 'Tag' }
 };
-
-// Get all unique tags
-const allTags = [...new Set(allWriteups.flatMap(w => w.data.tags || []))];
 ---
 
 <Layout title={`${lang === 'es' ? 'Writeups' : 'Writeups'}`}>
   <main class="min-h-[calc(100vh-16rem)] bg-gradient-to-br from-white via-white to-indigo-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/10">
+    <!-- Banner de filtro activo -->
+    {filterType && filterValue && (
+      <div class="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-800 dark:to-purple-800 py-4">
+        <div class="container max-w-7xl mx-auto px-4">
+          <div class="flex items-center justify-between flex-wrap gap-4">
+            <div class="flex items-center gap-3">
+              <span class="text-white text-sm font-semibold">
+                {lang === 'es' ? '🔍 Filtrando por' : '🔍 Filtering by'}:
+              </span>
+              <span class="px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full text-white font-bold text-sm">
+                {filterTranslations[filterType as keyof typeof filterTranslations][lang as 'es' | 'en']}: {filterValue}
+              </span>
+              <span class="text-white/80 text-sm">
+                ({filteredWriteups.length} {lang === 'es' ? 'resultados' : 'results'})
+              </span>
+            </div>
+            <a 
+              href={`/${lang}/writeup`}
+              class="px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 rounded-full text-white font-semibold text-sm transition-all duration-200 hover:scale-105"
+            >
+              {lang === 'es' ? '✕ Limpiar filtro' : '✕ Clear filter'}
+            </a>
+          </div>
+        </div>
+      </div>
+    )}
+
     <!-- Hero Section -->
     <section class="py-12 md:py-16">
       <div class="container max-w-7xl mx-auto px-4">
+        <!-- Breadcrumb -->
+        <Breadcrumb items={[
+          { label: lang === 'es' ? 'Inicio' : 'Home', href: `/${lang}` },
+          { label: 'Writeups' }
+        ]} />
+
         <div class="mb-12">
           <h1 class="text-4xl md:text-5xl lg:text-6xl font-black mb-4 font-sans tracking-tight bg-gradient-to-r from-slate-900 via-indigo-600 to-slate-900 dark:from-slate-100 dark:via-indigo-400 dark:to-slate-100 bg-clip-text text-transparent">
-            {lang === 'es' ? 'Bienvenido' : 'Welcome'}
+            {filterType ? (lang === 'es' ? 'Resultados de Búsqueda' : 'Search Results') : (lang === 'es' ? 'Bienvenido' : 'Welcome')}
           </h1>
           <div class="max-w-3xl">
             <p class="text-lg md:text-xl text-slate-700 dark:text-slate-300 leading-relaxed">
@@ -117,11 +144,15 @@ const allTags = [...new Set(allWriteups.flatMap(w => w.data.tags || []))];
             >
               <div class="relative z-10">
                 <div class="w-24 h-24 mb-4 flex items-center justify-center bg-white/50 dark:bg-slate-800/50 rounded-xl p-3">
-                  <img 
-                    src={platform.logo} 
-                    alt={platform.name}
-                    class="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110"
-                  />
+                  {platform.logo ? (
+                    <img 
+                      src={platform.logo} 
+                      alt={platform.name}
+                      class="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110"
+                    />
+                  ) : (
+                    <span class="text-5xl">{platform.icon}</span>
+                  )}
                 </div>
                 <h3 class="text-2xl font-bold mb-2 text-slate-900 dark:text-white">
                   {platform.name}
@@ -142,190 +173,6 @@ const allTags = [...new Set(allWriteups.flatMap(w => w.data.tags || []))];
             </a>
           ))}
         </div>
-      </div>
-    </section>
-
-    <!-- Global Statistics Section -->
-    <section class="py-8 md:py-12 bg-white/50 dark:bg-slate-800/30">
-      <div class="container max-w-7xl mx-auto px-4">
-        <h2 class="text-2xl md:text-3xl font-black mb-6 text-center bg-gradient-to-r from-slate-900 via-indigo-600 to-slate-900 dark:from-slate-100 dark:via-indigo-400 dark:to-slate-100 bg-clip-text text-transparent">
-          {lang === 'es' ? 'Estadísticas Globales' : 'Global Statistics'}
-        </h2>
-        
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <!-- Total Writeups -->
-          <div class="bg-white dark:bg-slate-900 rounded-xl p-6 border-2 border-indigo-200 dark:border-indigo-900 text-center">
-            <div class="text-4xl font-black bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
-              {totalWriteups}
-            </div>
-            <div class="text-sm text-slate-600 dark:text-slate-400 font-semibold">
-              {lang === 'es' ? 'Total Writeups' : 'Total Writeups'}
-            </div>
-          </div>
-
-          <!-- Easy -->
-          <div class="bg-white dark:bg-slate-900 rounded-xl p-6 border-2 border-green-200 dark:border-green-900 text-center">
-            <div class="text-4xl font-black text-green-600 dark:text-green-400 mb-2">
-              {difficultyCounts.easy}
-            </div>
-            <div class="text-sm text-slate-600 dark:text-slate-400 font-semibold">
-              {lang === 'es' ? 'Fácil' : 'Easy'}
-            </div>
-          </div>
-
-          <!-- Medium -->
-          <div class="bg-white dark:bg-slate-900 rounded-xl p-6 border-2 border-yellow-200 dark:border-yellow-900 text-center">
-            <div class="text-4xl font-black text-yellow-600 dark:text-yellow-400 mb-2">
-              {difficultyCounts.medium}
-            </div>
-            <div class="text-sm text-slate-600 dark:text-slate-400 font-semibold">
-              {lang === 'es' ? 'Medio' : 'Medium'}
-            </div>
-          </div>
-
-          <!-- Hard -->
-          <div class="bg-white dark:bg-slate-900 rounded-xl p-6 border-2 border-red-200 dark:border-red-900 text-center">
-            <div class="text-4xl font-black text-red-600 dark:text-red-400 mb-2">
-              {difficultyCounts.hard}
-            </div>
-            <div class="text-sm text-slate-600 dark:text-slate-400 font-semibold">
-              {lang === 'es' ? 'Difícil' : 'Hard'}
-            </div>
-          </div>
-        </div>
-
-        <!-- Additional Stats Row -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <!-- Insane -->
-          {difficultyCounts.insane > 0 && (
-            <div class="bg-white dark:bg-slate-900 rounded-xl p-6 border-2 border-purple-200 dark:border-purple-900 text-center">
-              <div class="text-3xl font-black text-purple-600 dark:text-purple-400 mb-2">
-                {difficultyCounts.insane}
-              </div>
-              <div class="text-sm text-slate-600 dark:text-slate-400 font-semibold">
-                {lang === 'es' ? 'Insano' : 'Insane'}
-              </div>
-            </div>
-          )}
-
-          <!-- Platforms -->
-          <div class="bg-white dark:bg-slate-900 rounded-xl p-6 border-2 border-slate-200 dark:border-slate-800 text-center">
-            <div class="text-3xl font-black bg-gradient-to-r from-slate-600 to-slate-800 dark:from-slate-300 dark:to-slate-100 bg-clip-text text-transparent mb-2">
-              {platforms.length}
-            </div>
-            <div class="text-sm text-slate-600 dark:text-slate-400 font-semibold">
-              {lang === 'es' ? 'Plataformas' : 'Platforms'}
-            </div>
-          </div>
-
-          <!-- Tags -->
-          <div class="bg-white dark:bg-slate-900 rounded-xl p-6 border-2 border-slate-200 dark:border-slate-800 text-center">
-            <div class="text-3xl font-black bg-gradient-to-r from-slate-600 to-slate-800 dark:from-slate-300 dark:to-slate-100 bg-clip-text text-transparent mb-2">
-              {allTags.length}
-            </div>
-            <div class="text-sm text-slate-600 dark:text-slate-400 font-semibold">
-              {lang === 'es' ? 'Técnicas' : 'Techniques'}
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Recent Writeups Section -->
-    <section class="py-8 md:py-12">
-      <div class="container max-w-7xl mx-auto px-4">
-        <h2 class="text-3xl md:text-4xl font-black mb-8 font-sans tracking-tight bg-gradient-to-r from-slate-900 via-indigo-600 to-slate-900 dark:from-slate-100 dark:via-indigo-400 dark:to-slate-100 bg-clip-text text-transparent">
-          {lang === 'es' ? 'Últimos Writeups' : 'Latest Writeups'}
-        </h2>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {recentWriteups.map((writeup) => {
-            const platform = platforms.find(p => writeup.data.platform === p.platformId);
-            const slug = writeup.slug.replace(`${lang}/`, '');
-            
-            return (
-              <article class="group relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-                {/* Image */}
-                {writeup.data.heroImage && (
-                  <div class="relative h-48 overflow-hidden">
-                    <img 
-                      src={writeup.data.heroImage} 
-                      alt={writeup.data.title}
-                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
-                    
-                    {/* Platform Badge */}
-                    {platform && (
-                      <div class={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold ${platform.bgColor} ${platform.borderColor} border backdrop-blur-sm`}>
-                        <span class={`bg-gradient-to-r ${platform.color} bg-clip-text text-transparent`}>
-                          {platform.name}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <div class="p-6">
-                  {/* Date */}
-                  <time class="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                    {new Date(writeup.data.pubDate).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </time>
-
-                  {/* Title */}
-                  <h3 class="text-xl font-bold mt-2 mb-3 text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
-                    {writeup.data.title}
-                  </h3>
-
-                  {/* Description */}
-                  <p class="text-sm text-slate-600 dark:text-slate-400 line-clamp-3 mb-4">
-                    {writeup.data.description}
-                  </p>
-
-                  {/* Tags */}
-                  {writeup.data.tags && writeup.data.tags.length > 0 && (
-                    <div class="flex flex-wrap gap-2 mb-4">
-                      {writeup.data.tags.slice(0, 3).map((tag: string) => (
-                        <span class="tag text-xs">
-                          {tag}
-                        </span>
-                      ))}
-                      {writeup.data.tags.length > 3 && (
-                        <span class="text-xs text-slate-400">
-                          +{writeup.data.tags.length - 3}
-                        </span>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Read More Link */}
-                  <a 
-                    href={`/${lang}/writeup/${slug}`}
-                    class="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
-                  >
-                    {lang === 'es' ? 'Leer más' : 'Read more'}
-                    <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </a>
-                </div>
-              </article>
-            );
-          })}
-        </div>
-
-        {/* View All Link */}
-        {recentWriteups.length === 0 && (
-          <div class="text-center py-12">
-            <p class="text-slate-600 dark:text-slate-400 text-lg">
-              {lang === 'es' ? 'No hay writeups disponibles en este momento.' : 'No writeups available at this time.'}
-            </p>
-          </div>
-        )}
       </div>
     </section>
   </main>

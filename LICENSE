@@ -1,0 +1,324 @@
+# 📄 LICENSE
+
+## GNU General Public License v3.0 (GPL-3.0)
+
+**Copyright © 2024-2025 Crypt0xDev**  
+**Project**: Crypt0 - Professional Cybersecurity Platform  
+**Website**: https://crypt0xdev.vercel.app  
+**Repository**: https://github.com/Crypt0xDev/Crypt0  
+**Author**: Crypt0xDev (https://github.com/Crypt0xDev)  
+
+---
+
+## 🔐 Strong Copyleft Protection
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+---
+
+## 🛡️ KEY PROTECTIONS OF GPL-3.0
+
+### 1. **Copyleft Requirement** 
+**Any derivative work MUST also be GPL-3.0 licensed**
+
+- ✅ Protects against proprietary forks
+- ✅ Ensures all modifications remain open source
+- ✅ Prevents commercial entities from "stealing" your code
+- ✅ Requires disclosure of source code in all distributions
+
+### 2. **Source Code Disclosure**
+Anyone distributing this software MUST provide:
+
+- Complete source code
+- Build instructions
+- All modifications made
+- Same GPL-3.0 license
+
+### 3. **Patent Protection**
+Contributors grant patent licenses automatically, protecting users from patent claims.
+
+### 4. **Anti-Tivoization**
+Prevents "locked down" devices - users must be able to run modified versions.
+
+---
+
+## 📋 MANDATORY ATTRIBUTION REQUIREMENTS
+
+If you use, fork, or derive from this project, you **MUST**:
+
+1. **✅ Maintain Copyright Notice**: Keep all copyright notices intact
+2. **✅ Credit Original Author**: Clearly attribute Crypt0xDev as the original author
+3. **✅ Link to Original**: Include link to https://github.com/Crypt0xDev/Crypt0
+4. **✅ State Modifications**: Document any changes made to the original code
+5. **✅ Include This License**: Distribute complete LICENSE file with any copies
+
+### Attribution Format Requirements
+
+When using this code, include prominent attribution in your project:
+
+```
+Based on Crypt0xDev (https://github.com/Crypt0xDev/Crypt0)
+Original code © 2024-2025 Crypt0xDev
+Licensed under MIT License with Additional Terms
+```
+
+**Failure to provide proper attribution may constitute copyright infringement.**
+
+---
+
+## 🚫 ADDITIONAL RESTRICTIVE TERMS
+
+### 1. Commercial Use Restrictions
+
+While permitted under MIT, commercial use requires:
+
+- **Notification**: Inform Crypt0xDev of commercial use via GitHub
+- **Attribution**: Prominent display of original authorship
+- **No Trademark Use**: Cannot use "Crypt0xDev" branding without permission
+- **No Endorsement**: Cannot claim endorsement by original author
+
+### 2. Code of Conduct for Usage
+
+Users of this software agree to:
+
+- **NOT** use the software for illegal activities
+- **NOT** remove or obscure copyright notices
+- **NOT** claim original authorship of Crypt0xDev's work
+- **NOT** use the Crypt0xDev name/brand without written permission
+- **RESPECT** the educational purpose of the project
+
+### 3. Protection Against Exact Copies
+
+While forks are allowed, **exact or near-exact copies** presented as original work are:
+
+- ❌ **Unethical** and constitute plagiarism
+- ❌ **Discouraged** by community standards
+- ❌ **Subject** to copyright enforcement if attribution is removed
+- ❌ **Reportable** to GitHub for DMCA violations
+
+**Recommended**: If forking, add significant original contributions.
+
+### 4. Branding and Trademark Notice
+
+The following are trademarks and brand identifiers of Crypt0xDev:
+
+- "Crypt0xDev" name and logo
+- Project-specific design elements
+- Custom UI/UX implementations
+- Original written content and writeups
+
+**Use of these elements requires explicit written permission.**
+
+---
+
+## 📝 EDUCATIONAL CONTENT TERMS
+
+### Cybersecurity Writeups & Tutorials
+
+The cybersecurity writeups, CTF solutions, tutorials, and educational content 
+included in this project are subject to **additional restrictions**:
+
+1. **Educational Use Only**: Content is for learning purposes
+2. **No Warranty**: Techniques shown may not work in all scenarios
+3. **Legal Compliance**: Users must comply with all applicable laws
+4. **Ethical Use**: Only use on systems you own or have permission to test
+5. **No Liability**: Author not responsible for misuse of information
+
+**⚠️ WARNING**: Unauthorized access to computer systems is illegal in most 
+jurisdictions. Use this knowledge responsibly and ethically.
+
+### Responsible Disclosure
+
+If you discover vulnerabilities using techniques from this project:
+
+- ✅ **DO** follow responsible disclosure practices
+- ✅ **DO** report to appropriate parties first
+- ✅ **DO** give reasonable time for patches
+- ❌ **DON'T** publicly disclose zero-days
+- ❌ **DON'T** use for malicious purposes
+
+---
+
+## 🖼️ THIRD-PARTY ASSETS
+
+### Platform Logos and Branding
+
+Logos, images, and references to third-party platforms included in this project:
+
+| Platform | Ownership | Usage |
+|----------|-----------|-------|
+| HackTheBox | © Hack The Box Ltd. | Fair use, educational |
+| TryHackMe | © TryHackMe | Fair use, educational |
+| VulnHub | © VulnHub | Fair use, educational |
+| PentesterLab | © PentesterLab | Fair use, educational |
+| HTB Academy | © Hack The Box Ltd. | Fair use, educational |
+
+**These assets are NOT covered by the MIT license** and remain the property 
+of their respective copyright holders. Use is limited to:
+
+- Educational and informational purposes
+- Fair use under copyright law
+- Non-commercial educational context
+
+**For commercial use of third-party assets, contact original copyright holders.**
+
+---
+
+## 🛡️ ANTI-PLAGIARISM MEASURES
+
+### Automated Detection
+
+This project employs:
+
+- GitHub's duplicate detection systems
+- Community reporting mechanisms
+- Periodic scans for unauthorized copies
+- DMCA takedown procedures when necessary
+
+### Reporting Violations
+
+If you find unauthorized use of this code:
+
+1. **GitHub**: Report via GitHub's copyright reporting
+2. **Email**: Contact via GitHub profile
+3. **Issue**: Open issue in this repository
+
+**We take copyright seriously and will pursue DMCA takedowns for clear violations.**
+
+---
+
+## 🔒 CONTENT PROTECTION
+
+### Original Content Copyright
+
+All original content in this project is protected:
+
+- ✅ **Source Code**: Custom implementations, utilities, components
+- ✅ **Documentation**: Written guides, tutorials, explanations  
+- ✅ **Writeups**: CTF solutions, penetration testing reports
+- ✅ **Design**: UI/UX implementations, visual design
+- ✅ **Architecture**: Project structure and organization
+
+**Copying substantial portions without attribution constitutes copyright infringement.**
+
+### Derivative Works
+
+Derivative works are permitted under MIT but must:
+
+1. **Credit Original**: Clear attribution to Crypt0xDev
+2. **Note Changes**: Document modifications made
+3. **Include License**: Distribute this LICENSE file
+4. **No Misrepresentation**: Don't claim original authorship
+
+---
+
+## 📜 LEGAL DISCLAIMERS
+
+### No Warranty
+
+This software is provided "as is" without warranty of any kind. The author
+is not liable for:
+
+- ❌ Damages from use or misuse of the software
+- ❌ Security vulnerabilities in user implementations
+- ❌ Legal issues from unauthorized system access
+- ❌ Data loss or system damage
+- ❌ Any other direct or indirect damages
+
+### Limitation of Liability
+
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+### Legal Compliance
+
+Users are solely responsible for ensuring their use of this software complies 
+with all applicable laws and regulations in their jurisdiction.
+
+---
+
+## 🌍 INTERNATIONAL CONSIDERATIONS
+
+This license is governed by international copyright law and:
+
+- Respects the Berne Convention
+- Complies with WIPO Copyright Treaty
+- Honors DMCA safe harbor provisions
+- Recognizes EU Copyright Directive
+
+**Jurisdiction**: Disputes governed by laws of author's jurisdiction.
+
+---
+
+## 📞 CONTACT INFORMATION
+
+**For licensing questions or permissions:**
+
+- **GitHub**: [@Crypt0xDev](https://github.com/Crypt0xDev)
+- **Project**: [Crypt0 Repository](https://github.com/Crypt0xDev/Crypt0)
+- **Website**: [crypt0xdev.vercel.app](https://crypt0xdev.vercel.app)
+
+**For copyright violations or DMCA takedown notices:**
+
+Please use GitHub's copyright reporting mechanism or contact through GitHub profile.
+
+---
+
+## 📌 VERSION INFORMATION
+
+- **License Version**: 2.0
+- **Last Updated**: November 10, 2025
+- **Effective Date**: November 10, 2025
+- **Applies To**: Crypt0xDev project and all associated code
+
+---
+
+## ✅ SUMMARY FOR USERS
+
+### ✅ You CAN:
+- Use the code for personal projects
+- Fork and modify the code
+- Use for learning and education
+- Create derivative works
+- Use commercially (with attribution)
+
+### ⚠️ You MUST:
+- Keep copyright notices intact
+- Credit Crypt0xDev as original author
+- Include this LICENSE file
+- Document any modifications
+- Link to original repository
+
+### ❌ You CANNOT:
+- Remove copyright notices
+- Claim original authorship
+- Use Crypt0xDev branding without permission
+- Use for illegal activities
+- Present exact copies as original work
+
+---
+
+<div align="center">
+
+**© 2024-2025 Crypt0xDev. All Rights Reserved.**
+
+**MIT License with Additional Terms**
+
+*This license protects both user freedoms and creator rights*
+
+[🏠 Back to Project](README.md) | [📚 Documentation](doc/README.md) | [🤝 Contributing](.github/CONTRIBUTING.md)
+
+</div>

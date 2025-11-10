@@ -1,5 +1,5 @@
 ---
-import { formatDate } from '../../i18n/utils';
+import { formatDate } from '@i18n/utils';
 
 interface Post {
   id?: string;
@@ -13,6 +13,7 @@ interface Post {
   platform?: string;
   heroImage?: string;
   readTime?: number;
+  category?: string;
 }
 
 interface Props {
@@ -32,7 +33,10 @@ const cleanSlug = (slug: string) => {
 const getPostUrl = (post: Post) => {
   const cleanedSlug = cleanSlug(post.slug);
   if (type === 'blog') {
-    return `/${lang}/blog/${cleanedSlug}/`;
+    const category = post.category || 'tutorial';
+    // Extraer solo el slug del post (última parte)
+    const postSlug = cleanedSlug.split('/').pop() || cleanedSlug;
+    return `/${lang}/blog/${category}/${postSlug}/`;
   } else {
     // Para writeups: /lang/writeup/platform/slug
     return `/${lang}/writeup/${cleanedSlug}/`;

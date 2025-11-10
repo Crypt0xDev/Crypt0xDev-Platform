@@ -1,8 +1,10 @@
 ---
 import { getCollection } from 'astro:content';
-import Layout from '../../../layouts/Layout.astro';
-import { getLangFromUrl, useTranslations } from '../../../i18n/core';
-import { formatDate, sortByDate, filterByLang } from '../../../i18n/utils';
+import Layout from '@layouts/Layout.astro';
+import Breadcrumb from '@components/common/Breadcrumb.astro';
+import { getLangFromUrl, useTranslations } from '@i18n/core';
+import { formatDate, sortByDate, filterByLang } from '@i18n/utils';
+import { BLOG_CATEGORIES } from '@i18n/constants/categories';
 
 export async function getStaticPaths() {
   return [
@@ -17,6 +19,21 @@ const t = useTranslations(lang as 'es' | 'en');
 // Obtener todos los posts del blog
 const allPosts = await getCollection('blog');
 const posts = sortByDate(filterByLang(allPosts, lang as string));
+
+// Obtener parámetros de filtro de la URL
+const url = Astro.url;
+const categoryFilter = url.searchParams.get('category');
+
+// Filtrar por categoría si se especifica
+const filteredPosts = categoryFilter 
+  ? posts.filter(p => p.data.category === categoryFilter)
+  : posts;
+
+// Preparar categorías con conteo para mostrar filtros
+const categories = Object.values(BLOG_CATEGORIES).map(cat => ({
+  ...cat,
+  count: posts.filter(p => p.data.category === cat.id).length
+}));
 ---
 
 <Layout
@@ -24,86 +41,129 @@ const posts = sortByDate(filterByLang(allPosts, lang as string));
   description={t('blog.latest_posts')}
   lang={lang}
 >
-  <main class="min-h-[calc(100vh-16rem)] py-8 md:py-16 bg-gradient-to-br from-white via-white to-indigo-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/20">
-    <div class="container max-w-7xl mx-auto px-4">
-      <header class="text-center mb-12 md:mb-16 py-8 animate-fadeInDown">
-        <h1 class="text-4xl md:text-5xl lg:text-6xl font-black mb-4 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent font-sans tracking-tight relative inline-block">
-          {t('blog.title')}
-          <span class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4/5 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full shadow-lg shadow-purple-500/40"></span>
-        </h1>
-        <p class="text-lg md:text-xl text-slate-600 dark:text-slate-400 font-medium font-sans">
-          {t('blog.latest_posts')}
-        </p>
-      </header>
+  <main class="min-h-[calc(100vh-16rem)] bg-gradient-to-br from-white via-white to-indigo-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/10">
+    <!-- Hero Section -->
+    <section class="py-12 md:py-16">
+      <div class="container max-w-7xl mx-auto px-4">
+        <!-- Breadcrumb -->
+        <Breadcrumb items={[
+          { label: lang === 'es' ? 'Inicio' : 'Home', href: `/${lang}` },
+          { label: 'Blog' }
+        ]} />
 
-      {posts.length === 0 ? (
-        <div class="text-center py-16">
-          <p class="text-lg md:text-xl text-slate-600 dark:text-slate-400">
-            {t('blog.no_posts')}
-          </p>
+        <div class="mb-12">
+          <div class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full text-sm font-semibold mb-6">
+            📝 {lang === 'es' ? 'Blog de Ciberseguridad' : 'Cybersecurity Blog'}
+          </div>
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-black mb-4 font-sans tracking-tight bg-gradient-to-r from-slate-900 via-indigo-600 to-slate-900 dark:from-slate-100 dark:via-indigo-400 dark:to-slate-100 bg-clip-text text-transparent">
+            {t('blog.title')}
+          </h1>
+          <div class="max-w-3xl">
+            <p class="text-lg md:text-xl text-slate-700 dark:text-slate-300 leading-relaxed mb-6">
+              {lang === 'es' 
+                ? 'Aprende sobre ciberseguridad con tutoriales, writeups detallados, investigaciones y las últimas noticias sobre hacking ético y pentesting.'
+                : 'Learn about cybersecurity with tutorials, detailed writeups, research, and the latest news on ethical hacking and pentesting.'}
+            </p>
+            
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-3 gap-4 mb-8">
+              <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                <div class="text-3xl font-bold text-indigo-600 dark:text-indigo-400">{posts.length}</div>
+                <div class="text-sm text-slate-600 dark:text-slate-400">{lang === 'es' ? 'Artículos' : 'Posts'}</div>
+              </div>
+              <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                <div class="text-3xl font-bold text-indigo-600 dark:text-indigo-400">{categories.filter(c => c.count > 0).length}</div>
+                <div class="text-sm text-slate-600 dark:text-slate-400">{lang === 'es' ? 'Categorías' : 'Categories'}</div>
+              </div>
+              <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                <div class="text-3xl font-bold text-indigo-600 dark:text-indigo-400">{categories.length}</div>
+                <div class="text-sm text-slate-600 dark:text-slate-400">{lang === 'es' ? 'Temas' : 'Topics'}</div>
+              </div>
+            </div>
+          </div>
         </div>
-      ) : (
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {posts.map((post, index) => {
-            const slugParts = post.slug.split('/');
-            const actualSlug = slugParts[slugParts.length - 1];
+
+        <!-- Categories Grid -->
+        <div class="mb-8">
+          <h2 class="text-2xl font-bold mb-6 text-slate-900 dark:text-white">
+            {lang === 'es' ? '📂 Categorías de Contenido' : '📂 Content Categories'}
+          </h2>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-16">
+          {categories.map((category, index) => {
+            const postsInCategory = posts.filter(p => p.data.category === category.id);
+            const difficulties = {
+              beginner: postsInCategory.filter(p => p.data.difficulty === 'beginner').length,
+              intermediate: postsInCategory.filter(p => p.data.difficulty === 'intermediate').length,
+              advanced: postsInCategory.filter(p => p.data.difficulty === 'advanced').length
+            };
             
             return (
-              <article 
-                class="group bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-indigo-500/25 hover:border-indigo-500 flex flex-col relative animate-scaleIn"
-                style={`animation-delay: ${index * 0.1}s`}
+              <a 
+                href={`/${lang}/blog/${category.id}`}
+                class={`group relative overflow-hidden rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-indigo-500 dark:hover:border-indigo-500`}
               >
-                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                {post.data.heroImage && (
-                  <div class="w-full h-60 overflow-hidden bg-gradient-to-br from-slate-100 to-indigo-100/60 dark:from-slate-800 dark:to-indigo-900/30">
-                    <img 
-                      src={post.data.heroImage} 
-                      alt={post.data.title}
-                      class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
-                    />
+                <div class="relative z-10">
+                  <div class="w-16 h-16 mb-4 flex items-center justify-center bg-slate-50 dark:bg-slate-700/50 rounded-xl">
+                    <span class="text-4xl">{category.icon}</span>
                   </div>
-                )}
-                <div class="p-6 lg:p-8 flex flex-col flex-1 gap-3 lg:gap-4">
-                  <div class="text-sm text-slate-600 dark:text-slate-400 font-medium font-sans">
-                    <time datetime={post.data.pubDate.toISOString()}>
-                      {formatDate(post.data.pubDate, lang as string)}
-                    </time>
+                  <h3 class="text-xl font-bold mb-2 text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                    {category.label[lang as 'es' | 'en']}
+                  </h3>
+                  <div class="flex items-center justify-between mb-4">
+                    <span class={`text-sm font-semibold ${category.color}`}>
+                      {category.count} {lang === 'es' ? (category.count === 1 ? 'post' : 'posts') : (category.count === 1 ? 'post' : 'posts')}
+                    </span>
+                    <svg class="w-5 h-5 text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
                   </div>
-                  <h2 class="text-xl lg:text-2xl font-extrabold font-sans tracking-tight m-0">
-                    <a 
-                      href={`/${lang}/blog/${actualSlug}`}
-                      class="text-slate-900 dark:text-slate-50 no-underline hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-300"
-                    >
-                      {post.data.title}
-                    </a>
-                  </h2>
-                  <p class="text-slate-600 dark:text-slate-400 leading-relaxed flex-1 font-sans m-0">
-                    {post.data.description}
-                  </p>
-                  {post.data.tags && post.data.tags.length > 0 && (
-                    <div class="flex flex-wrap gap-2 mb-4">
-                      {post.data.tags.map((tag) => (
-                        <a 
-                          href={`/${lang}/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`}
-                          class="tag"
-                        >
-                          #{tag}
-                        </a>
-                      ))}
+                  
+                  {category.count > 0 && (
+                    <div class="flex flex-wrap gap-1 mt-3">
+                      {difficulties.beginner > 0 && (
+                        <span class="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full">
+                          {difficulties.beginner} {lang === 'es' ? 'básico' : 'beginner'}
+                        </span>
+                      )}
+                      {difficulties.intermediate > 0 && (
+                        <span class="text-xs px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-full">
+                          {difficulties.intermediate} {lang === 'es' ? 'intermedio' : 'intermediate'}
+                        </span>
+                      )}
+                      {difficulties.advanced > 0 && (
+                        <span class="text-xs px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-full">
+                          {difficulties.advanced} {lang === 'es' ? 'avanzado' : 'advanced'}
+                        </span>
+                      )}
                     </div>
                   )}
-                  <a 
-                    href={`/${lang}/blog/${actualSlug}`}
-                    class="text-indigo-600 dark:text-indigo-400 font-bold no-underline transition-all duration-300 hover:text-indigo-700 dark:hover:text-indigo-300 hover:translate-x-1 self-start font-sans text-base lg:text-lg"
-                  >
-                    {t('blog.read_more')} →
-                  </a>
                 </div>
-              </article>
+                <div class="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-500 opacity-0 group-hover:opacity-5 transition-opacity duration-300"></div>
+              </a>
             );
           })}
         </div>
-      )}
-    </div>
+      </div>
+    </section>
+
+    {posts.length === 0 && (
+      <section class="py-16">
+        <div class="container max-w-7xl mx-auto px-4">
+          <div class="text-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700">
+            <div class="text-6xl mb-4">📝</div>
+            <h3 class="text-2xl font-bold mb-2 text-slate-900 dark:text-white">
+              {lang === 'es' ? 'Próximamente' : 'Coming Soon'}
+            </h3>
+            <p class="text-slate-600 dark:text-slate-400">
+              {lang === 'es' 
+                ? 'Estamos preparando contenido increíble. ¡Vuelve pronto!' 
+                : 'We are preparing amazing content. Come back soon!'}
+            </p>
+          </div>
+        </div>
+      </section>
+    )}
   </main>
 </Layout>

@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import tailwind from '@astrojs/tailwind';
+import sentry from '@sentry/astro';
 
 // https://astro.build/config
 export default defineConfig({
@@ -10,6 +11,14 @@ export default defineConfig({
   
   // Integraciones
   integrations: [
+    sentry({
+      dsn: process.env.PUBLIC_SENTRY_DSN,
+      sourceMapsUploadOptions: {
+        project: 'crypt0xdev',
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+        enabled: process.env.NODE_ENV === 'production',
+      },
+    }),
     sitemap({
       i18n: {
         defaultLocale: 'es',
@@ -58,8 +67,9 @@ export default defineConfig({
   markdown: {
     syntaxHighlight: 'shiki',
     shikiConfig: {
-      theme: 'one-dark-pro',
+      theme: 'material-theme-palenight',
       wrap: true,
+      langs: [],
     },
   },
   

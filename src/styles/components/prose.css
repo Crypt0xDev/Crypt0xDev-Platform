@@ -1,25 +1,97 @@
 /* ===== CODE SYNTAX HIGHLIGHTING ===== */
+
+/* Terminal/Code block styling - Kitty Mate Theme */
 pre.astro-code,
 pre.shiki {
-  @apply font-mono text-sm leading-relaxed rounded-lg p-4 overflow-x-auto;
+  @apply font-mono text-sm leading-relaxed rounded-lg overflow-x-auto;
   font-variant-ligatures: normal;
   font-feature-settings: "liga" 1, "calt" 1;
   tab-size: 2;
+  position: relative;
+  background: #1e1e1e !important;
+  border: 1px solid #2d2d2d;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+/* Adjust content padding */
+pre.astro-code code,
+pre.shiki code {
+  display: block;
+  color: #d4d4d4;
 }
 
 .astro-code .line {
-  @apply inline-block w-full px-4;
+  @apply inline-block w-full;
+  padding: 0.125rem 1rem;
+  min-height: 1.5rem;
 }
 
 .astro-code .line-number {
-  @apply inline-block w-12 text-right mr-4 select-none opacity-50;
+  @apply inline-block w-12 text-right mr-4 select-none;
+  color: #858585;
+  opacity: 0.6;
 }
 
 .shiki .line {
   min-height: 1.7em;
+  padding: 0.125rem 1rem;
 }
 
-/* Números de línea si están habilitados */
+/* Prompt styling para comandos bash - Kitty Mate colors */
+.astro-code .line::before,
+.shiki .line::before {
+  content: '❯ ';
+  color: #89ddff;
+  font-weight: bold;
+  margin-right: 0.5rem;
+  user-select: none;
+}
+
+/* Remove prompt for non-bash code blocks */
+pre.astro-code[data-language="javascript"] .line::before,
+pre.astro-code[data-language="typescript"] .line::before,
+pre.astro-code[data-language="python"] .line::before,
+pre.astro-code[data-language="php"] .line::before,
+pre.astro-code[data-language="java"] .line::before,
+pre.astro-code[data-language="c"] .line::before,
+pre.astro-code[data-language="cpp"] .line::before,
+pre.astro-code[data-language="go"] .line::before,
+pre.astro-code[data-language="rust"] .line::before,
+pre.astro-code[data-language="json"] .line::before,
+pre.astro-code[data-language="yaml"] .line::before,
+pre.astro-code[data-language="xml"] .line::before,
+pre.astro-code[data-language="html"] .line::before,
+pre.astro-code[data-language="css"] .line::before,
+pre.astro-code[data-language="sql"] .line::before,
+pre.shiki[data-language="javascript"] .line::before,
+pre.shiki[data-language="typescript"] .line::before,
+pre.shiki[data-language="python"] .line::before,
+pre.shiki[data-language="php"] .line::before,
+pre.shiki[data-language="java"] .line::before,
+pre.shiki[data-language="c"] .line::before,
+pre.shiki[data-language="cpp"] .line::before,
+pre.shiki[data-language="go"] .line::before,
+pre.shiki[data-language="rust"] .line::before,
+pre.shiki[data-language="json"] .line::before,
+pre.shiki[data-language="yaml"] .line::before,
+pre.shiki[data-language="xml"] .line::before,
+pre.shiki[data-language="html"] .line::before,
+pre.shiki[data-language="css"] .line::before,
+pre.shiki[data-language="sql"] .line::before {
+  content: '';
+  margin-right: 0;
+}
+
+/* Root prompt - Kitty Mate red */
+.astro-code[data-language="bash"] .line.root::before,
+.shiki[data-language="bash"] .line.root::before {
+  content: '# ';
+  color: #ff6b68;
+}
+
+/* Números de línea */
 .astro-code .line-number,
 .shiki .line-number {
   display: inline-block;
@@ -27,29 +99,67 @@ pre.shiki {
   text-align: right;
   padding-right: 1em;
   user-select: none;
-  opacity: 0.4;
+  color: #858585;
+  opacity: 0.5;
 }
 
-/* Highlight de línea */
+/* Highlight de línea - Kitty Mate accent */
 .astro-code .highlighted,
 .shiki .highlighted {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-left: 3px solid var(--accent-color);
-  padding-left: 0.5em;
-  margin-left: -0.5em;
+  background-color: rgba(137, 221, 255, 0.1);
+  border-left: 3px solid #89ddff;
+  padding-left: 0.75rem;
+  margin-left: -1rem;
 }
 
-/* Diff syntax */
+/* Diff syntax - Kitty Mate colors */
 .astro-code .line.diff.add,
 .shiki .line.diff.add {
-  background-color: rgba(34, 197, 94, 0.1);
-  border-left: 3px solid #22c55e;
+  background-color: rgba(195, 232, 141, 0.15);
+  border-left: 3px solid #c3e88d;
 }
 
 .astro-code .line.diff.remove,
 .shiki .line.diff.remove {
-  background-color: rgba(239, 68, 68, 0.1);
-  border-left: 3px solid #ef4444;
+  background-color: rgba(255, 107, 104, 0.15);
+  border-left: 3px solid #ff6b68;
+}
+
+/* Output lines (without prompt) */
+.astro-code .line.output::before,
+.shiki .line.output::before {
+  content: '';
+  margin-right: 0;
+}
+
+.astro-code .line.output,
+.shiki .line.output {
+  color: #c3e88d;
+  font-style: normal;
+}
+
+/* Scrollbar personalizado para bloques de código */
+pre.astro-code::-webkit-scrollbar,
+pre.shiki::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+pre.astro-code::-webkit-scrollbar-track,
+pre.shiki::-webkit-scrollbar-track {
+  background: #1e1e1e;
+  border-radius: 4px;
+}
+
+pre.astro-code::-webkit-scrollbar-thumb,
+pre.shiki::-webkit-scrollbar-thumb {
+  background: #404040;
+  border-radius: 4px;
+}
+
+pre.astro-code::-webkit-scrollbar-thumb:hover,
+pre.shiki::-webkit-scrollbar-thumb:hover {
+  background: #4d4d4d;
 }
 
 /* ===== PROSE (MARKDOWN CONTENT) ===== */
@@ -82,15 +192,23 @@ pre.shiki {
 }
 
 .prose code {
-  @apply px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-pink-600 dark:text-pink-400 font-mono text-sm;
+  @apply px-2 py-1 rounded font-mono text-sm;
+  background: #1e1e1e;
+  color: #89ddff;
+  border: 1px solid #2d2d2d;
+  font-weight: 500;
 }
 
 .prose pre {
-  @apply mb-4 rounded-lg overflow-x-auto;
+  @apply mb-6 rounded-lg overflow-hidden;
+  background: transparent !important;
+  padding: 0 !important;
 }
 
 .prose pre code {
-  @apply bg-transparent text-inherit p-0;
+  @apply bg-transparent p-0 border-0;
+  color: inherit;
+  font-weight: normal;
 }
 
 .prose ul, .prose ol {

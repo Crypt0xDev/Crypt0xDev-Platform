@@ -1,0 +1,231 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '@layouts/Layout.astro';
+import Breadcrumb from '@components/common/Breadcrumb.astro';
+import { useTranslations } from '@i18n/core';
+import { formatDate, sortByDate } from '@i18n/utils';
+import { BLOG_CATEGORIES } from '@i18n/constants/categories';
+
+export async function getStaticPaths() {
+  const categories = Object.keys(BLOG_CATEGORIES);
+  const langs = ['es', 'en'];
+  
+  const paths = [];
+  for (const lang of langs) {
+    for (const category of categories) {
+      paths.push({
+        params: { lang, category },
+      });
+    }
+  }
+  
+  return paths;
+}
+
+const { lang, category } = Astro.params;
+const t = useTranslations(lang as 'es' | 'en');
+
+// Validar que la categoría exista
+type BlogCategoryKey = 'tutorial' | 'writeup' | 'research' | 'tools' | 'news';
+const categoryKey = category as BlogCategoryKey;
+
+if (!BLOG_CATEGORIES[categoryKey]) {
+  return Astro.redirect(`/${lang}/blog`);
+}
+
+const categoryInfo = BLOG_CATEGORIES[categoryKey];
+
+// Obtener posts de esta categoría
+const allPosts = await getCollection('blog', (post) => {
+  return post.slug.startsWith(`${lang}/`) && post.data.category === category;
+});
+
+const posts = sortByDate(allPosts);
+
+// Filtros por dificultad
+const difficultyParams = Astro.url.searchParams.get('difficulty');
+const filteredPosts = difficultyParams 
+  ? posts.filter(p => p.data.difficulty === difficultyParams)
+  : posts;
+
+const difficultyCounts = {
+  beginner: posts.filter(p => p.data.difficulty === 'beginner').length,
+  intermediate: posts.filter(p => p.data.difficulty === 'intermediate').length,
+  advanced: posts.filter(p => p.data.difficulty === 'advanced').length,
+};
+
+const difficultyColors = {
+  beginner: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+  intermediate: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+  advanced: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+};
+
+const difficultyLabels = {
+  es: {
+    beginner: 'Principiante',
+    intermediate: 'Intermedio',
+    advanced: 'Avanzado'
+  },
+  en: {
+    beginner: 'Beginner',
+    intermediate: 'Intermediate',
+    advanced: 'Advanced'
+  }
+};
+---
+
+<Layout
+  title={`${categoryInfo.label[lang as 'es' | 'en']} - ${t('blog.title')}`}
+  description={`${t('blog.posts_in_category')} ${categoryInfo.label[lang as 'es' | 'en']}`}
+  lang={lang}
+>
+  <main class="min-h-[calc(100vh-16rem)] bg-gradient-to-br from-white via-white to-indigo-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Breadcrumbs -->
+      <Breadcrumb items={[
+        { label: lang === 'es' ? 'Inicio' : 'Home', href: `/${lang}` },
+        { label: 'Blog', href: `/${lang}/blog` },
+        { label: categoryInfo.label[lang as 'es' | 'en'] }
+      ]} />
+
+      <!-- Header -->
+      <div class="mb-12">
+        <div class="flex items-center gap-4 mb-4">
+          <div class={`p-4 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 text-white text-4xl`}>
+            {categoryInfo.icon}
+          </div>
+          <div>
+            <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+              {categoryInfo.label[lang as 'es' | 'en']}
+            </h1>
+            <p class="text-lg text-gray-600 dark:text-gray-400">
+              {lang === 'es' 
+                ? `Explora nuestros artículos sobre ${categoryInfo.label[lang as 'es' | 'en'].toLowerCase()}` 
+                : `Explore our ${categoryInfo.label[lang as 'es' | 'en'].toLowerCase()} articles`}
+            </p>
+          </div>
+        </div>
+        <div class="mt-4 flex gap-3 flex-wrap">
+          <span class={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${categoryInfo.color} border border-slate-300 dark:border-slate-600`}>
+            {filteredPosts.length} {lang === 'es' ? (filteredPosts.length === 1 ? 'publicación' : 'publicaciones') : (filteredPosts.length === 1 ? 'post' : 'posts')}
+          </span>
+          
+          {/* Filtros de dificultad */}
+          <a 
+            href={`/${lang}/blog/${category}`}
+            class={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
+              !difficultyParams 
+                ? 'bg-indigo-600 text-white' 
+                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+            }`}
+          >
+            {lang === 'es' ? 'Todos' : 'All'}
+          </a>
+          {difficultyCounts.beginner > 0 && (
+            <a 
+              href={`/${lang}/blog/${category}?difficulty=beginner`}
+              class={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
+                difficultyParams === 'beginner'
+                  ? 'bg-green-600 text-white' 
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+            >
+              {lang === 'es' ? 'Principiante' : 'Beginner'} ({difficultyCounts.beginner})
+            </a>
+          )}
+          {difficultyCounts.intermediate > 0 && (
+            <a 
+              href={`/${lang}/blog/${category}?difficulty=intermediate`}
+              class={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
+                difficultyParams === 'intermediate'
+                  ? 'bg-yellow-600 text-white' 
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+            >
+              {lang === 'es' ? 'Intermedio' : 'Intermediate'} ({difficultyCounts.intermediate})
+            </a>
+          )}
+          {difficultyCounts.advanced > 0 && (
+            <a 
+              href={`/${lang}/blog/${category}?difficulty=advanced`}
+              class={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
+                difficultyParams === 'advanced'
+                  ? 'bg-red-600 text-white' 
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+            >
+              {lang === 'es' ? 'Avanzado' : 'Advanced'} ({difficultyCounts.advanced})
+            </a>
+          )}
+        </div>
+      </div>
+
+      <!-- Posts Grid -->
+      {filteredPosts.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredPosts.map((post) => {
+            const slugParts = post.slug.split('/');
+            const actualSlug = slugParts[slugParts.length - 1];
+            
+            return (
+              <article class="group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                {post.data.heroImage && (
+                  <a href={`/${lang}/blog/${category}/${actualSlug}`} class="block">
+                    <div class="aspect-video overflow-hidden bg-gray-100 dark:bg-gray-900">
+                      <img 
+                        src={post.data.heroImage} 
+                        alt={post.data.title}
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  </a>
+                )}
+                
+                <div class="p-6">
+                  <div class="flex items-center gap-2 mb-3 flex-wrap">
+                    {post.data.difficulty && (
+                      <span class={`px-2 py-1 rounded-md text-xs font-medium ${difficultyColors[post.data.difficulty]}`}>
+                        {difficultyLabels[lang as 'es' | 'en'][post.data.difficulty]}
+                      </span>
+                    )}
+                    <span class={`px-2 py-1 rounded-md text-xs font-medium ${categoryInfo.color}`}>
+                      {categoryInfo.icon} {categoryInfo.label[lang as 'es' | 'en']}
+                    </span>
+                  </div>
+
+                  <a href={`/${lang}/blog/${category}/${actualSlug}`} class="block mb-2">
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                      {post.data.title}
+                    </h2>
+                  </a>
+
+                  <p class="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
+                    {post.data.description}
+                  </p>
+
+                  <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                    <time datetime={post.data.pubDate.toISOString()}>
+                      {formatDate(post.data.pubDate, lang as string)}
+                    </time>
+                    <a 
+                      href={`/${lang}/blog/${category}/${actualSlug}`}
+                      class="text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
+                    >
+                      {lang === 'es' ? 'Leer más' : 'Read more'} →
+                    </a>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      ) : (
+        <div class="text-center py-12">
+          <p class="text-gray-500 dark:text-gray-400 text-lg">
+            {lang === 'es' ? 'No hay publicaciones en esta categoría aún.' : 'No posts in this category yet.'}
+          </p>
+        </div>
+      )}
+    </div>
+  </main>
+</Layout>

@@ -1,8 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
-import Layout from '../../../layouts/Layout.astro';
-import { useTranslations } from '../../../i18n/core';
-import { formatDate } from '../../../i18n/utils';
+import Layout from '@layouts/Layout.astro';
+import { useTranslations } from '@i18n/core';
+import { formatDate } from '@i18n/utils';
 
 export async function getStaticPaths() {
   const blogEntries = await getCollection('blog');
@@ -10,10 +10,42 @@ export async function getStaticPaths() {
   
   const allEntries = [...blogEntries, ...writeupEntries];
   
-  // Obtener todos los tags únicos
+  // Obtener todos los tags únicos (incluyendo tags, attack vectors, techniques, certifications, vulnerabilities)
   const allTags = new Set<string>();
+  
   allEntries.forEach(entry => {
-    entry.data.tags?.forEach(tag => allTags.add(tag));
+    // Tags normales
+    if (entry.data.tags && Array.isArray(entry.data.tags)) {
+      entry.data.tags.forEach((tag: string) => allTags.add(tag));
+    }
+    
+    // Para writeups, también incluir otros campos
+    const data = entry.data as any;
+    
+    if (data.attackVectors && Array.isArray(data.attackVectors)) {
+      data.attackVectors.forEach((vector: string) => allTags.add(vector));
+    }
+    
+    if (data.techniques && Array.isArray(data.techniques)) {
+      data.techniques.forEach((tech: string) => allTags.add(tech));
+    }
+    
+    if (data.certifications && Array.isArray(data.certifications)) {
+      data.certifications.forEach((cert: string) => allTags.add(cert));
+    }
+    
+    if (data.vulnerabilities && Array.isArray(data.vulnerabilities)) {
+      data.vulnerabilities.forEach((vuln: string) => allTags.add(vuln));
+    }
+    
+    // Agregar difficulty y os para writeups
+    if (data.difficulty) {
+      allTags.add(data.difficulty);
+    }
+    
+    if (data.os) {
+      allTags.add(data.os);
+    }
   });
 
   // Crear rutas para cada combinación de idioma y tag
@@ -33,13 +65,55 @@ export async function getStaticPaths() {
 const { tag, lang } = Astro.props;
 const t = useTranslations(lang as 'es' | 'en');
 
+  // Función helper para verificar si un entry tiene el tag
+  const hasTag = (entry: any, tagToFind: string) => {
+    const data = entry.data;
+    
+    // Buscar en tags
+    if (data.tags && Array.isArray(data.tags) && data.tags.includes(tagToFind)) {
+      return true;
+    }
+    
+    // Buscar en attackVectors
+    if (data.attackVectors && Array.isArray(data.attackVectors) && data.attackVectors.includes(tagToFind)) {
+      return true;
+    }
+    
+    // Buscar en techniques
+    if (data.techniques && Array.isArray(data.techniques) && data.techniques.includes(tagToFind)) {
+      return true;
+    }
+    
+    // Buscar en certifications
+    if (data.certifications && Array.isArray(data.certifications) && data.certifications.includes(tagToFind)) {
+      return true;
+    }
+    
+    // Buscar en vulnerabilities
+    if (data.vulnerabilities && Array.isArray(data.vulnerabilities) && data.vulnerabilities.includes(tagToFind)) {
+      return true;
+    }
+    
+    // Buscar en difficulty
+    if (data.difficulty && data.difficulty === tagToFind) {
+      return true;
+    }
+    
+    // Buscar en os
+    if (data.os && data.os === tagToFind) {
+      return true;
+    }
+    
+    return false;
+  };
+
 // Obtener todas las entradas con este tag
 const blogEntries = await getCollection('blog', ({ data }) => {
-  return data.language === lang && data.tags?.some(t => t.toLowerCase().replace(/\s+/g, '-') === tag.toLowerCase().replace(/\s+/g, '-'));
+  return data.language === lang && hasTag({ data }, tag);
 });
 
 const writeupEntries = await getCollection('writeups', ({ data }) => {
-  return data.language === lang && data.tags?.some(t => t.toLowerCase().replace(/\s+/g, '-') === tag.toLowerCase().replace(/\s+/g, '-'));
+  return data.language === lang && hasTag({ data }, tag);
 });
 
 // Combinar y ordenar por fecha
@@ -47,10 +121,73 @@ const allEntries = [...blogEntries, ...writeupEntries].sort((a, b) => {
   return new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime();
 });
 
-// Encontrar el tag original (con mayúsculas correctas)
-const originalTag = allEntries[0]?.data.tags?.find(t => 
-  t.toLowerCase().replace(/\s+/g, '-') === tag.toLowerCase().replace(/\s+/g, '-')
-) || tag;
+  // Encontrar el tag original (con mayúsculas/minúsculas correctas)
+  let originalTag = tag;
+  allEntries.some(entry => {
+    const data = entry.data as any;
+    
+    if (data.tags && Array.isArray(data.tags)) {
+      const found = data.tags.find((t: string) => 
+        t.toLowerCase().replace(/\s+/g, '-') === tag
+      );
+      if (found) {
+        originalTag = found;
+        return true;
+      }
+    }
+    
+    if (data.attackVectors && Array.isArray(data.attackVectors)) {
+      const found = data.attackVectors.find((v: string) => 
+        v.toLowerCase().replace(/\s+/g, '-') === tag
+      );
+      if (found) {
+        originalTag = found;
+        return true;
+      }
+    }
+    
+    if (data.techniques && Array.isArray(data.techniques)) {
+      const found = data.techniques.find((t: string) => 
+        t.toLowerCase().replace(/\s+/g, '-') === tag
+      );
+      if (found) {
+        originalTag = found;
+        return true;
+      }
+    }
+    
+    if (data.certifications && Array.isArray(data.certifications)) {
+      const found = data.certifications.find((c: string) => 
+        c.toLowerCase().replace(/\s+/g, '-') === tag
+      );
+      if (found) {
+        originalTag = found;
+        return true;
+      }
+    }
+    
+    if (data.vulnerabilities && Array.isArray(data.vulnerabilities)) {
+      const found = data.vulnerabilities.find((v: string) => 
+        v.toLowerCase().replace(/\s+/g, '-') === tag
+      );
+      if (found) {
+        originalTag = found;
+        return true;
+      }
+    }
+    
+    if (data.difficulty && data.difficulty.toLowerCase().replace(/\s+/g, '-') === tag) {
+      originalTag = data.difficulty;
+      return true;
+    }
+    
+    if (data.os && data.os.toLowerCase().replace(/\s+/g, '-') === tag) {
+      originalTag = data.os;
+      return true;
+    }
+    
+    return false;
+  });
 ---
 
 <Layout
@@ -84,46 +221,171 @@ const originalTag = allEntries[0]?.data.tags?.find(t =>
             const isWriteup = 'platform' in entry.data;
             const slugParts = entry.slug.split('/');
             const actualSlug = slugParts[slugParts.length - 1];
-            const baseUrl = isWriteup ? `/${lang}/writeup` : `/${lang}/blog`;
+            const category = !isWriteup && entry.data.category ? entry.data.category : 'tutorial';
+            const baseUrl = isWriteup ? `/${lang}/writeup` : `/${lang}/blog/${category}`;
+            const machineName = entry.data.title.split(' - ')[0];
+            const machineLogo = (entry.data as any).logo || entry.data.heroImage;
+            const platform = isWriteup ? (entry.data as any).platform : null;
             
             return (
-              <article class="entry-card">
-                {entry.data.heroImage && (
-                  <a href={`${baseUrl}/${actualSlug}`} class="card-image">
-                    <img src={entry.data.heroImage} alt={entry.data.title} />
-                  </a>
-                )}
-                <div class="card-content">
-                  <div class="card-meta">
-                    <span class="card-type">{isWriteup ? 'CTF Writeup' : 'Blog'}</span>
-                    {isWriteup && 'platform' in entry.data && entry.data.platform && (
-                      <span class="card-platform">{entry.data.platform}</span>
-                    )}
-                  </div>
-                  <h2 class="card-title">
-                    <a href={`${baseUrl}/${actualSlug}`}>
-                      {entry.data.title}
-                    </a>
-                  </h2>
-                  <p class="card-description">{entry.data.description}</p>
-                  <div class="card-footer">
-                    <time datetime={entry.data.pubDate.toISOString()}>
-                      {formatDate(entry.data.pubDate, lang)}
-                    </time>
-                    {entry.data.tags && entry.data.tags.length > 0 && (
-                      <div class="card-tags">
-                        {entry.data.tags.slice(0, 3).map((t) => (
-                          <a 
-                            href={`/${lang}/tag/${t.toLowerCase().replace(/\s+/g, '-')}`}
-                            class={`tag ${t.toLowerCase().replace(/\s+/g, '-') === tag.toLowerCase().replace(/\s+/g, '-') ? 'active' : ''}`}
-                          >
-                            {t}
-                          </a>
-                        ))}
+              <article class={`writeup-card group ${isWriteup ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'} rounded-2xl overflow-hidden border transition-all duration-300 hover:shadow-2xl transform hover:-translate-y-2 hover:scale-105`}>
+                {isWriteup && platform ? (
+                  <>
+                    {/* Logo circular con gradiente de plataforma */}
+                    <div class="relative px-6 pt-8 pb-4 flex justify-center">
+                      <div class="relative group-hover:scale-110 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full blur-md opacity-75 group-hover:opacity-100 animate-pulse"></div>
+                        <div class="relative w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full p-1 group-hover:rotate-6 transition-transform duration-300">
+                          <div class="w-full h-full bg-slate-900 rounded-full p-2 overflow-hidden">
+                            <img 
+                              src={machineLogo} 
+                              alt={machineName}
+                              class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
+                            />
+                          </div>
+                        </div>
                       </div>
+                    </div>
+
+                    {/* Badges superiores */}
+                    <div class="px-6 flex items-center justify-center gap-3 mb-4">
+                      <span class="px-4 py-1.5 bg-blue-500/20 border border-blue-500/50 text-blue-400 rounded-full text-xs font-bold uppercase transition-all duration-300 hover:scale-110">
+                        {platform?.toUpperCase()}
+                      </span>
+                      {'difficulty' in entry.data && (
+                        <span class={`px-4 py-1.5 rounded-full text-xs font-bold uppercase transition-all duration-300 hover:scale-110 ${
+                          entry.data.difficulty === 'easy' ? 'bg-emerald-500/20 border border-emerald-500/50 text-emerald-400' :
+                          entry.data.difficulty === 'medium' ? 'bg-amber-500/20 border border-amber-500/50 text-amber-400' :
+                          entry.data.difficulty === 'hard' ? 'bg-red-500/20 border border-red-500/50 text-red-400' :
+                          'bg-purple-500/20 border border-purple-500/50 text-purple-400'
+                        }`}>
+                          {entry.data.difficulty}
+                        </span>
+                      )}
+                      {'retired' in entry.data && entry.data.retired && (
+                        <span class="px-4 py-1.5 bg-slate-500/20 border border-slate-500/50 text-slate-400 rounded-full text-xs font-bold uppercase">
+                          {lang === 'es' ? 'Retirada' : 'Retired'}
+                        </span>
+                      )}
+                    </div>
+                    
+                    {/* Contenido */}
+                    <div class="px-6 pb-6">
+                      <h2 class="text-xl font-bold text-white mb-2 text-center group-hover:text-blue-400 transition-colors duration-300">
+                        <a href={`${baseUrl}/${actualSlug}`}>
+                          {machineName}
+                        </a>
+                      </h2>
+                      
+                      <p class="text-sm text-slate-400 mb-4 line-clamp-2 text-center">
+                        {entry.data.description}
+                      </p>
+
+                      {/* Metadata */}
+                      <div class="flex items-center justify-center gap-4 mb-4 text-xs text-slate-400 flex-wrap">
+                        {'os' in entry.data && (
+                          <div class="flex items-center gap-1">
+                            <span>{entry.data.os === 'linux' ? '🐧' : entry.data.os === 'windows' ? '🪟' : '💻'}</span>
+                            <span class="capitalize">{entry.data.os}</span>
+                          </div>
+                        )}
+                        {'difficulty' in entry.data && (
+                          <div class="flex items-center gap-1">
+                            <span>{entry.data.difficulty === 'easy' ? '●' : entry.data.difficulty === 'medium' ? '●●' : entry.data.difficulty === 'hard' ? '●●●' : '●●●●'}</span>
+                            <span class="capitalize">{entry.data.difficulty}</span>
+                          </div>
+                        )}
+                        {'points' in entry.data && entry.data.points && (
+                          <div class="flex items-center gap-1">
+                            <span>⭐</span>
+                            <span>{entry.data.points}</span>
+                          </div>
+                        )}
+                        <div class="flex items-center gap-1">
+                          <span>📅</span>
+                          <time datetime={entry.data.pubDate.toISOString()}>
+                            {new Date(entry.data.pubDate).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US', {
+                              day: '2-digit',
+                              month: 'short',
+                              year: 'numeric'
+                            })}
+                          </time>
+                        </div>
+                      </div>
+                      
+                      {/* Tags */}
+                      {entry.data.tags && entry.data.tags.length > 0 && (
+                        <div class="flex flex-wrap gap-2 justify-center">
+                          {entry.data.tags.slice(0, 3).map((t) => (
+                            <a 
+                              href={`/${lang}/tag/${t.toLowerCase().replace(/\s+/g, '-')}`}
+                              class={`text-xs px-3 py-1 border rounded-full ${
+                                t.toLowerCase().replace(/\s+/g, '-') === tag.toLowerCase().replace(/\s+/g, '-') 
+                                  ? 'bg-indigo-500/40 border-indigo-400 text-indigo-200 font-bold' 
+                                  : 'bg-indigo-500/20 border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/30'
+                              } transition-colors`}
+                            >
+                              #{t}
+                            </a>
+                          ))}
+                          {entry.data.tags.length > 3 && (
+                            <span class="text-xs text-slate-400">
+                              +{entry.data.tags.length - 3}
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {/* CVEs si existen */}
+                      {'vulnerabilities' in entry.data && entry.data.vulnerabilities && entry.data.vulnerabilities.length > 0 && (
+                        <div class="flex flex-wrap gap-2 justify-center mt-3">
+                          {entry.data.vulnerabilities.slice(0, 2).map((cve: string) => (
+                            <span class="text-xs px-3 py-1 bg-red-500/20 border border-red-500/30 text-red-300 rounded-full">
+                              #{cve}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Vista clásica para blog posts */}
+                    {entry.data.heroImage && (
+                      <a href={`${baseUrl}/${actualSlug}`} class="card-image">
+                        <img src={entry.data.heroImage} alt={entry.data.title} />
+                      </a>
                     )}
-                  </div>
-                </div>
+                    <div class="card-content">
+                      <div class="card-meta">
+                        <span class="card-type">Blog</span>
+                      </div>
+                      <h2 class="card-title">
+                        <a href={`${baseUrl}/${actualSlug}`}>
+                          {entry.data.title}
+                        </a>
+                      </h2>
+                      <p class="card-description">{entry.data.description}</p>
+                      <div class="card-footer">
+                        <time datetime={entry.data.pubDate.toISOString()}>
+                          {formatDate(entry.data.pubDate, lang)}
+                        </time>
+                        {entry.data.tags && entry.data.tags.length > 0 && (
+                          <div class="card-tags">
+                            {entry.data.tags.slice(0, 3).map((t) => (
+                              <a 
+                                href={`/${lang}/tag/${t.toLowerCase().replace(/\s+/g, '-')}`}
+                                class={`tag ${t.toLowerCase().replace(/\s+/g, '-') === tag.toLowerCase().replace(/\s+/g, '-') ? 'active' : ''}`}
+                              >
+                                {t}
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
               </article>
             );
           })}
@@ -131,7 +393,9 @@ const originalTag = allEntries[0]?.data.tags?.find(t =>
       )}
 
       <div class="back-link-wrapper">
-        <a href={`/${lang}/blog`} class="back-link">← {lang === 'es' ? 'Volver al Blog' : 'Back to Blog'}</a>
+        <button onclick="window.history.back()" class="back-link">
+          ← {lang === 'es' ? 'Volver atrás' : 'Go back'}
+        </button>
       </div>
     </div>
   </main>
@@ -191,6 +455,15 @@ const originalTag = allEntries[0]?.data.tags?.find(t =>
     margin-bottom: 4rem;
   }
 
+  .writeup-card {
+    position: relative;
+  }
+
+  .writeup-card:hover.bg-gradient-to-br {
+    border-color: var(--accent-color);
+  }
+
+  /* Blog card styles */
   .entry-card {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -323,6 +596,11 @@ const originalTag = allEntries[0]?.data.tags?.find(t =>
     font-weight: 600;
     font-size: 1.125rem;
     transition: color 0.2s ease;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
   }
 
   .back-link:hover {
@@ -338,5 +616,24 @@ const originalTag = allEntries[0]?.data.tags?.find(t =>
     .entries-grid {
       grid-template-columns: 1fr;
     }
+    
+    .writeup-card .px-6 {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+
+  /* Animación para el glow */
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 0.75;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 </style>

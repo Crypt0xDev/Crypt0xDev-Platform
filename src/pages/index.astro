@@ -95,7 +95,7 @@ export const prerender = true;
           }
         }
       } catch (error) {
-        console.log('No se pudo detectar ubicación, usando idioma del navegador');
+        // Fallback silencioso: usar idioma del navegador
       }
       
       // Fallback: usar idioma del navegador

@@ -1,6 +1,6 @@
 ---
-import Layout from '../../../layouts/Layout.astro';
-import { getLangFromUrl, useTranslations } from '../../../i18n/core';
+import Layout from '@layouts/Layout.astro';
+import { getLangFromUrl, useTranslations } from '@i18n/core';
 
 export function getStaticPaths() {
   return [
@@ -518,7 +518,9 @@ const t = useTranslations(lang as 'es' | 'en');
           
           let url = '';
           if (item.type === 'blog') {
-            url = `/${lang}/blog/${item.slug.split('/').pop()}`;
+            const category = item.category || 'tutorial';
+            const slug = item.slug.split('/').pop();
+            url = `/${lang}/blog/${category}/${slug}`;
           } else if (item.type === 'writeup') {
             url = `/${lang}/writeup/${item.actualSlug || item.slug}`;
           } else if (item.type === 'ctf') {

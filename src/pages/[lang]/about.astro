@@ -1,8 +1,8 @@
 ---
-import Layout from '../../layouts/Layout.astro';
+import Layout from '@layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-import { getLangFromUrl, useTranslations } from '../../i18n/core';
-import { filterByLang } from '../../i18n/utils';
+import { getLangFromUrl, useTranslations } from '@i18n/core';
+import { filterByLang } from '@i18n/utils';
 
 export function getStaticPaths() {
   return [

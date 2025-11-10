@@ -24,12 +24,16 @@
     "astro": "astro",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "generate:images": "node scripts/generate-placeholder-images.js"
   },
   "dependencies": {
+    "@astrojs/check": "^0.9.5",
     "@astrojs/sitemap": "^3.6.0",
+    "@sentry/astro": "^10.24.0",
     "@vercel/speed-insights": "^1.2.0",
-    "astro": "^5.15.3"
+    "astro": "^5.15.3",
+    "typescript": "^5.9.3"
   },
   "devDependencies": {
     "@astrojs/tailwind": "^6.0.2",

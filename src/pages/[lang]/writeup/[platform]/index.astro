@@ -1,0 +1,405 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '@layouts/Layout.astro';
+import Breadcrumb from '@components/common/Breadcrumb.astro';
+import { useTranslations } from '@i18n/core';
+import { sortByDate, filterByLang } from '@i18n/utils';
+import { PLATFORMS, getPlatform, type PlatformId } from '@i18n/constants/platforms';
+
+export async function getStaticPaths() {
+  const platforms: PlatformId[] = ['htb', 'tryhackme', 'vulnhub', 'hackmyvm', 'portswigger'];
+  const languages = ['es', 'en'];
+  const paths = [];
+
+  for (const platformId of platforms) {
+    for (const lang of languages) {
+      const platform = getPlatform(platformId);
+      paths.push({
+        params: { lang, platform: platform.slug },
+        props: { platformId, platform }
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { lang } = Astro.params;
+const { platformId, platform } = Astro.props as { platformId: PlatformId; platform: typeof PLATFORMS[PlatformId] };
+const t = useTranslations(lang as 'es' | 'en');
+
+// Obtener todos los writeups de la plataforma
+const allWriteups = await getCollection('writeups');
+const platformWriteups = sortByDate(
+  filterByLang(allWriteups, lang as string).filter(w => {
+    // El slug es: es/hackthebox/codify
+    const slugParts = w.slug.split('/');
+    const platformSlugInFile = slugParts[1]; // hackthebox
+    return platformSlugInFile === platform.slug; // Comparar con 'hackthebox'
+  })
+);
+
+// Configuración de categorías con nombres traducidos y colores
+const categoryConfig: Record<string, any> = {
+  machines: {
+    name: { es: 'Máquinas', en: 'Machines' },
+    description: { es: 'Máquinas virtuales vulnerables', en: 'Vulnerable virtual machines' },
+    icon: '🖥️',
+    gradient: 'from-blue-500 to-blue-700',
+    bgColor: 'bg-blue-50 dark:bg-blue-950/20',
+    borderColor: 'border-blue-200 dark:border-blue-900'
+  },
+  fortresses: {
+    name: { es: 'Fortalezas', en: 'Fortresses' },
+    description: { es: 'Laboratorios avanzados de pentesting', en: 'Advanced pentesting labs' },
+    icon: '🏰',
+    gradient: 'from-purple-500 to-purple-700',
+    bgColor: 'bg-purple-50 dark:bg-purple-950/20',
+    borderColor: 'border-purple-200 dark:border-purple-900'
+  },
+  endgames: {
+    name: { es: 'Endgames', en: 'Endgames' },
+    description: { es: 'Entornos de red completos', en: 'Complete network environments' },
+    icon: '🎮',
+    gradient: 'from-red-500 to-red-700',
+    bgColor: 'bg-red-50 dark:bg-red-950/20',
+    borderColor: 'border-red-200 dark:border-red-900'
+  },
+  prolabs: {
+    name: { es: 'Pro Labs', en: 'Pro Labs' },
+    description: { es: 'Laboratorios profesionales empresariales', en: 'Professional enterprise labs' },
+    icon: '⚡',
+    gradient: 'from-yellow-500 to-yellow-700',
+    bgColor: 'bg-yellow-50 dark:bg-yellow-950/20',
+    borderColor: 'border-yellow-200 dark:border-yellow-900'
+  },
+  challenges: {
+    name: { es: 'Retos', en: 'Challenges' },
+    description: { es: 'Desafíos técnicos específicos', en: 'Specific technical challenges' },
+    icon: '🏆',
+    gradient: 'from-green-500 to-green-700',
+    bgColor: 'bg-green-50 dark:bg-green-950/20',
+    borderColor: 'border-green-200 dark:border-green-900'
+  },
+  rooms: {
+    name: { es: 'Salas', en: 'Rooms' },
+    description: { es: 'Salas interactivas de aprendizaje', en: 'Interactive learning rooms' },
+    icon: '🚪',
+    gradient: 'from-cyan-500 to-cyan-700',
+    bgColor: 'bg-cyan-50 dark:bg-cyan-950/20',
+    borderColor: 'border-cyan-200 dark:border-cyan-900'
+  },
+  paths: {
+    name: { es: 'Rutas', en: 'Paths' },
+    description: { es: 'Rutas de aprendizaje guiadas', en: 'Guided learning paths' },
+    icon: '🛤️',
+    gradient: 'from-indigo-500 to-indigo-700',
+    bgColor: 'bg-indigo-50 dark:bg-indigo-950/20',
+    borderColor: 'border-indigo-200 dark:border-indigo-900'
+  },
+  labs: {
+    name: { es: 'Laboratorios', en: 'Labs' },
+    description: { es: 'Laboratorios de seguridad web', en: 'Web security labs' },
+    icon: '🔬',
+    gradient: 'from-pink-500 to-pink-700',
+    bgColor: 'bg-pink-50 dark:bg-pink-950/20',
+    borderColor: 'border-pink-200 dark:border-pink-900'
+  },
+  other: {
+    name: { es: 'Otros', en: 'Other' },
+    description: { es: 'Otros recursos y materiales', en: 'Other resources and materials' },
+    icon: '📦',
+    gradient: 'from-gray-500 to-gray-700',
+    bgColor: 'bg-gray-50 dark:bg-gray-950/20',
+    borderColor: 'border-gray-200 dark:border-gray-900'
+  }
+};
+
+// Obtener categorías disponibles para esta plataforma con conteo de dificultad
+const availableCategories = platform.categories.map(catId => {
+  const categoryWriteups = platformWriteups.filter(w => w.data.category === catId);
+  const count = categoryWriteups.length;
+  const config = categoryConfig[catId] || categoryConfig.other;
+  
+  return {
+    id: catId,
+    name: config.name[lang as 'es' | 'en'],
+    description: config.description[lang as 'es' | 'en'],
+    icon: config.icon,
+    gradient: config.gradient,
+    bgColor: config.bgColor,
+    borderColor: config.borderColor,
+    count,
+    difficulties: {
+      easy: categoryWriteups.filter(w => w.data.difficulty === 'easy').length,
+      medium: categoryWriteups.filter(w => w.data.difficulty === 'medium').length,
+      hard: categoryWriteups.filter(w => w.data.difficulty === 'hard').length,
+      insane: categoryWriteups.filter(w => w.data.difficulty === 'insane').length
+    }
+  };
+}); // Removido el filtro .filter(cat => cat.count > 0) para mostrar todas las categorías
+
+// Función helper para obtener íconos de categorías
+function getCategoryIcon(category: string): string {
+  const config = categoryConfig[category] || categoryConfig.other;
+  return config.icon;
+}
+
+// Función para obtener imagen de categoría (si existe)
+function getCategoryImage(platformId: string, category: string): string | null {
+  const platformData = Object.values(PLATFORMS).find(p => p.id === platformId);
+  if (platformData && 'categoryIcons' in platformData) {
+    const categoryIcons = platformData.categoryIcons as Record<string, string>;
+    return categoryIcons[category] || null;
+  }
+  return null;
+}
+
+// Obtener imagen de plataforma desde configuración
+const platformLogo = 'logo' in platform ? platform.logo as string : undefined;
+
+// Estadísticas
+const difficultyColors = {
+  easy: '#10b981',
+  medium: '#f59e0b',
+  hard: '#ef4444',
+  insane: '#8b5cf6'
+};
+
+const difficultyCounts = {
+  easy: platformWriteups.filter(w => w.data.difficulty === 'easy').length,
+  medium: platformWriteups.filter(w => w.data.difficulty === 'medium').length,
+  hard: platformWriteups.filter(w => w.data.difficulty === 'hard').length,
+  insane: platformWriteups.filter(w => w.data.difficulty === 'insane').length,
+};
+
+// Función para limpiar el slug
+function getCleanSlug(fullSlug: string): string {
+  const parts = fullSlug.split('/');
+  // slug viene como "es/hackthebox/codify" -> queremos solo "codify"
+  return parts.slice(2).join('/');
+}
+---
+
+<Layout
+  title={`${platform.name} - Writeups`}
+  description={`Writeups de ${platform.name}`}
+  lang={lang}
+>
+  <main class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Breadcrumb -->
+      <Breadcrumb items={[
+        { label: lang === 'es' ? 'Inicio' : 'Home', href: `/${lang}` },
+        { label: 'Writeups', href: `/${lang}/writeup` },
+        { label: platform.name }
+      ]} />
+
+      <!-- Header con diseño moderno -->
+      <header class="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 dark:from-indigo-900 dark:via-purple-900 dark:to-pink-900 rounded-3xl shadow-2xl mb-12 mt-6">
+        {/* Patrón de fondo decorativo */}
+        <div class="absolute inset-0 bg-grid-white/5 bg-grid-16 [mask-image:radial-gradient(white,transparent_85%)]"></div>
+        
+        <div class="relative px-8 py-12 lg:px-12 lg:py-16">
+          <div class="flex flex-col lg:flex-row items-center gap-8">
+            {/* Logo de la plataforma */}
+            <div class="flex-shrink-0">
+              <div class="relative group">
+                <div class="absolute -inset-4 bg-gradient-to-r from-blue-400 to-purple-400 rounded-3xl blur-2xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
+                <div class="relative w-32 h-32 lg:w-40 lg:h-40 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-4 flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
+                  {platformLogo ? (
+                    <img 
+                      src={platformLogo} 
+                      alt={platform.name}
+                      class="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <span class="text-6xl lg:text-7xl">{platform.icon}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Información de la plataforma */}
+            <div class="flex-1 text-center lg:text-left">
+              <h1 class="text-4xl lg:text-5xl xl:text-6xl font-black text-white mb-4 tracking-tight">
+                {platform.name}
+              </h1>
+              <p class="text-lg lg:text-xl text-indigo-100 dark:text-indigo-200 mb-6 max-w-2xl">
+                {platform.description}
+              </p>
+              
+              {/* Estadísticas rápidas */}
+              <div class="flex flex-wrap gap-3 justify-center lg:justify-start">
+                <div class="px-5 py-2.5 bg-white/10 dark:bg-white/5 backdrop-blur-sm rounded-full border border-white/20">
+                  <span class="text-2xl font-bold text-white">{platformWriteups.length}</span>
+                  <span class="text-sm text-indigo-100 ml-2">{lang === 'es' ? 'Writeups' : 'Writeups'}</span>
+                </div>
+                <div class="px-5 py-2.5 bg-white/10 dark:bg-white/5 backdrop-blur-sm rounded-full border border-white/20">
+                  <span class="text-2xl font-bold text-white">{availableCategories.length}</span>
+                  <span class="text-sm text-indigo-100 ml-2">{lang === 'es' ? 'Categorías' : 'Categories'}</span>
+                </div>
+                {difficultyCounts.easy > 0 && (
+                  <div class="px-4 py-2.5 bg-emerald-500/20 backdrop-blur-sm rounded-full border border-emerald-400/30">
+                    <span class="text-sm font-semibold text-emerald-100">✓ {difficultyCounts.easy} {lang === 'es' ? 'Fácil' : 'Easy'}</span>
+                  </div>
+                )}
+                {difficultyCounts.medium > 0 && (
+                  <div class="px-4 py-2.5 bg-amber-500/20 backdrop-blur-sm rounded-full border border-amber-400/30">
+                    <span class="text-sm font-semibold text-amber-100">⚡ {difficultyCounts.medium} {lang === 'es' ? 'Medio' : 'Medium'}</span>
+                  </div>
+                )}
+                {difficultyCounts.hard > 0 && (
+                  <div class="px-4 py-2.5 bg-red-500/20 backdrop-blur-sm rounded-full border border-red-400/30">
+                    <span class="text-sm font-semibold text-red-100">🔥 {difficultyCounts.hard} {lang === 'es' ? 'Difícil' : 'Hard'}</span>
+                  </div>
+                )}
+                {difficultyCounts.insane > 0 && (
+                  <div class="px-4 py-2.5 bg-purple-500/20 backdrop-blur-sm rounded-full border border-purple-400/30">
+                    <span class="text-sm font-semibold text-purple-100">💀 {difficultyCounts.insane} {lang === 'es' ? 'Insano' : 'Insane'}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Decoración inferior */}
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400"></div>
+      </header>
+
+      <!-- Categorías -->
+      {availableCategories.length > 0 && (
+        <section class="mb-16">
+          <div class="flex items-center justify-between mb-8">
+            <h2 class="text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
+              <span class="text-3xl">📂</span>
+              {lang === 'es' ? 'Categorías Disponibles' : 'Available Categories'}
+            </h2>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {availableCategories.map((category) => {
+              const categoryImg = getCategoryImage(platformId, category.id);
+              return (
+                <a 
+                  href={`/${lang}/writeup/${platform.slug}/${category.id}`}
+                  class={`group relative overflow-hidden rounded-2xl border-2 ${category.borderColor} ${category.bgColor} hover:border-indigo-400 dark:hover:border-indigo-600 p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-indigo-500/20 text-left block`}
+                >
+                  <div class="relative z-10">
+                    {categoryImg ? (
+                      <div class="w-20 h-20 mb-5 flex items-center justify-center bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-lg transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                        <img 
+                          src={categoryImg} 
+                          alt={category.name}
+                          class="w-full h-full object-contain p-2"
+                        />
+                      </div>
+                    ) : (
+                      <div class="w-20 h-20 mb-5 flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-lg transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                        <span class="text-4xl filter drop-shadow-lg">{category.icon}</span>
+                      </div>
+                    )}
+                    
+                    <h3 class="text-xl font-bold mb-2 text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                      {category.name}
+                    </h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 line-clamp-2 leading-relaxed">
+                      {category.description}
+                    </p>
+                    
+                    <div class="flex items-center justify-between mb-4">
+                      <span class="text-sm font-bold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
+                        {category.count} {lang === 'es' ? (category.count === 1 ? 'writeup' : 'writeups') : (category.count === 1 ? 'writeup' : 'writeups')}
+                      </span>
+                      <div class="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center group-hover:bg-indigo-600 dark:group-hover:bg-indigo-600 transition-colors">
+                        <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400 group-hover:text-white transition-colors transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    </div>
+                    
+                    {category.count > 0 && (
+                      <div class="flex flex-wrap gap-2 pt-4 border-t border-slate-200 dark:border-slate-700">
+                        {category.difficulties.easy > 0 && (
+                          <span class="inline-flex items-center gap-1 text-xs px-3 py-1.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-full font-semibold">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            {category.difficulties.easy}
+                          </span>
+                        )}
+                        {category.difficulties.medium > 0 && (
+                          <span class="inline-flex items-center gap-1 text-xs px-3 py-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-full font-semibold">
+                            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                            {category.difficulties.medium}
+                          </span>
+                        )}
+                        {category.difficulties.hard > 0 && (
+                          <span class="inline-flex items-center gap-1 text-xs px-3 py-1.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-full font-semibold">
+                            <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                            {category.difficulties.hard}
+                          </span>
+                        )}
+                        {category.difficulties.insane > 0 && (
+                          <span class="inline-flex items-center gap-1 text-xs px-3 py-1.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full font-semibold">
+                            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                            {category.difficulties.insane}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Efecto de hover degradado */}
+                  <div class={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
+                  
+                  {/* Brillo en hover */}
+                  <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/40 to-transparent rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -translate-y-16 translate-x-16"></div>
+                </a>
+              );
+            })}
+          </div>
+        </section>
+      )}
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .bg-grid-white\/5 {
+    background-image: 
+      linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  }
+  
+  .bg-grid-16 {
+    background-size: 16px 16px;
+  }
+</style>
+
+<script>
+  // Filtrado por categoría (client-side)
+  let activeCategory: string | null = null;
+
+  (window as any).filterByCategory = function(button: HTMLButtonElement) {
+    const category = button.dataset.category;
+    const cards = document.querySelectorAll('.writeup-card');
+    const buttons = document.querySelectorAll('.category-card');
+
+    // Toggle category
+    if (activeCategory === category) {
+      activeCategory = null;
+      buttons.forEach(btn => btn.classList.remove('active'));
+      cards.forEach(card => (card as HTMLElement).style.display = '');
+    } else {
+      activeCategory = category || null;
+      buttons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+      
+      cards.forEach(card => {
+        const cardCategory = (card as HTMLElement).dataset.category;
+        (card as HTMLElement).style.display = cardCategory === category ? '' : 'none';
+      });
+    }
+  };
+</script>
+

@@ -1,13 +1,14 @@
 ---
 import { getCollection } from 'astro:content';
-import Layout from '../../../../layouts/Layout.astro';
+import Layout from '@layouts/Layout.astro';
+import Breadcrumb from '@components/common/Breadcrumb.astro';
 import { 
   DYNAMIC_CTF_CATEGORIES as CTF_CATEGORIES, 
   getCTFCategoryById, 
   getCTFCategoryName, 
   getCTFCategoryDescription 
-} from '../../../../i18n/constants';
-import type { Language } from '../../../../i18n/types';
+} from '@i18n/constants';
+import type { Language } from '@i18n/types';
 
 export async function getStaticPaths() {
   const categories = CTF_CATEGORIES.map(cat => cat.id);
@@ -55,12 +56,11 @@ const categoryCTFs = allCTFs.filter(ctf => {
   return ctfLang === currentLang && ctfCategory === categoryId;
 });
 
-// Función helper para obtener el slug limpio (sin idioma)
+// Función helper para obtener el slug limpio (sin idioma ni categoría)
 const getCleanSlug = (fullSlug: string) => {
   const parts = fullSlug.split('/');
-  // Si empieza con es/ o en/, quitarlo
   if (parts[0] === 'es' || parts[0] === 'en') {
-    return parts.slice(1).join('/');
+    return parts.slice(2).join('/');
   }
   return fullSlug;
 };
@@ -124,29 +124,11 @@ const difficultyLabels = {
 <Layout title={pageTitle} description={pageDescription}>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Breadcrumbs -->
-    <nav class="flex mb-8 text-sm" aria-label="Breadcrumb">
-      <ol class="inline-flex items-center space-x-1 md:space-x-3">
-        <li class="inline-flex items-center">
-          <a href={`/${currentLang}`} class="text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">
-            {t.breadcrumbHome}
-          </a>
-        </li>
-        <li>
-          <div class="flex items-center">
-            <span class="mx-2 text-gray-400">/</span>
-            <a href={`/${currentLang}/ctf`} class="text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">
-              {t.breadcrumbCTF}
-            </a>
-          </div>
-        </li>
-        <li aria-current="page">
-          <div class="flex items-center">
-            <span class="mx-2 text-gray-400">/</span>
-            <span class="text-gray-500 dark:text-gray-400">{categoryName}</span>
-          </div>
-        </li>
-      </ol>
-    </nav>
+    <Breadcrumb items={[
+      { label: t.breadcrumbHome, href: `/${currentLang}` },
+      { label: t.breadcrumbCTF, href: `/${currentLang}/ctf` },
+      { label: categoryName }
+    ]} />
 
     <!-- Header -->
     <div class="mb-12">

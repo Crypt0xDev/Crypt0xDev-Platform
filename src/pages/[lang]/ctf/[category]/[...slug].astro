@@ -1,9 +1,10 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
-import Layout from '../../../../layouts/Layout.astro';
-import TOC from '../../../../components/common/TOC.astro';
-import { getCTFCategoryById, getCTFCategoryName } from '../../../../i18n/constants';
-import type { Language } from '../../../../i18n/types';
+import Layout from '@layouts/Layout.astro';
+import TOC from '@components/common/TOC.astro';
+import Breadcrumb from '@components/common/Breadcrumb.astro';
+import { getCTFCategoryById, getCTFCategoryName } from '@i18n/constants';
+import type { Language } from '@i18n/types';
 
 export async function getStaticPaths() {
   const allCTFs = await getCollection('ctf');
@@ -12,10 +13,7 @@ export async function getStaticPaths() {
     const slugParts = ctf.slug.split('/');
     const lang = (slugParts[0] === 'es' || slugParts[0] === 'en') ? slugParts[0] : 'es';
     const category = ctf.data.category;
-    
-    // El slug debe ser solo la parte después de lang (sin incluir lang/)
-    // Ejemplo: "es/picoctf-web-scraping" -> slug = "picoctf-web-scraping"
-    const slug = slugParts.slice(1).join('/');
+    const slug = slugParts.slice(2).join('/');
     
     return {
       params: { 
@@ -107,37 +105,12 @@ const difficultyLabels = {
 <Layout title={ctf.data.title} description={ctf.data.description}>
   <article class="ctf-article">
     <!-- Breadcrumbs -->
-    <nav class="flex mb-8 text-sm" aria-label="Breadcrumb">
-      <ol class="inline-flex items-center space-x-1 md:space-x-3">
-        <li class="inline-flex items-center">
-          <a href={`/${currentLang}`} class="text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">
-            {t.breadcrumbHome}
-          </a>
-        </li>
-        <li>
-          <div class="flex items-center">
-            <span class="mx-2 text-gray-400">/</span>
-            <a href={`/${currentLang}/ctf`} class="text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">
-              {t.breadcrumbCTF}
-            </a>
-          </div>
-        </li>
-        <li>
-          <div class="flex items-center">
-            <span class="mx-2 text-gray-400">/</span>
-            <a href={`/${currentLang}/ctf/${categoryId}`} class="text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">
-              {categoryName}
-            </a>
-          </div>
-        </li>
-        <li aria-current="page">
-          <div class="flex items-center">
-            <span class="mx-2 text-gray-400">/</span>
-            <span class="text-gray-500 dark:text-gray-400 truncate max-w-xs">{ctf.data.title}</span>
-          </div>
-        </li>
-      </ol>
-    </nav>
+    <Breadcrumb items={[
+      { label: t.breadcrumbHome, href: `/${currentLang}` },
+      { label: t.breadcrumbCTF, href: `/${currentLang}/ctf` },
+      { label: categoryName, href: `/${currentLang}/ctf/${categoryId}` },
+      { label: ctf.data.title }
+    ]} />
 
     <!-- Hero Image -->
     {ctf.data.heroImage && (

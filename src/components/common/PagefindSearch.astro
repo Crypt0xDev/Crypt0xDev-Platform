@@ -50,21 +50,37 @@ const t = translations[lang];
 
 // Convertir traducciones a formato serializable
 const translationsJSON = JSON.stringify(t);
+
+// Verificar si estamos en modo desarrollo
+const isDev = import.meta.env.DEV;
 ---
 
-<!-- Cargar CSS de Pagefind -->
-<link rel="stylesheet" href="/pagefind/pagefind-ui.css">
+{!isDev && (
+  <!-- Cargar CSS de Pagefind solo en producción -->
+  <link rel="stylesheet" href="/pagefind/pagefind-ui.css">
+)}
 
 <div class={`pagefind-search-wrapper ${className}`}>
   <div id="pagefind-search"></div>
 </div>
 
-<!-- Cargar script de Pagefind -->
-<script is:inline src="/pagefind/pagefind-ui.js"></script>
+{!isDev && (
+  <!-- Cargar script de Pagefind solo en producción -->
+  <script is:inline src="/pagefind/pagefind-ui.js"></script>
+)}
 
-<script is:inline define:vars={{ translationsJSON, lang }}>
+<script is:inline define:vars={{ translationsJSON, lang, isDev }}>
   // Inicializar Pagefind cuando el DOM esté listo
   document.addEventListener('DOMContentLoaded', function() {
+    if (isDev) {
+      // En desarrollo, mostrar mensaje
+      const searchDiv = document.getElementById('pagefind-search');
+      if (searchDiv) {
+        searchDiv.innerHTML = '<div style="padding: 1rem; text-align: center; color: #6b7280;">La búsqueda solo está disponible en producción. Ejecuta <code>npm run build && npm run preview</code></div>';
+      }
+      return;
+    }
+    
     const translations = JSON.parse(translationsJSON);
     
     if (window.PagefindUI) {

@@ -1,9 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
-import Layout from '../../../../layouts/Layout.astro';
-import { useTranslations } from '../../../../i18n/core';
-import { filterByLang } from '../../../../i18n/utils';
-import { RESOURCE_CATEGORIES, getCategoryById, type ResourceCategory } from '../../../../i18n/constants/resources';
+import Layout from '@layouts/Layout.astro';
+import { useTranslations } from '@i18n/core';
+import { filterByLang } from '@i18n/utils';
+import { RESOURCE_CATEGORIES, getCategoryById, type ResourceCategory } from '@i18n/constants/resources';
 
 export async function getStaticPaths() {
   const categories = RESOURCE_CATEGORIES.map(cat => cat.id);

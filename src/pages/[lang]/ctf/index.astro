@@ -1,9 +1,10 @@
 ---
 import { getCollection } from 'astro:content';
-import Layout from '../../../layouts/Layout.astro';
-import { getLangFromUrl, useTranslations } from '../../../i18n/core';
-import { formatDate, sortByDate, filterByLang } from '../../../i18n/utils';
-import { DYNAMIC_CTF_CATEGORIES as CTF_CATEGORIES } from '../../../i18n/constants';
+import Layout from '@layouts/Layout.astro';
+import Breadcrumb from '@components/common/Breadcrumb.astro';
+import { getLangFromUrl, useTranslations } from '@i18n/core';
+import { formatDate, sortByDate, filterByLang } from '@i18n/utils';
+import { DYNAMIC_CTF_CATEGORIES, type DynamicCTFCategory } from '@i18n/constants';
 
 export async function getStaticPaths() {
   return [
@@ -15,12 +16,12 @@ export async function getStaticPaths() {
 const { lang } = Astro.params;
 const t = useTranslations(lang as 'es' | 'en');
 
-// Obtener todos los CTF writeups
+// Obtener solo los CTF writeups del idioma actual
 const allCtf = await getCollection('ctf');
-const ctfWriteups = sortByDate(filterByLang(allCtf, lang as string));
+const ctfWriteups = sortByDate(filterByLang(allCtf, lang as 'es' | 'en'));
 
-// Usar categorías desde configuración centralizada y mapear al formato esperado
-const ctfCategories = CTF_CATEGORIES.map(cat => ({
+// Usar categorías CTF dinámicas desde configuración centralizada
+const ctfCategories = DYNAMIC_CTF_CATEGORIES.map((cat: DynamicCTFCategory) => ({
   id: cat.id,
   title: cat.name[lang as 'es' | 'en'],
   description: cat.description[lang as 'es' | 'en'],
@@ -30,21 +31,20 @@ const ctfCategories = CTF_CATEGORIES.map(cat => ({
   borderColor: cat.borderColor
 }));
 
-// Contar CTF por categoría
-const categoryCounts = ctfCategories.map(cat => ({
-  ...cat,
-  count: ctfWriteups.filter(w => w.data.category === cat.id).length,
+// Contar writeups por categoría
+const categoryCounts = ctfCategories.map((category: any) => ({
+  ...category,
+  count: ctfWriteups.filter((w: any) => w.data.category === category.id).length,
   difficulties: {
-    easy: ctfWriteups.filter(w => w.data.category === cat.id && w.data.difficulty === 'easy').length,
-    medium: ctfWriteups.filter(w => w.data.category === cat.id && w.data.difficulty === 'medium').length,
-    hard: ctfWriteups.filter(w => w.data.category === cat.id && w.data.difficulty === 'hard').length,
-    insane: ctfWriteups.filter(w => w.data.category === cat.id && w.data.difficulty === 'insane').length,
+    easy: ctfWriteups.filter((w: any) => w.data.category === category.id && w.data.difficulty === 'easy').length,
+    medium: ctfWriteups.filter((w: any) => w.data.category === category.id && w.data.difficulty === 'medium').length,
+    hard: ctfWriteups.filter((w: any) => w.data.category === category.id && w.data.difficulty === 'hard').length
   }
 }));
+// Mostrar todas las categorías, incluso las que no tienen writeups
 
 // Obtener CTFs únicos
 const uniqueCtfs = [...new Set(ctfWriteups.map(w => w.data.ctfName))];
-const recentWriteups = ctfWriteups.slice(0, 6);
 ---
 
 <Layout
@@ -56,6 +56,12 @@ const recentWriteups = ctfWriteups.slice(0, 6);
     <!-- Hero Section -->
     <section class="py-12 md:py-16">
       <div class="container max-w-7xl mx-auto px-4">
+        <!-- Breadcrumb -->
+        <Breadcrumb items={[
+          { label: lang === 'es' ? 'Inicio' : 'Home', href: `/${lang}` },
+          { label: 'CTF' }
+        ]} />
+
         <div class="mb-12">
           <div class="inline-flex items-center gap-2 px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-full text-sm font-semibold mb-6">
             🚩 Capture The Flag
@@ -96,7 +102,7 @@ const recentWriteups = ctfWriteups.slice(0, 6);
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {categoryCounts.map((category) => {
+          {categoryCounts.map((category: any) => {
             return (
               <a 
                 href={`/${lang}/ctf/${category.id}`}
@@ -114,7 +120,7 @@ const recentWriteups = ctfWriteups.slice(0, 6);
                 </p>
                 <div class="flex items-center justify-between">
                   <span class={`text-sm font-semibold bg-gradient-to-r ${category.color} bg-clip-text text-transparent`}>
-                    {category.count} {category.count === 1 ? 'reto' : 'retos'}
+                    {category.count} {lang === 'es' ? (category.count === 1 ? 'reto' : 'retos') : (category.count === 1 ? 'challenge' : 'challenges')}
                   </span>
                   <svg class="w-5 h-5 text-slate-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -125,17 +131,17 @@ const recentWriteups = ctfWriteups.slice(0, 6);
                   <div class="flex flex-wrap gap-1 mt-3">
                     {category.difficulties.easy > 0 && (
                       <span class="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full">
-                        {category.difficulties.easy} easy
+                        {category.difficulties.easy} {lang === 'es' ? 'fácil' : 'easy'}
                       </span>
                     )}
                     {category.difficulties.medium > 0 && (
                       <span class="text-xs px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-full">
-                        {category.difficulties.medium} medium
+                        {category.difficulties.medium} {lang === 'es' ? 'medio' : 'medium'}
                       </span>
                     )}
                     {category.difficulties.hard > 0 && (
                       <span class="text-xs px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-full">
-                        {category.difficulties.hard} hard
+                        {category.difficulties.hard} {lang === 'es' ? 'difícil' : 'hard'}
                       </span>
                     )}
                   </div>
@@ -148,87 +154,6 @@ const recentWriteups = ctfWriteups.slice(0, 6);
         </div>
       </div>
     </section>
-
-    {recentWriteups.length > 0 && (
-      <section class="py-8 md:py-12 bg-white/50 dark:bg-slate-800/30">
-        <div class="container max-w-7xl mx-auto px-4">
-          <h2 class="text-2xl font-bold mb-6 text-slate-900 dark:text-white">
-            {lang === 'es' ? '🆕 Retos Recientes' : '🆕 Recent Challenges'}
-          </h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recentWriteups.map((writeup) => {
-              const slugParts = writeup.slug.split('/');
-              const actualSlug = (slugParts[0] === 'es' || slugParts[0] === 'en')
-                ? slugParts.slice(1).join('/')
-                : writeup.slug;
-              
-              const defaultImage = '/images/ctf/default-ctf.png';
-              const imageUrl = writeup.data.heroImage || defaultImage;
-              
-              const categoryData = ctfCategories.find(c => c.id === writeup.data.category);
-              
-              return (
-                <a 
-                  href={`/${lang}/ctf/${actualSlug}`}
-                  class="group bg-white dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 hover:border-red-500 dark:hover:border-red-500 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-                >
-                  {imageUrl && (
-                    <div class="relative h-48 overflow-hidden">
-                      <img 
-                        src={imageUrl} 
-                        alt={writeup.data.title}
-                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                        onerror="this.src='/images/ctf/default-ctf.png'"
-                      />
-                      <div class="absolute top-3 right-3">
-                        <span class={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          writeup.data.difficulty === 'easy' ? 'bg-green-500' :
-                          writeup.data.difficulty === 'medium' ? 'bg-amber-500' :
-                          writeup.data.difficulty === 'hard' ? 'bg-red-500' : 'bg-purple-500'
-                        } text-white`}>
-                          {writeup.data.difficulty}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div class="p-5">
-                    <div class="flex items-center gap-2 mb-3">
-                      <span class="text-2xl">{categoryData?.icon || '🎯'}</span>
-                      <span class="text-sm font-semibold text-red-600 dark:text-red-400">
-                        {writeup.data.ctfName}
-                      </span>
-                    </div>
-                    
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
-                      {writeup.data.title}
-                    </h3>
-                    
-                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 line-clamp-2">
-                      {writeup.data.description}
-                    </p>
-                    
-                    <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                      <span class="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded">
-                        {writeup.data.category}
-                      </span>
-                      {writeup.data.points && (
-                        <span class="font-semibold text-red-600 dark:text-red-400">
-                          {writeup.data.points} pts
-                        </span>
-                      )}
-                      <time datetime={writeup.data.pubDate.toISOString()}>
-                        {formatDate(writeup.data.pubDate, lang as 'es' | 'en')}
-                      </time>
-                    </div>
-                  </div>
-                </a>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-    )}
 
     {ctfWriteups.length === 0 && (
       <section class="py-16">

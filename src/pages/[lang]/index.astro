@@ -1,8 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
-import Layout from '../../layouts/Layout.astro';
-import { getLangFromUrl, useTranslations } from '../../i18n/core';
-import { formatDate, sortByDate, filterByLang } from '../../i18n/utils';
+import Layout from '@layouts/Layout.astro';
+import { getLangFromUrl, useTranslations } from '@i18n/core';
+import { formatDate, sortByDate, filterByLang } from '@i18n/utils';
+import { getPlatform } from '@i18n/constants/platforms';
 import site from '../../content/site';
 
 export function getStaticPaths() {
@@ -18,8 +19,50 @@ const t = useTranslations(lang as 'es' | 'en');
 const allPosts = await getCollection('blog');
 const allWriteups = await getCollection('writeups');
 
-const recentPosts = sortByDate(filterByLang(allPosts, lang as string)).slice(0, 3);
-const recentWriteups = sortByDate(filterByLang(allWriteups, lang as string)).slice(0, 3);
+const langWriteups = filterByLang(allWriteups, lang as string);
+const langPosts = filterByLang(allPosts, lang as string);
+
+const recentPosts = sortByDate(langPosts).slice(0, 3);
+const recentWriteups = sortByDate(langWriteups).slice(0, 6);
+
+// Estadísticas generales
+const stats = {
+  totalWriteups: langWriteups.length,
+  totalPosts: langPosts.length,
+  platforms: [...new Set(langWriteups.map(w => w.data.platform))].length,
+  techniques: [...new Set(langWriteups.flatMap(w => w.data.techniques || []))].length,
+  difficulties: {
+    easy: langWriteups.filter(w => w.data.difficulty === 'easy').length,
+    medium: langWriteups.filter(w => w.data.difficulty === 'medium').length,
+    hard: langWriteups.filter(w => w.data.difficulty === 'hard').length,
+    insane: langWriteups.filter(w => w.data.difficulty === 'insane').length,
+  },
+  byPlatform: {
+    htb: langWriteups.filter(w => w.data.platform === 'htb').length,
+    tryhackme: langWriteups.filter(w => w.data.platform === 'tryhackme').length,
+    vulnhub: langWriteups.filter(w => w.data.platform === 'vulnhub').length,
+    hackmyvm: langWriteups.filter(w => w.data.platform === 'hackmyvm').length,
+  }
+};
+
+// Writeups destacados (Insane o Hard con muchas técnicas)
+const featuredWriteups = langWriteups
+  .filter(w => w.data.difficulty === 'insane' || w.data.difficulty === 'hard')
+  .sort((a, b) => (b.data.techniques?.length || 0) - (a.data.techniques?.length || 0))
+  .slice(0, 3);
+
+// Writeups para certificaciones
+const oscp = langWriteups.filter(w => w.data.certifications?.includes('OSCP')).slice(0, 4);
+
+// Técnicas más populares
+const allTechniques = langWriteups.flatMap(w => w.data.techniques || []);
+const techniqueCounts = allTechniques.reduce((acc, tech) => {
+  acc[tech] = (acc[tech] || 0) + 1;
+  return acc;
+}, {} as Record<string, number>);
+const topTechniques = Object.entries(techniqueCounts)
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 8);
 
 // Meta description optimizada para SEO
 const metaDescription = lang === 'es' 
@@ -73,6 +116,7 @@ const blogPostsStructuredData = recentPosts.map(post => ({
   ))}
 
   <main class="min-h-[calc(100vh-16rem)] bg-gradient-to-br from-white via-white to-indigo-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/10">
+    <!-- Hero Section -->
     <section class="relative py-12 md:py-16 bg-transparent overflow-hidden">
       <!-- Patrón de puntos decorativo -->
       <div class="absolute inset-0 z-0" style="background-image: radial-gradient(circle, rgba(99, 102, 241, 0.15) 2px, transparent 2px); background-size: 40px 40px;"></div>
@@ -92,6 +136,90 @@ const blogPostsStructuredData = recentPosts.map(post => ({
       </div>
     </section>
 
+    <!-- Estadísticas Section -->
+    <section class="py-8 md:py-12 animate-fadeInUp">
+      <div class="container max-w-7xl mx-auto px-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          <!-- Total Writeups -->
+          <div class="stat-card">
+            <div class="stat-icon">📝</div>
+            <div class="stat-number">{stats.totalWriteups}</div>
+            <div class="stat-label">{lang === 'es' ? 'Writeups' : 'Writeups'}</div>
+          </div>
+          
+          <!-- Total Posts -->
+          <div class="stat-card">
+            <div class="stat-icon">✍️</div>
+            <div class="stat-number">{stats.totalPosts}</div>
+            <div class="stat-label">{lang === 'es' ? 'Artículos' : 'Articles'}</div>
+          </div>
+          
+          <!-- Plataformas -->
+          <div class="stat-card">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-number">{stats.platforms}</div>
+            <div class="stat-label">{lang === 'es' ? 'Plataformas' : 'Platforms'}</div>
+          </div>
+          
+          <!-- Técnicas -->
+          <div class="stat-card">
+            <div class="stat-icon">🔧</div>
+            <div class="stat-number">{stats.techniques}</div>
+            <div class="stat-label">{lang === 'es' ? 'Técnicas' : 'Techniques'}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filtros Rápidos -->
+    <section class="py-6 md:py-8">
+      <div class="container max-w-7xl mx-auto px-4">
+        <h3 class="text-xl md:text-2xl font-bold mb-4 text-slate-900 dark:text-slate-100 font-sans">
+          {lang === 'es' ? '🎯 Explorar por Dificultad' : '🎯 Browse by Difficulty'}
+        </h3>
+        <div class="flex flex-wrap gap-3">
+          <a href={`/${lang}/tag/easy`} class="filter-badge filter-easy">
+            🎯 {lang === 'es' ? 'Fácil' : 'Easy'} ({stats.difficulties.easy})
+          </a>
+          <a href={`/${lang}/tag/medium`} class="filter-badge filter-medium">
+            ⚡ {lang === 'es' ? 'Medio' : 'Medium'} ({stats.difficulties.medium})
+          </a>
+          <a href={`/${lang}/tag/hard`} class="filter-badge filter-hard">
+            🔥 {lang === 'es' ? 'Difícil' : 'Hard'} ({stats.difficulties.hard})
+          </a>
+          <a href={`/${lang}/tag/insane`} class="filter-badge filter-insane">
+            💀 Insane ({stats.difficulties.insane})
+          </a>
+        </div>
+
+        <h3 class="text-xl md:text-2xl font-bold mb-4 mt-6 text-slate-900 dark:text-slate-100 font-sans">
+          {lang === 'es' ? '🏢 Explorar por Plataforma' : '🏢 Browse by Platform'}
+        </h3>
+        <div class="flex flex-wrap gap-3">
+          {stats.byPlatform.htb > 0 && (
+            <a href={`/${lang}/writeup/hackthebox`} class="filter-badge filter-platform-htb">
+              HackTheBox ({stats.byPlatform.htb})
+            </a>
+          )}
+          {stats.byPlatform.tryhackme > 0 && (
+            <a href={`/${lang}/writeup/tryhackme`} class="filter-badge filter-platform-thm">
+              TryHackMe ({stats.byPlatform.tryhackme})
+            </a>
+          )}
+          {stats.byPlatform.vulnhub > 0 && (
+            <a href={`/${lang}/writeup/vulnhub`} class="filter-badge filter-platform-vh">
+              VulnHub ({stats.byPlatform.vulnhub})
+            </a>
+          )}
+          {stats.byPlatform.hackmyvm > 0 && (
+            <a href={`/${lang}/writeup/hackmyvm`} class="filter-badge filter-platform-hmvm">
+              HackMyVM ({stats.byPlatform.hackmyvm})
+            </a>
+          )}
+        </div>
+      </div>
+    </section>
+
     {recentPosts.length > 0 && (
       <section class="py-8 md:py-12 animate-fadeInUp" aria-labelledby="recent-posts-title">
         <div class="container max-w-7xl mx-auto px-4">
@@ -104,6 +232,7 @@ const blogPostsStructuredData = recentPosts.map(post => ({
               const actualSlug = (slugParts[0] === 'es' || slugParts[0] === 'en')
                 ? slugParts[slugParts.length - 1]
                 : post.slug;
+              const category = post.data.category || 'tutorial';
               return (
                 <article 
                   class="group bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-indigo-500/25 hover:border-indigo-500 flex flex-col relative animate-scaleIn shadow-md"
@@ -136,7 +265,7 @@ const blogPostsStructuredData = recentPosts.map(post => ({
                     </div>
                     <h3 class="text-xl lg:text-2xl font-extrabold m-0 leading-snug font-sans tracking-tight" itemprop="headline">
                       <a 
-                        href={`/${lang}/blog/${actualSlug}`}
+                        href={`/${lang}/blog/${category}/${actualSlug}`}
                         itemprop="url"
                         class="text-slate-900 dark:text-slate-50 no-underline hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-300 line-clamp-2"
                       >
@@ -181,6 +310,8 @@ const blogPostsStructuredData = recentPosts.map(post => ({
               const actualSlug = (slugParts[0] === 'es' || slugParts[0] === 'en')
                 ? slugParts.slice(1).join('/')
                 : writeup.slug;
+              const platformData = getPlatform(writeup.data.platform);
+              const logoToShow = writeup.data.logo || (platformData as any).logo || platformData.icon;
               return (
                 <article 
                   class="group bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-indigo-500/25 hover:border-indigo-500 flex flex-col relative animate-scaleIn shadow-md"
@@ -190,17 +321,15 @@ const blogPostsStructuredData = recentPosts.map(post => ({
                   itemtype="https://schema.org/TechArticle"
                 >
                   <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  {writeup.data.heroImage && (
-                    <div class="w-full h-52 overflow-hidden bg-gradient-to-br from-slate-100 to-indigo-100/50 dark:from-slate-800 dark:to-indigo-900/30">
-                      <img 
-                        src={writeup.data.heroImage} 
-                        alt={writeup.data.title}
-                        loading="lazy"
-                        itemprop="image"
-                        class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110 block"
-                      />
-                    </div>
-                  )}
+                  <div class="w-full h-52 overflow-hidden bg-gradient-to-br from-slate-100 to-indigo-100/50 dark:from-slate-800 dark:to-indigo-900/30 flex items-center justify-center p-8">
+                    <img 
+                      src={logoToShow} 
+                      alt={writeup.data.title}
+                      loading="lazy"
+                      itemprop="image"
+                      class="max-w-full max-h-full object-contain transition-transform duration-500 group-hover:scale-110"
+                    />
+                  </div>
                   <div class="p-6 lg:p-8 flex flex-col flex-1 gap-4">
                     <div class="flex flex-wrap gap-2 items-center">
                       <span 
@@ -221,7 +350,33 @@ const blogPostsStructuredData = recentPosts.map(post => ({
                           {writeup.data.os === 'linux' ? '🐧' : writeup.data.os === 'windows' ? '🪟' : '💻'}
                         </span>
                       )}
+                      {writeup.data.retired !== undefined && (
+                        <span class={`inline-flex items-center px-2.5 py-1.5 rounded-md text-xs font-semibold ${writeup.data.retired ? 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400' : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'}`}>
+                          {writeup.data.retired ? (lang === 'es' ? 'Retirada' : 'Retired') : (lang === 'es' ? 'Activa' : 'Active')}
+                        </span>
+                      )}
+                      {writeup.data.points && (
+                        <span class="inline-flex items-center px-2.5 py-1.5 rounded-md text-xs font-semibold bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400">
+                          ⭐ {writeup.data.points}
+                        </span>
+                      )}
                     </div>
+                    
+                    {/* Attack Vectors mini-badges */}
+                    {writeup.data.attackVectors && writeup.data.attackVectors.length > 0 && (
+                      <div class="flex flex-wrap gap-1.5">
+                        {writeup.data.attackVectors.slice(0, 2).map((vector) => (
+                          <span class="text-xs px-2 py-1 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 font-medium">
+                            {vector}
+                          </span>
+                        ))}
+                        {writeup.data.attackVectors.length > 2 && (
+                          <span class="text-xs px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium">
+                            +{writeup.data.attackVectors.length - 2}
+                          </span>
+                        )}
+                      </div>
+                    )}
                     
                     <h3 class="text-xl lg:text-2xl font-extrabold m-0 leading-snug font-sans tracking-tight" itemprop="headline">
                       <a 
@@ -261,5 +416,197 @@ const blogPostsStructuredData = recentPosts.map(post => ({
         </div>
       </section>
     )}
+
+    {/* Técnicas Populares */}
+    {topTechniques.length > 0 && (
+      <section class="py-8 md:py-12">
+        <div class="container max-w-7xl mx-auto px-4">
+          <h2 class="text-3xl md:text-4xl lg:text-5xl font-black mb-8 font-sans tracking-tight bg-gradient-to-r from-slate-900 via-indigo-600 to-slate-900 dark:from-slate-100 dark:via-indigo-400 dark:to-slate-100 bg-clip-text text-transparent">
+            {lang === 'es' ? '🔧 Técnicas Más Cubiertas' : '🔧 Most Covered Techniques'}
+          </h2>
+          <div class="flex flex-wrap gap-3">
+            {topTechniques.map(([technique, count]) => (
+              <a 
+                href={`/${lang}/tag/${technique.toLowerCase().replace(/\s+/g, '-')}`}
+                class="technique-badge"
+              >
+                {technique} <span class="technique-count">({count})</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    {/* Preparación Certificaciones */}
+    {oscp.length > 0 && (
+      <section class="py-8 md:py-12">
+        <div class="container max-w-7xl mx-auto px-4">
+          <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/10 dark:to-emerald-900/10 rounded-2xl p-8 border-2 border-green-200 dark:border-green-800">
+            <h2 class="text-3xl md:text-4xl font-black mb-4 font-sans tracking-tight text-green-800 dark:text-green-400">
+              🎯 {lang === 'es' ? 'Preparación OSCP' : 'OSCP Preparation'}
+            </h2>
+            <p class="text-slate-700 dark:text-slate-300 mb-6">
+              {lang === 'es' ? 'Writeups recomendados para prepararte para la certificación OSCP' : 'Recommended writeups to prepare for OSCP certification'}
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {oscp.map((writeup) => {
+                const slugParts = writeup.slug.split('/');
+                const actualSlug = slugParts.slice(1).join('/');
+                const platformData = getPlatform(writeup.data.platform);
+                return (
+                  <a 
+                    href={`/${lang}/writeup/${actualSlug}`}
+                    class="cert-card"
+                  >
+                    <div class="flex items-center gap-2 mb-2">
+                      <span class={`difficulty-${writeup.data.difficulty} px-2 py-1 rounded text-xs font-bold`}>
+                        {t(`difficulty.${writeup.data.difficulty}`)}
+                      </span>
+                      <span class="text-xs text-slate-600 dark:text-slate-400">
+                        {platformData.name}
+                      </span>
+                    </div>
+                    <h3 class="font-bold text-slate-900 dark:text-slate-100 line-clamp-2">
+                      {writeup.data.title}
+                    </h3>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+    )}
+
+    {/* Writeups Destacados */}
+    {featuredWriteups.length > 0 && (
+      <section class="py-8 md:py-12">
+        <div class="container max-w-7xl mx-auto px-4">
+          <h2 class="text-3xl md:text-4xl lg:text-5xl font-black mb-8 font-sans tracking-tight bg-gradient-to-r from-slate-900 via-red-600 to-slate-900 dark:from-slate-100 dark:via-red-400 dark:to-slate-100 bg-clip-text text-transparent">
+            ✨ {lang === 'es' ? 'Writeups Destacados' : 'Featured Writeups'}
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {featuredWriteups.map((writeup) => {
+              const slugParts = writeup.slug.split('/');
+              const actualSlug = slugParts.slice(1).join('/');
+              const platformData = getPlatform(writeup.data.platform);
+              const logoToShow = writeup.data.logo || (platformData as any).logo || platformData.icon;
+              return (
+                <a 
+                  href={`/${lang}/writeup/${actualSlug}`}
+                  class="featured-card"
+                >
+                  <div class="w-full h-48 overflow-hidden rounded-t-xl bg-gradient-to-br from-slate-100 to-indigo-100/50 dark:from-slate-800 dark:to-indigo-900/30 flex items-center justify-center p-6">
+                    <img 
+                      src={logoToShow} 
+                      alt={writeup.data.title}
+                      class="max-w-full max-h-full object-contain hover:scale-110 transition-transform duration-500"
+                    />
+                  </div>
+                  <div class="p-6">
+                    <div class="flex gap-2 mb-3">
+                      <span class={`difficulty-${writeup.data.difficulty} px-3 py-1 rounded-lg text-xs font-bold`}>
+                        {writeup.data.difficulty === 'insane' ? '💀 Insane' : '🔥 Hard'}
+                      </span>
+                      <span class="text-xs px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg font-semibold">
+                        {platformData.name}
+                      </span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+                      {writeup.data.title}
+                    </h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-3 line-clamp-2">
+                      {writeup.data.description}
+                    </p>
+                    {writeup.data.techniques && writeup.data.techniques.length > 0 && (
+                      <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-500">
+                        <span>🔧</span>
+                        <span>{writeup.data.techniques.length} {lang === 'es' ? 'técnicas' : 'techniques'}</span>
+                      </div>
+                    )}
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    )}
   </main>
 </Layout>
+
+<style>
+  /* Estadísticas Cards */
+  .stat-card {
+    @apply bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-2xl p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-indigo-500;
+  }
+
+  .stat-icon {
+    @apply text-4xl mb-3;
+  }
+
+  .stat-number {
+    @apply text-3xl md:text-4xl font-black text-slate-900 dark:text-slate-100 mb-2;
+  }
+
+  .stat-label {
+    @apply text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide;
+  }
+
+  /* Filter Badges */
+  .filter-badge {
+    @apply inline-flex items-center px-4 py-2.5 rounded-lg font-bold text-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border-2 no-underline;
+  }
+
+  .filter-easy {
+    @apply bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-300 dark:border-green-800 hover:bg-green-200 dark:hover:bg-green-900/50;
+  }
+
+  .filter-medium {
+    @apply bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-800 hover:bg-yellow-200 dark:hover:bg-yellow-900/50;
+  }
+
+  .filter-hard {
+    @apply bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 border-orange-300 dark:border-orange-800 hover:bg-orange-200 dark:hover:bg-orange-900/50;
+  }
+
+  .filter-insane {
+    @apply bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-300 dark:border-red-800 hover:bg-red-200 dark:hover:bg-red-900/50;
+  }
+
+  .filter-platform-htb {
+    @apply bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-300 dark:border-green-800 hover:bg-green-200 dark:hover:bg-green-900/50;
+  }
+
+  .filter-platform-thm {
+    @apply bg-pink-100 dark:bg-pink-900/30 text-pink-800 dark:text-pink-300 border-pink-300 dark:border-pink-800 hover:bg-pink-200 dark:hover:bg-pink-900/50;
+  }
+
+  .filter-platform-vh {
+    @apply bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800 hover:bg-emerald-200 dark:hover:bg-emerald-900/50;
+  }
+
+  .filter-platform-hmvm {
+    @apply bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 border-orange-300 dark:border-orange-800 hover:bg-orange-200 dark:hover:bg-orange-900/50;
+  }
+
+  /* Technique Badges */
+  .technique-badge {
+    @apply inline-flex items-center px-4 py-2 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-2 border-blue-300 dark:border-blue-800 font-semibold text-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md no-underline;
+  }
+
+  .technique-count {
+    @apply ml-1 text-blue-600 dark:text-blue-400 font-bold;
+  }
+
+  /* Certification Cards */
+  .cert-card {
+    @apply block p-4 bg-white dark:bg-slate-900 border-2 border-green-200 dark:border-green-800 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-green-400 dark:hover:border-green-600 no-underline;
+  }
+
+  /* Featured Cards */
+  .featured-card {
+    @apply block bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-red-500 no-underline;
+  }
+</style>

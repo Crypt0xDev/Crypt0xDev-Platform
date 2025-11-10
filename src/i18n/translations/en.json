@@ -37,7 +37,18 @@
     "reading_time": "min read",
     "back_to_blog": "Back to Blog",
     "table_of_contents": "Table of Contents",
-    "related_posts": "Related Posts"
+    "related_posts": "Related Posts",
+    "categories_title": "Blog Categories",
+    "categories_description": "Explore our content organized by categories",
+    "posts_in_category": "Posts in category",
+    "view_all_categories": "View all categories",
+    "category": {
+      "tutorial": "Tutorial",
+      "writeup": "Writeup",
+      "research": "Research",
+      "tools": "Tools",
+      "news": "News"
+    }
   },
   "writeups": {
     "title": "Writeups",
