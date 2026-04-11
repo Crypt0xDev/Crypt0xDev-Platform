@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import Layout from '@layouts/Layout.astro';
 import TOC from '@components/common/TOC.astro';
 import Breadcrumb from '@components/common/Breadcrumb.astro';
@@ -9,14 +9,14 @@ import { PLATFORMS, getPlatform } from '@i18n/constants/platforms';
 
 export async function getStaticPaths() {
   const allWriteups = await getCollection('writeups');
-  
-  return allWriteups.map(entry => {
-    const slugParts = entry.slug.split('/');
+
+  return allWriteups.map((entry) => {
+    const slugParts = entry.id.replace(/\.md$/, '').split('/');
     const lang = slugParts[0];
     const platformSlug = slugParts[1];
     const actualSlug = slugParts.slice(2).join('/');
     const platformId = entry.data.platform;
-    
+
     return {
       params: { lang, platform: platformSlug, slug: actualSlug },
       props: { entry, platformId },
@@ -25,7 +25,7 @@ export async function getStaticPaths() {
 }
 
 const { entry, platformId } = Astro.props;
-const { Content, headings } = await entry.render();
+const { Content, headings } = await render(entry);
 const { lang, platform: platformSlug } = Astro.params;
 
 const platformData = getPlatform(platformId);
@@ -50,7 +50,7 @@ const translations = {
     easy: 'Fácil',
     medium: 'Medio',
     hard: 'Difícil',
-    insane: 'Insano'
+    insane: 'Insano',
   },
   en: {
     breadcrumbHome: 'Home',
@@ -69,84 +69,102 @@ const translations = {
     easy: 'Easy',
     medium: 'Medium',
     hard: 'Hard',
-    insane: 'Insane'
-  }
+    insane: 'Insane',
+  },
 }[lang as 'es' | 'en'];
 
 const difficultyColors = {
   easy: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-  medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+  medium:
+    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
   hard: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
-  insane: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+  insane: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
 };
 
 // Obtener writeups relacionados (misma plataforma, misma dificultad o tags similares)
 const allWriteupsForRelated = await getCollection('writeups');
 const relatedWriteups = allWriteupsForRelated
-  .filter(w => {
+  .filter((w) => {
     // Filtrar por idioma
-    if (!w.slug.startsWith(`${lang}/`)) return false;
+    if (!w.id.startsWith(`${lang}/`)) return false;
     // Excluir el writeup actual
-    if (w.slug === entry.slug) return false;
-    
+    if (w.id === entry.id) return false;
+
     // Relacionados: misma plataforma O misma dificultad O tags en común
     const samePlatform = w.data.platform === entry.data.platform;
     const sameDifficulty = w.data.difficulty === entry.data.difficulty;
-    const commonTags = entry.data.tags?.some(tag => w.data.tags?.includes(tag));
-    
+    const commonTags = entry.data.tags?.some((tag) =>
+      w.data.tags?.includes(tag)
+    );
+
     return samePlatform || sameDifficulty || commonTags;
   })
   .sort((a, b) => {
     // Priorizar por más similitud
     let scoreA = 0;
     let scoreB = 0;
-    
+
     if (a.data.platform === entry.data.platform) scoreA += 3;
     if (b.data.platform === entry.data.platform) scoreB += 3;
-    
+
     if (a.data.difficulty === entry.data.difficulty) scoreA += 2;
     if (b.data.difficulty === entry.data.difficulty) scoreB += 2;
-    
-    const tagsA = entry.data.tags?.filter(tag => a.data.tags?.includes(tag)).length || 0;
-    const tagsB = entry.data.tags?.filter(tag => b.data.tags?.includes(tag)).length || 0;
+
+    const tagsA =
+      entry.data.tags?.filter((tag) => a.data.tags?.includes(tag)).length || 0;
+    const tagsB =
+      entry.data.tags?.filter((tag) => b.data.tags?.includes(tag)).length || 0;
     scoreA += tagsA;
     scoreB += tagsB;
-    
+
     return scoreB - scoreA;
   })
   .slice(0, 3); // Mostrar solo 3 writeups relacionados
 ---
 
-<Layout 
-  title={entry.data.title} 
+<Layout
+  title={entry.data.title}
   description={entry.data.description}
   lang={lang as 'es' | 'en'}
 >
   <article class="writeup-article">
     <!-- Breadcrumbs -->
-    <Breadcrumb items={[
-      { label: translations.breadcrumbHome, href: `/${lang}` },
-      { label: translations.breadcrumbWriteups, href: `/${lang}/writeup` },
-      { label: platformData.name, href: `/${lang}/writeup/${platformSlug}` },
-      ...(entry.data.category ? [{ label: entry.data.category, href: `/${lang}/writeup/${platformSlug}/${entry.data.category}` }] : []),
-      { label: entry.data.title }
-    ]} />
+    <Breadcrumb
+      items={[
+        { label: translations.breadcrumbHome, href: `/${lang}` },
+        { label: translations.breadcrumbWriteups, href: `/${lang}/writeup` },
+        { label: platformData.name, href: `/${lang}/writeup/${platformSlug}` },
+        ...(entry.data.category
+          ? [
+              {
+                label: entry.data.category,
+                href: `/${lang}/writeup/${platformSlug}/${entry.data.category}`,
+              },
+            ]
+          : []),
+        { label: entry.data.title },
+      ]}
+    />
 
     <!-- Hero Image -->
-    {entry.data.heroImage && (
-      <div class="hero-image-container">
-        <img 
-          src={entry.data.heroImage} 
-          alt={entry.data.title}
-          class="hero-image"
-        />
-      </div>
-    )}
+    {
+      entry.data.heroImage && (
+        <div class="hero-image-container">
+          <img
+            src={entry.data.heroImage}
+            alt={entry.data.title}
+            class="hero-image"
+          />
+        </div>
+      )
+    }
 
     <!-- Header -->
     <header class="writeup-header">
       <!-- Title -->
-      <h1 class="writeup-title bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+      <h1
+        class="writeup-title bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent"
+      >
         {entry.data.title}
       </h1>
 
@@ -157,172 +175,213 @@ const relatedWriteups = allWriteupsForRelated
 
       <!-- Badges principales - Clickeables -->
       <div class="badges-row">
-        <a 
+        <a
           href={`/${lang}/writeup/${platformSlug}`}
           class="badge badge-platform bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-500/20"
         >
           {platformData.name}
         </a>
-        <a 
+        <a
           href={`/${lang}/tag/${entry.data.difficulty.toLowerCase()}`}
           class={`badge badge-difficulty ${difficultyColors[entry.data.difficulty]}`}
         >
           {translations[entry.data.difficulty]}
         </a>
-        <a 
+        <a
           href={`/${lang}/tag/${entry.data.os.toLowerCase()}`}
           class="badge badge-os"
         >
-          {entry.data.os === 'linux' ? '🐧' : entry.data.os === 'windows' ? '🪟' : '💻'} {entry.data.os}
+          {
+            entry.data.os === 'linux'
+              ? '🐧'
+              : entry.data.os === 'windows'
+                ? '🪟'
+                : '💻'
+          }
+          {entry.data.os}
         </a>
-        {entry.data.retired !== undefined && (
-          <span class={`badge ${entry.data.retired ? 'badge-retired' : 'badge-active'}`}>
-            {entry.data.retired ? translations.retired : translations.active}
-          </span>
-        )}
-        {entry.data.points && (
-          <span class="badge badge-points">
-            ⭐ {entry.data.points} {translations.points}
-          </span>
-        )}
+        {
+          entry.data.retired !== undefined && (
+            <span
+              class={`badge ${entry.data.retired ? 'badge-retired' : 'badge-active'}`}
+            >
+              {entry.data.retired ? translations.retired : translations.active}
+            </span>
+          )
+        }
+        {
+          entry.data.points && (
+            <span class="badge badge-points">
+              ⭐ {entry.data.points} {translations.points}
+            </span>
+          )
+        }
       </div>
 
       <!-- Metadata compacta -->
       <div class="metadata-row">
         <span>
-          📅 {entry.data.pubDate.toLocaleDateString(lang as string, {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          })}
+          📅 {
+            entry.data.pubDate.toLocaleDateString(lang as string, {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
+          }
         </span>
-        {entry.data.estimatedTime && (
-          <span>⏱️ {entry.data.estimatedTime}</span>
-        )}
+        {entry.data.estimatedTime && <span>⏱️ {entry.data.estimatedTime}</span>}
       </div>
 
       {/* Sección de tags y clasificaciones - Compacta */}
       <div class="metadata-container">
         {/* Vectores de Ataque */}
-        {entry.data.attackVectors && entry.data.attackVectors.length > 0 && (
-          <div class="metadata-section">
-            <h3 class="metadata-title">{lang === 'es' ? 'Vectores de Ataque:' : 'Attack Vectors:'}</h3>
-            <div class="metadata-tags">
-              {entry.data.attackVectors.map((vector: string) => (
-                <a 
-                  href={`/${lang}/tag/${vector.toLowerCase().replace(/\s+/g, '-')}`}
-                  class="metadata-tag tag-attack"
-                >
-                  {vector}
-                </a>
-              ))}
+        {
+          entry.data.attackVectors && entry.data.attackVectors.length > 0 && (
+            <div class="metadata-section">
+              <h3 class="metadata-title">
+                {lang === 'es' ? 'Vectores de Ataque:' : 'Attack Vectors:'}
+              </h3>
+              <div class="metadata-tags">
+                {entry.data.attackVectors.map((vector: string) => (
+                  <a
+                    href={`/${lang}/tag/${vector.toLowerCase().replace(/\s+/g, '-')}`}
+                    class="metadata-tag tag-attack"
+                  >
+                    {vector}
+                  </a>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )
+        }
 
         {/* Técnicas MITRE ATT&CK */}
-        {entry.data.techniques && entry.data.techniques.length > 0 && (
-          <div class="metadata-section">
-            <h3 class="metadata-title">{lang === 'es' ? 'Técnicas MITRE:' : 'MITRE Techniques:'}</h3>
-            <div class="metadata-tags">
-              {entry.data.techniques.map((technique: string) => (
-                <a 
-                  href={`/${lang}/tag/${technique.toLowerCase().replace(/\s+/g, '-')}`}
-                  class="metadata-tag tag-technique"
-                >
-                  {technique}
-                </a>
-              ))}
+        {
+          entry.data.techniques && entry.data.techniques.length > 0 && (
+            <div class="metadata-section">
+              <h3 class="metadata-title">
+                {lang === 'es' ? 'Técnicas MITRE:' : 'MITRE Techniques:'}
+              </h3>
+              <div class="metadata-tags">
+                {entry.data.techniques.map((technique: string) => (
+                  <a
+                    href={`/${lang}/tag/${technique.toLowerCase().replace(/\s+/g, '-')}`}
+                    class="metadata-tag tag-technique"
+                  >
+                    {technique}
+                  </a>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )
+        }
 
         {/* Vulnerabilidades */}
-        {entry.data.vulnerabilities && entry.data.vulnerabilities.length > 0 && (
-          <div class="metadata-section">
-            <h3 class="metadata-title">{lang === 'es' ? 'Vulnerabilidades:' : 'Vulnerabilities:'}</h3>
-            <div class="metadata-tags">
-              {entry.data.vulnerabilities.map((vuln: string) => (
-                <a 
-                  href={`/${lang}/tag/${vuln.toLowerCase().replace(/\s+/g, '-')}`}
-                  class="metadata-tag tag-vulnerability"
-                >
-                  {vuln}
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
+        {
+          entry.data.vulnerabilities &&
+            entry.data.vulnerabilities.length > 0 && (
+              <div class="metadata-section">
+                <h3 class="metadata-title">
+                  {lang === 'es' ? 'Vulnerabilidades:' : 'Vulnerabilities:'}
+                </h3>
+                <div class="metadata-tags">
+                  {entry.data.vulnerabilities.map((vuln: string) => (
+                    <a
+                      href={`/${lang}/tag/${vuln.toLowerCase().replace(/\s+/g, '-')}`}
+                      class="metadata-tag tag-vulnerability"
+                    >
+                      {vuln}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )
+        }
 
         {/* Certificaciones */}
-        {entry.data.certifications && entry.data.certifications.length > 0 && (
-          <div class="metadata-section">
-            <h3 class="metadata-title">{lang === 'es' ? 'Certificaciones:' : 'Certifications:'}</h3>
-            <div class="metadata-tags">
-              {entry.data.certifications.map((cert: string) => (
-                <a 
-                  href={`/${lang}/tag/${cert.toLowerCase().replace(/\s+/g, '-')}`}
-                  class="metadata-tag tag-certification"
-                >
-                  {cert}
-                </a>
-              ))}
+        {
+          entry.data.certifications && entry.data.certifications.length > 0 && (
+            <div class="metadata-section">
+              <h3 class="metadata-title">
+                {lang === 'es' ? 'Certificaciones:' : 'Certifications:'}
+              </h3>
+              <div class="metadata-tags">
+                {entry.data.certifications.map((cert: string) => (
+                  <a
+                    href={`/${lang}/tag/${cert.toLowerCase().replace(/\s+/g, '-')}`}
+                    class="metadata-tag tag-certification"
+                  >
+                    {cert}
+                  </a>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )
+        }
 
         {/* Etiquetas */}
-        {entry.data.tags && entry.data.tags.length > 0 && (
-          <div class="metadata-section">
-            <div class="metadata-tags">
-              {entry.data.tags.map((tag: string) => (
-                <a 
-                  href={`/${lang}/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`}
-                  class="metadata-tag tag-general"
-                >
-                  {tag}
-                </a>
-              ))}
+        {
+          entry.data.tags && entry.data.tags.length > 0 && (
+            <div class="metadata-section">
+              <div class="metadata-tags">
+                {entry.data.tags.map((tag: string) => (
+                  <a
+                    href={`/${lang}/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`}
+                    class="metadata-tag tag-general"
+                  >
+                    {tag}
+                  </a>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )
+        }
       </div>
     </header>
-
 
     <!-- Content & TOC -->
     <div class="content-container">
       <div class="content-wrapper">
-        <div class="main-content prose prose-lg dark:prose-invert 
-                    prose-headings:font-inter prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-white 
+        <div
+          class="main-content prose prose-lg dark:prose-invert
+                    prose-headings:font-inter prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-white
                     prose-p:font-inter prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed
                     prose-li:font-inter prose-li:text-gray-700 dark:prose-li:text-gray-300
                     prose-a:font-inter prose-a:font-medium prose-a:text-blue-600 dark:prose-a:text-blue-400
                     prose-strong:font-inter prose-strong:font-semibold
                     prose-code:font-mono prose-code:text-pink-600 dark:prose-code:text-pink-400 prose-code:font-medium
-                    prose-pre:bg-gray-900 dark:prose-pre:bg-gray-950 prose-pre:font-mono">
+                    prose-pre:bg-gray-900 dark:prose-pre:bg-gray-950 prose-pre:font-mono"
+        >
           <Content />
         </div>
       </div>
     </div>
 
     <!-- TOC Fixed -->
-    {headings.length > 0 && (
-      <aside class="toc-wrapper">
-        <TOC headings={headings} title={lang === 'es' ? 'Tabla de Contenidos' : 'Table of Contents'} inline={false} />
-      </aside>
-    )}
+    {
+      headings.length > 0 && (
+        <aside class="toc-wrapper">
+          <TOC
+            headings={headings}
+            title={lang === 'es' ? 'Tabla de Contenidos' : 'Table of Contents'}
+            inline={false}
+          />
+        </aside>
+      )
+    }
 
     <!-- Writeups Relacionados -->
-    {relatedWriteups.length > 0 && (
-      <section class="related-writeups-section">
-        <RelatedWriteups 
-          writeups={relatedWriteups} 
-          title={lang === 'es' ? 'Writeups Relacionados' : 'Related Writeups'}
-          lang={lang as string}
-        />
-      </section>
-    )}
+    {
+      relatedWriteups.length > 0 && (
+        <section class="related-writeups-section">
+          <RelatedWriteups
+            writeups={relatedWriteups}
+            title={lang === 'es' ? 'Writeups Relacionados' : 'Related Writeups'}
+            lang={lang as string}
+          />
+        </section>
+      )
+    }
   </article>
 </Layout>
 
@@ -361,7 +420,11 @@ const relatedWriteups = allWriteupsForRelated
   }
 
   .writeup-title {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family:
+      'Inter',
+      system-ui,
+      -apple-system,
+      sans-serif;
     font-size: clamp(2rem, 5vw, 2.75rem);
     font-weight: 800;
     line-height: 1.2;
@@ -370,7 +433,11 @@ const relatedWriteups = allWriteupsForRelated
   }
 
   .writeup-description {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family:
+      'Inter',
+      system-ui,
+      -apple-system,
+      sans-serif;
     font-size: 1.0625rem;
     color: rgba(156, 163, 175, 1);
     margin-bottom: 1.5rem;
@@ -389,7 +456,11 @@ const relatedWriteups = allWriteupsForRelated
   }
 
   .badge {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family:
+      'Inter',
+      system-ui,
+      -apple-system,
+      sans-serif;
     padding: 0.375rem 0.875rem;
     border-radius: 9999px;
     font-size: 0.8125rem;
@@ -451,7 +522,11 @@ const relatedWriteups = allWriteupsForRelated
      METADATA ROW
      ======================================== */
   .metadata-row {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family:
+      'Inter',
+      system-ui,
+      -apple-system,
+      sans-serif;
     display: flex;
     flex-wrap: wrap;
     gap: 1.5rem;
@@ -471,7 +546,11 @@ const relatedWriteups = allWriteupsForRelated
      METADATA CONTAINER (Tags y clasificaciones)
      ======================================== */
   .metadata-container {
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.4) 0%, rgba(51, 65, 85, 0.25) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba(30, 41, 59, 0.4) 0%,
+      rgba(51, 65, 85, 0.25) 100%
+    );
     border: 1px solid rgba(100, 116, 139, 0.2);
     border-radius: 0.75rem;
     padding: 1rem 1.25rem;
@@ -480,7 +559,11 @@ const relatedWriteups = allWriteupsForRelated
   }
 
   :global(.light) .metadata-container {
-    background: linear-gradient(135deg, rgba(241, 245, 249, 0.8) 0%, rgba(226, 232, 240, 0.6) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba(241, 245, 249, 0.8) 0%,
+      rgba(226, 232, 240, 0.6) 100%
+    );
     border: 1px solid rgba(203, 213, 225, 0.5);
   }
 
@@ -500,7 +583,11 @@ const relatedWriteups = allWriteupsForRelated
   }
 
   .metadata-title {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family:
+      'Inter',
+      system-ui,
+      -apple-system,
+      sans-serif;
     font-size: 0.75rem;
     font-weight: 700;
     color: rgba(226, 232, 240, 0.85);
@@ -523,7 +610,11 @@ const relatedWriteups = allWriteupsForRelated
   }
 
   .metadata-tag {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family:
+      'Inter',
+      system-ui,
+      -apple-system,
+      sans-serif;
     padding: 0.25rem 0.625rem;
     border-radius: 0.375rem;
     font-size: 0.6875rem;
@@ -611,7 +702,11 @@ const relatedWriteups = allWriteupsForRelated
   .main-content {
     width: 100%;
     max-width: none !important;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family:
+      'Inter',
+      system-ui,
+      -apple-system,
+      sans-serif;
     font-size: 1rem;
     line-height: 1.75;
   }
@@ -626,7 +721,11 @@ const relatedWriteups = allWriteupsForRelated
   .main-content :global(h4),
   .main-content :global(h5),
   .main-content :global(h6) {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family:
+      'Inter',
+      system-ui,
+      -apple-system,
+      sans-serif;
     font-weight: 700;
     letter-spacing: -0.02em;
   }
@@ -635,7 +734,11 @@ const relatedWriteups = allWriteupsForRelated
   .main-content :global(li),
   .main-content :global(td),
   .main-content :global(th) {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family:
+      'Inter',
+      system-ui,
+      -apple-system,
+      sans-serif;
   }
 
   /* ========================================
@@ -674,7 +777,9 @@ const relatedWriteups = allWriteupsForRelated
     margin: 2rem auto;
     display: block;
     border-radius: 0.75rem;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    box-shadow:
+      0 10px 25px -5px rgba(0, 0, 0, 0.2),
+      0 8px 10px -6px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(100, 116, 139, 0.1);
   }
 
@@ -684,7 +789,8 @@ const relatedWriteups = allWriteupsForRelated
     border: 1px solid rgba(100, 116, 139, 0.15);
     padding: 1.25rem;
     overflow-x: auto;
-    font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-family:
+      'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
     font-size: 0.875rem;
     line-height: 1.7;
   }
@@ -695,13 +801,15 @@ const relatedWriteups = allWriteupsForRelated
   }
 
   .main-content :global(code) {
-    font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-family:
+      'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
     font-size: 0.875em;
     font-weight: 500;
   }
 
   .main-content :global(pre code) {
-    font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-family:
+      'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
     font-size: 0.875rem;
     background-color: transparent !important;
     padding: 0;
@@ -715,7 +823,7 @@ const relatedWriteups = allWriteupsForRelated
   /* ========================================
      RESPONSIVE DESIGN
      ======================================== */
-  
+
   /* Tablets y pantallas medianas */
   @media (max-width: 1600px) {
     .toc-wrapper {
@@ -740,7 +848,7 @@ const relatedWriteups = allWriteupsForRelated
       max-width: 100%;
     }
   }
-  
+
   /* Mobile - Tablets pequeñas */
   @media (max-width: 768px) {
     .writeup-article {

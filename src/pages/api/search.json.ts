@@ -13,36 +13,36 @@ export const GET: APIRoute = async () => {
         type: 'blog',
         title: post.data.title,
         description: post.data.description,
-        content: post.body || '',
-        slug: post.slug,
+        content: (post as any).body || '',
+        slug: post.id.replace(/\.md$/, ''),
         language: post.data.language,
         tags: post.data.tags || [],
         category: post.data.category,
         difficulty: post.data.difficulty,
         date: post.data.pubDate,
-        draft: post.data.draft || false
+        draft: post.data.draft || false,
       });
     }
 
     // Indexar writeups
     const writeups = await getCollection('writeups');
     for (const writeup of writeups) {
-      const slugParts = writeup.slug.split('/');
+      const slugParts = writeup.id.replace(/\.md$/, '').split('/');
       const actualSlug = slugParts.slice(1).join('/');
-      
+
       searchIndex.push({
         type: 'writeup',
         title: writeup.data.title,
         description: writeup.data.description,
-        content: writeup.body || '',
-        slug: writeup.slug,
+        content: (writeup as any).body || '',
+        slug: writeup.id.replace(/\.md$/, ''),
         actualSlug: actualSlug,
         language: writeup.data.language,
         platform: writeup.data.platform,
         difficulty: writeup.data.difficulty,
         tags: writeup.data.tags || [],
         os: writeup.data.os,
-        date: writeup.data.pubDate
+        date: writeup.data.pubDate,
       });
     }
 
@@ -53,15 +53,15 @@ export const GET: APIRoute = async () => {
         type: 'ctf',
         title: ctf.data.title,
         description: ctf.data.description,
-        content: ctf.body || '',
-        slug: ctf.slug,
+        content: (ctf as any).body || '',
+        slug: ctf.id.replace(/\.md$/, ''),
         language: ctf.data.language,
         ctfName: ctf.data.ctfName,
         category: ctf.data.category,
         tags: ctf.data.tags || [],
         difficulty: ctf.data.difficulty,
         date: ctf.data.pubDate,
-        draft: ctf.data.draft || false
+        draft: ctf.data.draft || false,
       });
     }
 
@@ -69,18 +69,20 @@ export const GET: APIRoute = async () => {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=3600'
-      }
+        'Cache-Control': 'public, max-age=3600',
+      },
     });
-    
   } catch (error) {
     console.error('Search index error:', error);
-    return new Response(JSON.stringify({ 
-      error: 'Failed to generate search index',
-      message: error instanceof Error ? error.message : 'Unknown error'
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return new Response(
+      JSON.stringify({
+        error: 'Failed to generate search index',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   }
 };

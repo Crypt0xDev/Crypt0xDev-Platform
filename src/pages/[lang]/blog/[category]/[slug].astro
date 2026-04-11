@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BlogLayout from '@layouts/BlogLayout.astro';
 import TOC from '@components/common/TOC.astro';
 import Breadcrumb from '@components/common/Breadcrumb.astro';
@@ -10,12 +10,12 @@ import { BLOG_CATEGORIES } from '@i18n/constants/categories';
 
 export async function getStaticPaths() {
   const blogEntries = await getCollection('blog');
-  return blogEntries.map(entry => {
-    const slugParts = entry.slug.split('/');
+  return blogEntries.map((entry) => {
+    const slugParts = entry.id.replace(/\.md$/, '').split('/');
     const lang = slugParts[0] || entry.data.language || 'es';
     const category = slugParts[1] || entry.data.category || 'tutorial';
     const actualSlug = slugParts[2] || slugParts[slugParts.length - 1];
-    
+
     return {
       params: { lang: lang, category: category, slug: actualSlug },
       props: { entry },
@@ -24,11 +24,12 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content, headings } = await entry.render();
+const { Content, headings } = await render(entry);
 const t = useTranslations(entry.data.language as 'es' | 'en');
 
 // Obtener información de la categoría
-const categoryInfo = entry.data.category && BLOG_CATEGORIES[entry.data.category];
+const categoryInfo =
+  entry.data.category && BLOG_CATEGORIES[entry.data.category];
 
 // Obtener posts relacionados
 const allPosts = await getCollection('blog', ({ data }) => {
@@ -39,17 +40,20 @@ const currentTags = entry.data.tags || [];
 
 // Buscar relacionados por tags
 const related = allPosts
-  .filter(p => p.slug !== entry.slug) // Excluir el actual
-  .map(p => ({
+  .filter((p) => p.id !== entry.id) // Excluir el actual
+  .map((p) => ({
     post: p,
     // Calcular score de similitud basado en tags compartidos
-    score: p.data.tags?.filter(t => currentTags.includes(t)).length || 0
+    score: p.data.tags?.filter((t) => currentTags.includes(t)).length || 0,
   }))
   .filter(({ score }) => score > 0) // Solo mostrar si hay tags en común
   .sort((a, b) => {
     // Primero por score, luego por fecha
     if (b.score !== a.score) return b.score - a.score;
-    return new Date(b.post.data.pubDate).getTime() - new Date(a.post.data.pubDate).getTime();
+    return (
+      new Date(b.post.data.pubDate).getTime() -
+      new Date(a.post.data.pubDate).getTime()
+    );
   })
   .slice(0, 3) // Top 3
   .map(({ post }) => post);
@@ -57,8 +61,11 @@ const related = allPosts
 // Si no hay suficientes posts relacionados por tags, completar con los más recientes
 if (related.length < 3) {
   const remaining = allPosts
-    .filter(p => p.slug !== entry.slug && !related.includes(p))
-    .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
+    .filter((p) => p.id !== entry.id && !related.includes(p))
+    .sort(
+      (a, b) =>
+        new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+    )
     .slice(0, 3 - related.length);
   related.push(...remaining);
 }
@@ -75,64 +82,100 @@ if (related.length < 3) {
 >
   <article class="blog-post">
     <!-- Breadcrumb -->
-    <Breadcrumb items={[
-      { label: entry.data.language === 'es' ? 'Inicio' : 'Home', href: `/${entry.data.language}` },
-      { label: 'Blog', href: `/${entry.data.language}/blog` },
-      ...(categoryInfo ? [{ label: categoryInfo.label[entry.data.language as 'es' | 'en'], href: `/${entry.data.language}/blog/${entry.data.category}` }] : []),
-      { label: entry.data.title }
-    ]} />
-    
+    <Breadcrumb
+      items={[
+        {
+          label: entry.data.language === 'es' ? 'Inicio' : 'Home',
+          href: `/${entry.data.language}`,
+        },
+        { label: 'Blog', href: `/${entry.data.language}/blog` },
+        ...(categoryInfo
+          ? [
+              {
+                label: categoryInfo.label[entry.data.language as 'es' | 'en'],
+                href: `/${entry.data.language}/blog/${entry.data.category}`,
+              },
+            ]
+          : []),
+        { label: entry.data.title },
+      ]}
+    />
+
     <header class="post-header">
       <div class="post-meta-wrapper">
         <!-- Categoría y Dificultad -->
         <div class="flex items-center justify-center gap-3 mb-6 flex-wrap">
-          {categoryInfo && (
-            <a 
-              href={`/${entry.data.language}/blog/${entry.data.category}`}
-              class={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold ${categoryInfo.color} no-underline hover:opacity-80 transition-all border border-current`}
-            >
-              <span>{categoryInfo.icon}</span>
-              {categoryInfo.label[entry.data.language as 'es' | 'en']}
-            </a>
-          )}
-          {entry.data.difficulty && (
-            <span class={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold border ${
-              entry.data.difficulty === 'beginner' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 border-green-300 dark:border-green-700' :
-              entry.data.difficulty === 'intermediate' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 border-yellow-300 dark:border-yellow-700' :
-              'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400 border-red-300 dark:border-red-700'
-            }`}>
-              {entry.data.difficulty === 'beginner' ? (entry.data.language === 'es' ? 'Principiante' : 'Beginner') :
-               entry.data.difficulty === 'intermediate' ? (entry.data.language === 'es' ? 'Intermedio' : 'Intermediate') :
-               (entry.data.language === 'es' ? 'Avanzado' : 'Advanced')}
-            </span>
-          )}
+          {
+            categoryInfo && (
+              <a
+                href={`/${entry.data.language}/blog/${entry.data.category}`}
+                class={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold ${categoryInfo.color} no-underline hover:opacity-80 transition-all border border-current`}
+              >
+                <span>{categoryInfo.icon}</span>
+                {categoryInfo.label[entry.data.language as 'es' | 'en']}
+              </a>
+            )
+          }
+          {
+            entry.data.difficulty && (
+              <span
+                class={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold border ${
+                  entry.data.difficulty === 'beginner'
+                    ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 border-green-300 dark:border-green-700'
+                    : entry.data.difficulty === 'intermediate'
+                      ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 border-yellow-300 dark:border-yellow-700'
+                      : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400 border-red-300 dark:border-red-700'
+                }`}
+              >
+                {entry.data.difficulty === 'beginner'
+                  ? entry.data.language === 'es'
+                    ? 'Principiante'
+                    : 'Beginner'
+                  : entry.data.difficulty === 'intermediate'
+                    ? entry.data.language === 'es'
+                      ? 'Intermedio'
+                      : 'Intermediate'
+                    : entry.data.language === 'es'
+                      ? 'Avanzado'
+                      : 'Advanced'}
+              </span>
+            )
+          }
         </div>
-        
+
         <h1 class="post-title">{entry.data.title}</h1>
-        
+
         <div class="post-meta">
-          <time datetime={entry.data.pubDate.toISOString()} class="text-slate-600 dark:text-slate-400">
+          <time
+            datetime={entry.data.pubDate.toISOString()}
+            class="text-slate-600 dark:text-slate-400"
+          >
             {formatDate(entry.data.pubDate, entry.data.language)}
           </time>
-          {entry.data.updatedDate && (
-            <span class="text-slate-600 dark:text-slate-400">
-              · {entry.data.language === 'es' ? 'Actualizado' : 'Updated'}: {formatDate(entry.data.updatedDate, entry.data.language)}
-            </span>
-          )}
+          {
+            entry.data.updatedDate && (
+              <span class="text-slate-600 dark:text-slate-400">
+                · {entry.data.language === 'es' ? 'Actualizado' : 'Updated'}:{' '}
+                {formatDate(entry.data.updatedDate, entry.data.language)}
+              </span>
+            )
+          }
         </div>
-        
-        {entry.data.tags && entry.data.tags.length > 0 && (
-          <div class="tags">
-            {entry.data.tags.map((tag: string) => (
-              <a 
-                href={`/${entry.data.language}/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`}
-                class="tag"
-              >
-                #{tag}
-              </a>
-            ))}
-          </div>
-        )}
+
+        {
+          entry.data.tags && entry.data.tags.length > 0 && (
+            <div class="tags">
+              {entry.data.tags.map((tag: string) => (
+                <a
+                  href={`/${entry.data.language}/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`}
+                  class="tag"
+                >
+                  #{tag}
+                </a>
+              ))}
+            </div>
+          )
+        }
       </div>
     </header>
 
@@ -143,18 +186,24 @@ if (related.length < 3) {
         </article>
       </div>
 
-      {headings.length > 2 && (
-        <aside class="toc-sidebar" data-pagefind-ignore>
-          <TOC headings={headings} title={t('blog.table_of_contents') || 'Table of Contents'} platform="blog" />
-        </aside>
-      )}
+      {
+        headings.length > 2 && (
+          <aside class="toc-sidebar" data-pagefind-ignore>
+            <TOC
+              headings={headings}
+              title={t('blog.table_of_contents') || 'Table of Contents'}
+              platform="blog"
+            />
+          </aside>
+        )
+      }
     </div>
 
     <div class="related-section" data-pagefind-ignore>
-      <RelatedPosts 
-        posts={related.map(post => ({
+      <RelatedPosts
+        posts={related.map((post) => ({
           id: post.id,
-          slug: post.slug,
+          slug: post.id.replace(/\.md$/, ''),
           title: post.data.title,
           description: post.data.description,
           pubDate: post.data.pubDate,
@@ -162,9 +211,9 @@ if (related.length < 3) {
           tags: post.data.tags,
           language: post.data.language,
           readTime: post.data.readTime,
-          category: post.data.category
-        }))} 
-        title={t('blog.related_posts') || 'Related Posts'} 
+          category: post.data.category,
+        }))}
+        title={t('blog.related_posts') || 'Related Posts'}
         lang={entry.data.language}
         type="blog"
       />
@@ -277,7 +326,11 @@ if (related.length < 3) {
     line-height: 1.75;
     font-size: 1rem;
     max-width: none !important;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family:
+      'Inter',
+      system-ui,
+      -apple-system,
+      sans-serif;
   }
 
   .prose :global(h1),
@@ -286,7 +339,11 @@ if (related.length < 3) {
   .prose :global(h4),
   .prose :global(h5),
   .prose :global(h6) {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family:
+      'Inter',
+      system-ui,
+      -apple-system,
+      sans-serif;
     font-weight: 700;
     letter-spacing: -0.02em;
   }
@@ -321,7 +378,11 @@ if (related.length < 3) {
   .prose :global(li),
   .prose :global(td),
   .prose :global(th) {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family:
+      'Inter',
+      system-ui,
+      -apple-system,
+      sans-serif;
   }
 
   .prose :global(p) {

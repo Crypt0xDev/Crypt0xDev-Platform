@@ -1,5 +1,5 @@
 ---
-import { getCollection, type CollectionEntry } from 'astro:content';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 import Layout from '@layouts/Layout.astro';
 import TOC from '@components/common/TOC.astro';
 import { getCategoryById } from '@i18n/constants/resources';
@@ -10,44 +10,44 @@ interface Props {
 
 export async function getStaticPaths() {
   const allResources = await getCollection('resources');
-  
+
   const paths: Array<{
     params: { lang: string; category: string; slug: string };
     props: { resource: CollectionEntry<'resources'> };
   }> = [];
-  
+
   for (const resource of allResources) {
-    const slugParts = resource.slug.split('/');
-    
+    const idParts = resource.id.replace(/\.md$/, '').split('/');
+
     // Determinar el idioma y el slug del archivo
     let lang: string;
     let category: string;
     let slug: string;
-    
-    if (slugParts[0] === 'es' || slugParts[0] === 'en') {
-      lang = slugParts[0];
-      category = slugParts[1];
-      slug = slugParts[2];
+
+    if (idParts[0] === 'es' || idParts[0] === 'en') {
+      lang = idParts[0];
+      category = idParts[1];
+      slug = idParts[2];
     } else {
-      // Si no hay idioma en el slug, usar español por defecto
+      // Si no hay idioma en el id, usar español por defecto
       lang = 'es';
-      category = slugParts[0];
-      slug = slugParts[1];
+      category = idParts[0];
+      slug = idParts[1];
     }
-    
+
     // Solo generar páginas para recursos que NO tienen URL externa
     if (!resource.data.url) {
       paths.push({
-        params: { 
-          lang, 
+        params: {
+          lang,
           category,
-          slug 
+          slug,
         },
-        props: { resource }
+        props: { resource },
       });
     }
   }
-  
+
   return paths;
 }
 
@@ -62,7 +62,7 @@ if (!category) {
 }
 
 const categoryName = category.name[lang as 'es' | 'en'];
-const { Content, headings } = await resource.render();
+const { Content, headings } = await render(resource);
 ---
 
 <Layout
@@ -73,12 +73,20 @@ const { Content, headings } = await resource.render();
   <main class="min-h-screen bg-white dark:bg-slate-900">
     <div class="resource-article">
       <!-- Breadcrumb -->
-      <nav class="flex items-center gap-2 text-sm mb-8 text-slate-600 dark:text-slate-400">
-        <a href={`/${lang}/resources`} class={`hover:${category.textColor} transition-colors`}>
+      <nav
+        class="flex items-center gap-2 text-sm mb-8 text-slate-600 dark:text-slate-400"
+      >
+        <a
+          href={`/${lang}/resources`}
+          class={`hover:${category.textColor} transition-colors`}
+        >
           {lang === 'es' ? 'Recursos' : 'Resources'}
         </a>
         <span>/</span>
-        <a href={`/${lang}/resources/${categoryId}`} class={`hover:${category.textColor} transition-colors`}>
+        <a
+          href={`/${lang}/resources/${categoryId}`}
+          class={`hover:${category.textColor} transition-colors`}
+        >
           {categoryName}
         </a>
         <span>/</span>
@@ -90,35 +98,42 @@ const { Content, headings } = await resource.render();
       <!-- Header -->
       <header class="mb-12">
         <div class="flex items-center gap-3 mb-4">
-          <span class={`px-3 py-1 ${category.bgColor} ${category.textColor} rounded-lg text-sm font-semibold flex items-center gap-2`}>
+          <span
+            class={`px-3 py-1 ${category.bgColor} ${category.textColor} rounded-lg text-sm font-semibold flex items-center gap-2`}
+          >
             <span>{category.icon}</span>
             {categoryName}
           </span>
         </div>
-        
-        <h1 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4">
+
+        <h1
+          class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4"
+        >
           {resource.data.title}
         </h1>
-        
+
         <p class="text-xl text-slate-600 dark:text-slate-400">
           {resource.data.description}
         </p>
 
-        {resource.data.tags && resource.data.tags.length > 0 && (
-          <div class="flex flex-wrap gap-2 mt-6">
-            {resource.data.tags.map((tag: string) => (
-              <span class="text-sm px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-full">
-                #{tag}
-              </span>
-            ))}
-          </div>
-        )}
+        {
+          resource.data.tags && resource.data.tags.length > 0 && (
+            <div class="flex flex-wrap gap-2 mt-6">
+              {resource.data.tags.map((tag: string) => (
+                <span class="text-sm px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-full">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )
+        }
       </header>
 
       <!-- Content & TOC -->
       <div class="content-container">
         <div class="content-wrapper">
-          <article class="main-content prose prose-lg dark:prose-invert
+          <article
+            class="main-content prose prose-lg dark:prose-invert
             prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-white
             prose-p:text-slate-700 dark:prose-p:text-slate-300
             prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline
@@ -132,30 +147,52 @@ const { Content, headings } = await resource.render();
             prose-hr:border-slate-200 dark:prose-hr:border-slate-800
             prose-table:text-slate-700 dark:prose-table:text-slate-300
             prose-th:text-slate-900 dark:prose-th:text-white
-            prose-img:rounded-lg prose-img:shadow-lg
-          ">
+            prose-img:rounded-lg prose-img:shadow-lg"
+          >
             <Content />
           </article>
         </div>
       </div>
 
       <!-- TOC Fixed (fuera del flujo) -->
-      {headings.length > 0 && (
-        <aside class="toc-wrapper">
-          <TOC headings={headings} title={lang === 'es' ? 'Tabla de Contenidos' : 'Table of Contents'} inline={false} platform="default" />
-        </aside>
-      )}
+      {
+        headings.length > 0 && (
+          <aside class="toc-wrapper">
+            <TOC
+              headings={headings}
+              title={
+                lang === 'es' ? 'Tabla de Contenidos' : 'Table of Contents'
+              }
+              inline={false}
+              platform="default"
+            />
+          </aside>
+        )
+      }
 
       <!-- Back to category -->
       <div class="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800">
-        <a 
+        <a
           href={`/${lang}/resources/${categoryId}`}
           class={`inline-flex items-center gap-2 ${category.textColor} hover:underline font-semibold`}
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
           </svg>
-          {lang === 'es' ? `Volver a ${categoryName}` : `Back to ${categoryName}`}
+          {
+            lang === 'es'
+              ? `Volver a ${categoryName}`
+              : `Back to ${categoryName}`
+          }
         </a>
       </div>
     </div>
@@ -212,7 +249,7 @@ const { Content, headings } = await resource.render();
       display: none;
     }
   }
-  
+
   @media (max-width: 768px) {
     .resource-article {
       padding: 1.5rem 1rem;

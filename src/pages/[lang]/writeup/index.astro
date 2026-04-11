@@ -6,10 +6,7 @@ import { getLangFromUrl, useTranslations } from '@i18n/core';
 import { PLATFORMS, getAllPlatforms } from '@i18n/constants/platforms';
 
 export async function getStaticPaths() {
-  return [
-    { params: { lang: 'es' } },
-    { params: { lang: 'en' } }
-  ];
+  return [{ params: { lang: 'es' } }, { params: { lang: 'en' } }];
 }
 
 const { lang } = Astro.params;
@@ -21,47 +18,57 @@ const filterType = url.searchParams.get('filter'); // attackVector, technique, c
 const filterValue = url.searchParams.get('value');
 
 // Platform information (usando configuración centralizada)
-const platforms = getAllPlatforms().map(p => ({
+const platforms = getAllPlatforms().map((p) => ({
   name: p.name,
   slug: p.slug,
   platformId: p.id,
   description: p.description,
   color: p.color.gradient,
-  bgColor: p.id === 'htb' ? 'bg-green-50 dark:bg-green-950/20' :
-           p.id === 'tryhackme' ? 'bg-red-50 dark:bg-red-950/20' :
-           p.id === 'hackmyvm' ? 'bg-blue-50 dark:bg-blue-950/20' :
-           p.id === 'vulnhub' ? 'bg-purple-50 dark:bg-purple-950/20' :
-           'bg-orange-50 dark:bg-orange-950/20',
-  borderColor: p.id === 'htb' ? 'border-green-200 dark:border-green-900' :
-               p.id === 'tryhackme' ? 'border-red-200 dark:border-red-900' :
-               p.id === 'hackmyvm' ? 'border-blue-200 dark:border-blue-900' :
-               p.id === 'vulnhub' ? 'border-purple-200 dark:border-purple-900' :
-               'border-orange-200 dark:border-orange-900',
+  bgColor:
+    p.id === 'htb'
+      ? 'bg-green-50 dark:bg-green-950/20'
+      : p.id === 'tryhackme'
+        ? 'bg-red-50 dark:bg-red-950/20'
+        : p.id === 'hackmyvm'
+          ? 'bg-blue-50 dark:bg-blue-950/20'
+          : p.id === 'vulnhub'
+            ? 'bg-purple-50 dark:bg-purple-950/20'
+            : 'bg-orange-50 dark:bg-orange-950/20',
+  borderColor:
+    p.id === 'htb'
+      ? 'border-green-200 dark:border-green-900'
+      : p.id === 'tryhackme'
+        ? 'border-red-200 dark:border-red-900'
+        : p.id === 'hackmyvm'
+          ? 'border-blue-200 dark:border-blue-900'
+          : p.id === 'vulnhub'
+            ? 'border-purple-200 dark:border-purple-900'
+            : 'border-orange-200 dark:border-orange-900',
   href: `/${lang}/writeup/${p.slug}`,
   logo: 'logo' in p ? p.logo : undefined,
-  icon: p.icon
+  icon: p.icon,
 }));
 
 // Get all writeups
 const allWriteups = await getCollection('writeups', (writeup) => {
-  return writeup.slug.startsWith(`${lang}/`);
+  return writeup.id.startsWith(`${lang}/`);
 });
 
 // Aplicar filtros si existen
 let filteredWriteups = allWriteups;
 if (filterType && filterValue) {
-  filteredWriteups = allWriteups.filter(w => {
+  filteredWriteups = allWriteups.filter((w) => {
     switch (filterType) {
       case 'attackVector':
-        return w.data.attackVectors?.some(v => v === filterValue);
+        return w.data.attackVectors?.some((v) => v === filterValue);
       case 'technique':
-        return w.data.techniques?.some(t => t === filterValue);
+        return w.data.techniques?.some((t) => t === filterValue);
       case 'certification':
-        return w.data.certifications?.some(c => c === filterValue);
+        return w.data.certifications?.some((c) => c === filterValue);
       case 'vulnerability':
-        return w.data.vulnerabilities?.some(vuln => vuln === filterValue);
+        return w.data.vulnerabilities?.some((vuln) => vuln === filterValue);
       case 'tag':
-        return w.data.tags?.some(tag => tag === filterValue);
+        return w.data.tags?.some((tag) => tag === filterValue);
       default:
         return true;
     }
@@ -69,9 +76,11 @@ if (filterType && filterValue) {
 }
 
 // Count writeups per platform (usando filteredWriteups si hay filtro)
-const platformCounts = platforms.map(platform => ({
+const platformCounts = platforms.map((platform) => ({
   ...platform,
-  count: (filterType ? filteredWriteups : allWriteups).filter(w => w.data.platform === platform.platformId).length
+  count: (filterType ? filteredWriteups : allWriteups).filter(
+    (w) => w.data.platform === platform.platformId
+  ).length,
 }));
 
 // Traducciones para filtros
@@ -80,98 +89,140 @@ const filterTranslations = {
   technique: { es: 'Técnica MITRE', en: 'MITRE Technique' },
   certification: { es: 'Certificación', en: 'Certification' },
   vulnerability: { es: 'Vulnerabilidad', en: 'Vulnerability' },
-  tag: { es: 'Etiqueta', en: 'Tag' }
+  tag: { es: 'Etiqueta', en: 'Tag' },
 };
 ---
 
 <Layout title={`${lang === 'es' ? 'Writeups' : 'Writeups'}`}>
-  <main class="min-h-[calc(100vh-16rem)] bg-gradient-to-br from-white via-white to-indigo-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/10">
+  <main
+    class="min-h-[calc(100vh-16rem)] bg-gradient-to-br from-white via-white to-indigo-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/10"
+  >
     <!-- Banner de filtro activo -->
-    {filterType && filterValue && (
-      <div class="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-800 dark:to-purple-800 py-4">
-        <div class="container max-w-7xl mx-auto px-4">
-          <div class="flex items-center justify-between flex-wrap gap-4">
-            <div class="flex items-center gap-3">
-              <span class="text-white text-sm font-semibold">
-                {lang === 'es' ? '🔍 Filtrando por' : '🔍 Filtering by'}:
-              </span>
-              <span class="px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full text-white font-bold text-sm">
-                {filterTranslations[filterType as keyof typeof filterTranslations][lang as 'es' | 'en']}: {filterValue}
-              </span>
-              <span class="text-white/80 text-sm">
-                ({filteredWriteups.length} {lang === 'es' ? 'resultados' : 'results'})
-              </span>
+    {
+      filterType && filterValue && (
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-800 dark:to-purple-800 py-4">
+          <div class="container max-w-7xl mx-auto px-4">
+            <div class="flex items-center justify-between flex-wrap gap-4">
+              <div class="flex items-center gap-3">
+                <span class="text-white text-sm font-semibold">
+                  {lang === 'es' ? '🔍 Filtrando por' : '🔍 Filtering by'}:
+                </span>
+                <span class="px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full text-white font-bold text-sm">
+                  {
+                    filterTranslations[
+                      filterType as keyof typeof filterTranslations
+                    ][lang as 'es' | 'en']
+                  }
+                  : {filterValue}
+                </span>
+                <span class="text-white/80 text-sm">
+                  ({filteredWriteups.length}{' '}
+                  {lang === 'es' ? 'resultados' : 'results'})
+                </span>
+              </div>
+              <a
+                href={`/${lang}/writeup`}
+                class="px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 rounded-full text-white font-semibold text-sm transition-all duration-200 hover:scale-105"
+              >
+                {lang === 'es' ? '✕ Limpiar filtro' : '✕ Clear filter'}
+              </a>
             </div>
-            <a 
-              href={`/${lang}/writeup`}
-              class="px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 rounded-full text-white font-semibold text-sm transition-all duration-200 hover:scale-105"
-            >
-              {lang === 'es' ? '✕ Limpiar filtro' : '✕ Clear filter'}
-            </a>
           </div>
         </div>
-      </div>
-    )}
+      )
+    }
 
     <!-- Hero Section -->
     <section class="py-12 md:py-16">
       <div class="container max-w-7xl mx-auto px-4">
         <!-- Breadcrumb -->
-        <Breadcrumb items={[
-          { label: lang === 'es' ? 'Inicio' : 'Home', href: `/${lang}` },
-          { label: 'Writeups' }
-        ]} />
+        <Breadcrumb
+          items={[
+            { label: lang === 'es' ? 'Inicio' : 'Home', href: `/${lang}` },
+            { label: 'Writeups' },
+          ]}
+        />
 
         <div class="mb-12">
-          <h1 class="text-4xl md:text-5xl lg:text-6xl font-black mb-4 font-sans tracking-tight bg-gradient-to-r from-slate-900 via-indigo-600 to-slate-900 dark:from-slate-100 dark:via-indigo-400 dark:to-slate-100 bg-clip-text text-transparent">
-            {filterType ? (lang === 'es' ? 'Resultados de Búsqueda' : 'Search Results') : (lang === 'es' ? 'Bienvenido' : 'Welcome')}
+          <h1
+            class="text-4xl md:text-5xl lg:text-6xl font-black mb-4 font-sans tracking-tight bg-gradient-to-r from-slate-900 via-indigo-600 to-slate-900 dark:from-slate-100 dark:via-indigo-400 dark:to-slate-100 bg-clip-text text-transparent"
+          >
+            {
+              filterType
+                ? lang === 'es'
+                  ? 'Resultados de Búsqueda'
+                  : 'Search Results'
+                : lang === 'es'
+                  ? 'Bienvenido'
+                  : 'Welcome'
+            }
           </h1>
           <div class="max-w-3xl">
-            <p class="text-lg md:text-xl text-slate-700 dark:text-slate-300 leading-relaxed">
-              {lang === 'es' 
-                ? 'Bienvenido a la sección de writeups, aquí vas a encontrar resoluciones de máquinas, tanto escritas como en formato video, de plataformas como HackTheBox, TryHackMe, HackMyVM y VulnHub.'
-                : 'Welcome to the writeups section, here you will find machine solutions, both written and in video format, from platforms such as HackTheBox, TryHackMe, HackMyVM and VulnHub.'}
+            <p
+              class="text-lg md:text-xl text-slate-700 dark:text-slate-300 leading-relaxed"
+            >
+              {
+                lang === 'es'
+                  ? 'Bienvenido a la sección de writeups, aquí vas a encontrar resoluciones de máquinas, tanto escritas como en formato video, de plataformas como HackTheBox, TryHackMe, HackMyVM y VulnHub.'
+                  : 'Welcome to the writeups section, here you will find machine solutions, both written and in video format, from platforms such as HackTheBox, TryHackMe, HackMyVM and VulnHub.'
+              }
             </p>
           </div>
         </div>
 
         <!-- Platform Cards Grid - 4 en fila -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {platformCounts.map((platform) => (
-            <a 
-              href={platform.href}
-              class={`group relative overflow-hidden rounded-2xl border-2 ${platform.borderColor} ${platform.bgColor} p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl`}
-            >
-              <div class="relative z-10">
-                <div class="w-24 h-24 mb-4 flex items-center justify-center bg-white/50 dark:bg-slate-800/50 rounded-xl p-3">
-                  {platform.logo ? (
-                    <img 
-                      src={platform.logo} 
-                      alt={platform.name}
-                      class="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110"
-                    />
-                  ) : (
-                    <span class="text-5xl">{platform.icon}</span>
-                  )}
+          {
+            platformCounts.map((platform) => (
+              <a
+                href={platform.href}
+                class={`group relative overflow-hidden rounded-2xl border-2 ${platform.borderColor} ${platform.bgColor} p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl`}
+              >
+                <div class="relative z-10">
+                  <div class="w-24 h-24 mb-4 flex items-center justify-center bg-white/50 dark:bg-slate-800/50 rounded-xl p-3">
+                    {platform.logo ? (
+                      <img
+                        src={platform.logo}
+                        alt={platform.name}
+                        class="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110"
+                      />
+                    ) : (
+                      <span class="text-5xl">{platform.icon}</span>
+                    )}
+                  </div>
+                  <h3 class="text-2xl font-bold mb-2 text-slate-900 dark:text-white">
+                    {platform.name}
+                  </h3>
+                  <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                    {platform.description}
+                  </p>
+                  <div class="flex items-center justify-between">
+                    <span
+                      class={`text-sm font-semibold bg-gradient-to-r ${platform.color} bg-clip-text text-transparent`}
+                    >
+                      {platform.count} writeup{platform.count !== 1 ? 's' : ''}
+                    </span>
+                    <svg
+                      class="w-5 h-5 text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </div>
                 </div>
-                <h3 class="text-2xl font-bold mb-2 text-slate-900 dark:text-white">
-                  {platform.name}
-                </h3>
-                <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                  {platform.description}
-                </p>
-                <div class="flex items-center justify-between">
-                  <span class={`text-sm font-semibold bg-gradient-to-r ${platform.color} bg-clip-text text-transparent`}>
-                    {platform.count} writeup{platform.count !== 1 ? 's' : ''}
-                  </span>
-                  <svg class="w-5 h-5 text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              </div>
-              <div class={`absolute inset-0 bg-gradient-to-br ${platform.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}></div>
-            </a>
-          ))}
+                <div
+                  class={`absolute inset-0 bg-gradient-to-br ${platform.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}
+                />
+              </a>
+            ))
+          }
         </div>
       </div>
     </section>

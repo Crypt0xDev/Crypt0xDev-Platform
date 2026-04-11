@@ -43,14 +43,14 @@ export function filterByLang<T extends { data: any }>(
 }
 
 /**
- * Obtiene posts únicos por slug (para evitar duplicados entre idiomas)
+ * Obtiene entradas únicas por id (para evitar duplicados entre idiomas)
  */
-export function getUniqueBySlug<T extends { slug: string }>(items: T[]): T[] {
+export function getUniqueBySlug<T extends { id: string }>(items: T[]): T[] {
   const seen = new Set<string>();
   return items.filter(item => {
-    const slug = item.slug;
-    if (seen.has(slug)) return false;
-    seen.add(slug);
+    const id = item.id;
+    if (seen.has(id)) return false;
+    seen.add(id);
     return true;
   });
 }

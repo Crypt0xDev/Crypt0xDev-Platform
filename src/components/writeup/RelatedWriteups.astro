@@ -2,8 +2,8 @@
 import { formatDate } from '@i18n/utils';
 
 interface Writeup {
-  id?: string;
-  slug: string;
+  id: string;
+  slug?: string;
   collection?: string;
   data: {
     title: string;
@@ -37,15 +37,22 @@ const platformNames: Record<string, string> = {
   portswigger: 'PortSwigger'
 };
 
+// Derivar slug efectivo desde id (v6) o slug legacy (v5)
+const getEffectiveSlug = (writeup: Writeup): string => {
+  if (writeup.slug) return writeup.slug;
+  return writeup.id.replace(/\.md$/, '');
+};
+
 // Generar URL correcta para writeups
 const getWriteupUrl = (writeup: Writeup) => {
-  const slugParts = writeup.slug.split('/');
+  const effectiveSlug = getEffectiveSlug(writeup);
+  const slugParts = effectiveSlug.split('/');
   if (slugParts.length >= 3) {
     const platform = slugParts[1];
     const machineName = slugParts.slice(2).join('/');
     return `/${lang}/writeup/${platform}/${machineName}`;
   }
-  const cleanedSlug = writeup.slug.replace(/^(es|en)\//, '');
+  const cleanedSlug = effectiveSlug.replace(/^(es|en)\//, '');
   return `/${lang}/writeup/${cleanedSlug}`;
 };
 
