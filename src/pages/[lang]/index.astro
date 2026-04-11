@@ -136,7 +136,7 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
   }
 
   <main
-    class="min-h-[calc(100vh-16rem)] bg-gradient-to-br from-white via-white to-indigo-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/10"
+    class="min-h-[calc(100vh-16rem)] bg-linear-to-br from-white via-white to-indigo-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/10"
   >
     <!-- Hero Section -->
     <section class="relative py-12 md:py-16 bg-transparent overflow-hidden">
@@ -147,7 +147,7 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
       >
       </div>
       <div
-        class="absolute inset-0 bg-gradient-to-b from-transparent via-white/50 to-white dark:from-transparent dark:via-slate-900/50 dark:to-slate-900 z-0"
+        class="absolute inset-0 bg-linear-to-b from-transparent via-white/50 to-white dark:from-transparent dark:via-slate-900/50 dark:to-slate-900 z-0"
       >
       </div>
       <div class="container max-w-4xl mx-auto px-4 relative z-10">
@@ -157,11 +157,11 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
           >
             {t('common.welcome_to')}
             <span
-              class="relative inline-block bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent"
+              class="relative inline-block bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent"
             >
               Crypt0xDev
               <span
-                class="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full shadow-lg shadow-purple-500/40"
+                class="absolute -bottom-1 left-0 w-full h-1 bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full shadow-lg shadow-purple-500/40"
               ></span>
             </span>
           </h1>
@@ -309,7 +309,7 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
           <div class="container max-w-7xl mx-auto px-4">
             <h2
               id="recent-posts-title"
-              class="text-3xl md:text-4xl lg:text-5xl font-black mb-8 font-sans tracking-tight bg-gradient-to-r from-slate-900 via-indigo-600 to-slate-900 dark:from-slate-100 dark:via-indigo-400 dark:to-slate-100 bg-clip-text text-transparent"
+              class="text-3xl md:text-4xl lg:text-5xl font-black mb-8 font-sans tracking-tight bg-linear-to-r from-slate-900 via-indigo-600 to-slate-900 dark:from-slate-100 dark:via-indigo-400 dark:to-slate-100 bg-clip-text text-transparent"
             >
               {t('blog.latest_posts')}
             </h2>
@@ -332,9 +332,9 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
                     itemscope
                     itemtype="https://schema.org/BlogPosting"
                   >
-                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div class="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     {post.data.heroImage && (
-                      <div class="w-full h-52 overflow-hidden bg-gradient-to-br from-slate-100 to-indigo-100/50 dark:from-slate-800 dark:to-indigo-900/30">
+                      <div class="w-full h-52 overflow-hidden bg-linear-to-br from-slate-100 to-indigo-100/50 dark:from-slate-800 dark:to-indigo-900/30">
                         <img
                           src={post.data.heroImage}
                           alt={post.data.title}
@@ -405,7 +405,7 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
           <div class="container max-w-7xl mx-auto px-4">
             <h2
               id="recent-writeups-title"
-              class="text-3xl md:text-4xl lg:text-5xl font-black mb-8 font-sans tracking-tight bg-gradient-to-r from-slate-900 via-indigo-600 to-slate-900 dark:from-slate-100 dark:via-indigo-400 dark:to-slate-100 bg-clip-text text-transparent"
+              class="text-3xl md:text-4xl lg:text-5xl font-black mb-8 font-sans tracking-tight bg-linear-to-r from-slate-900 via-indigo-600 to-slate-900 dark:from-slate-100 dark:via-indigo-400 dark:to-slate-100 bg-clip-text text-transparent"
             >
               {t('writeups.latest')}
             </h2>
@@ -432,8 +432,8 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
                     itemscope
                     itemtype="https://schema.org/TechArticle"
                   >
-                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <div class="w-full h-52 overflow-hidden bg-gradient-to-br from-slate-100 to-indigo-100/50 dark:from-slate-800 dark:to-indigo-900/30 flex items-center justify-center p-8">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div class="w-full h-52 overflow-hidden bg-linear-to-br from-slate-100 to-indigo-100/50 dark:from-slate-800 dark:to-indigo-900/30 flex items-center justify-center p-8">
                       <img
                         src={logoToShow}
                         alt={writeup.data.title}
@@ -459,7 +459,7 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
                         </span>
                         {writeup.data.os && (
                           <span
-                            class="inline-flex items-center px-3 py-2 bg-gradient-to-br from-slate-100 to-slate-100/50 dark:from-slate-800/50 dark:to-slate-800/30 text-slate-600 dark:text-slate-400 border-2 border-slate-300/50 dark:border-slate-700/50 rounded-lg text-base lg:text-lg font-semibold font-sans leading-none"
+                            class="inline-flex items-center px-3 py-2 bg-linear-to-br from-slate-100 to-slate-100/50 dark:from-slate-800/50 dark:to-slate-800/30 text-slate-600 dark:text-slate-400 border-2 border-slate-300/50 dark:border-slate-700/50 rounded-lg text-base lg:text-lg font-semibold font-sans leading-none"
                             itemprop="operatingSystem"
                           >
                             {writeup.data.os === 'linux'
@@ -561,7 +561,7 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
       topTechniques.length > 0 && (
         <section class="py-8 md:py-12">
           <div class="container max-w-7xl mx-auto px-4">
-            <h2 class="text-3xl md:text-4xl lg:text-5xl font-black mb-8 font-sans tracking-tight bg-gradient-to-r from-slate-900 via-indigo-600 to-slate-900 dark:from-slate-100 dark:via-indigo-400 dark:to-slate-100 bg-clip-text text-transparent">
+            <h2 class="text-3xl md:text-4xl lg:text-5xl font-black mb-8 font-sans tracking-tight bg-linear-to-r from-slate-900 via-indigo-600 to-slate-900 dark:from-slate-100 dark:via-indigo-400 dark:to-slate-100 bg-clip-text text-transparent">
               {lang === 'es'
                 ? '🔧 Técnicas Más Cubiertas'
                 : '🔧 Most Covered Techniques'}
@@ -586,7 +586,7 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
       oscp.length > 0 && (
         <section class="py-8 md:py-12">
           <div class="container max-w-7xl mx-auto px-4">
-            <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/10 dark:to-emerald-900/10 rounded-2xl p-8 border-2 border-green-200 dark:border-green-800">
+            <div class="bg-linear-to-br from-green-50 to-emerald-50 dark:from-green-900/10 dark:to-emerald-900/10 rounded-2xl p-8 border-2 border-green-200 dark:border-green-800">
               <h2 class="text-3xl md:text-4xl font-black mb-4 font-sans tracking-tight text-green-800 dark:text-green-400">
                 🎯 {lang === 'es' ? 'Preparación OSCP' : 'OSCP Preparation'}
               </h2>
@@ -633,7 +633,7 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
       featuredWriteups.length > 0 && (
         <section class="py-8 md:py-12">
           <div class="container max-w-7xl mx-auto px-4">
-            <h2 class="text-3xl md:text-4xl lg:text-5xl font-black mb-8 font-sans tracking-tight bg-gradient-to-r from-slate-900 via-red-600 to-slate-900 dark:from-slate-100 dark:via-red-400 dark:to-slate-100 bg-clip-text text-transparent">
+            <h2 class="text-3xl md:text-4xl lg:text-5xl font-black mb-8 font-sans tracking-tight bg-linear-to-r from-slate-900 via-red-600 to-slate-900 dark:from-slate-100 dark:via-red-400 dark:to-slate-100 bg-clip-text text-transparent">
               ✨ {lang === 'es' ? 'Writeups Destacados' : 'Featured Writeups'}
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -650,7 +650,7 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
                     href={`/${lang}/writeup/${actualSlug}`}
                     class="featured-card"
                   >
-                    <div class="w-full h-48 overflow-hidden rounded-t-xl bg-gradient-to-br from-slate-100 to-indigo-100/50 dark:from-slate-800 dark:to-indigo-900/30 flex items-center justify-center p-6">
+                    <div class="w-full h-48 overflow-hidden rounded-t-xl bg-linear-to-br from-slate-100 to-indigo-100/50 dark:from-slate-800 dark:to-indigo-900/30 flex items-center justify-center p-6">
                       <img
                         src={logoToShow}
                         alt={writeup.data.title}
@@ -699,7 +699,7 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
 </Layout>
 
 <style>
-  @reference "tailwindcss";
+  @reference "../../styles/global.css";
 
   /* Estadísticas Cards */
   .stat-card {

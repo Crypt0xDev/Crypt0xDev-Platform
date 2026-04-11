@@ -64,14 +64,14 @@ const recentResources = resources.slice(0, 6);
   lang={lang}
 >
   <main
-    class="min-h-[calc(100vh-16rem)] bg-gradient-to-br from-white via-slate-50 to-blue-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950"
+    class="min-h-[calc(100vh-16rem)] bg-linear-to-br from-white via-slate-50 to-blue-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950"
   >
     <div class="container max-w-7xl mx-auto px-4 py-16">
       <!-- Hero Section -->
       <header class="text-center mb-16">
         <div class="inline-block mb-6">
           <div
-            class="w-24 h-24 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-3xl flex items-center justify-center shadow-2xl"
+            class="w-24 h-24 bg-linear-to-br from-blue-500 to-cyan-600 rounded-3xl flex items-center justify-center shadow-2xl"
           >
             <span class="text-5xl">📚</span>
           </div>
@@ -79,7 +79,7 @@ const recentResources = resources.slice(0, 6);
 
         <h1 class="text-5xl md:text-6xl font-bold mb-6">
           <span
-            class="bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-600 dark:from-blue-400 dark:via-cyan-400 dark:to-teal-400 bg-clip-text text-transparent"
+            class="bg-linear-to-r from-blue-600 via-cyan-600 to-teal-600 dark:from-blue-400 dark:via-cyan-400 dark:to-teal-400 bg-clip-text text-transparent"
           >
             {lang === 'es' ? 'Recursos' : 'Resources'}
           </span>
@@ -179,7 +179,7 @@ const recentResources = resources.slice(0, 6);
                   class={`group relative overflow-hidden rounded-2xl border-2 ${category.borderColor} ${category.bgColor} p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl`}
                 >
                   <div
-                    class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br opacity-10 rounded-full blur-2xl -translate-y-8 translate-x-8 group-hover:opacity-20 transition-opacity"
+                    class="absolute top-0 right-0 w-32 h-32 bg-linear-to-br opacity-10 rounded-full blur-2xl -translate-y-8 translate-x-8 group-hover:opacity-20 transition-opacity"
                     style={`background: linear-gradient(to bottom right, ${category.gradient.split(' ')[1]}, ${category.gradient.split(' ')[3]})`}
                   />
 
@@ -244,7 +244,7 @@ const recentResources = resources.slice(0, 6);
                     class="group bg-white dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
                   >
                     <div
-                      class={`relative h-48 overflow-hidden bg-gradient-to-br ${category?.gradient || 'from-blue-400 to-cyan-600'}`}
+                      class={`relative h-48 overflow-hidden bg-linear-to-br ${category?.gradient || 'from-blue-400 to-cyan-600'}`}
                     >
                       <div class="w-full h-full flex items-center justify-center">
                         <span class="text-6xl">{category?.icon || '📚'}</span>

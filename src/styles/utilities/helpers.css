@@ -2,11 +2,11 @@
 @layer utilities {
   /* Gradients */
   .gradient-primary {
-    @apply bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600;
+    @apply bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600;
   }
 
   .gradient-text {
-    @apply bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent;
+    @apply bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent;
   }
 
   /* Animations */

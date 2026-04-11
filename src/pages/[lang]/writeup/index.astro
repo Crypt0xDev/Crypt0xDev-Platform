@@ -95,12 +95,12 @@ const filterTranslations = {
 
 <Layout title={`${lang === 'es' ? 'Writeups' : 'Writeups'}`}>
   <main
-    class="min-h-[calc(100vh-16rem)] bg-gradient-to-br from-white via-white to-indigo-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/10"
+    class="min-h-[calc(100vh-16rem)] bg-linear-to-br from-white via-white to-indigo-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/10"
   >
     <!-- Banner de filtro activo -->
     {
       filterType && filterValue && (
-        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-800 dark:to-purple-800 py-4">
+        <div class="bg-linear-to-r from-indigo-600 to-purple-600 dark:from-indigo-800 dark:to-purple-800 py-4">
           <div class="container max-w-7xl mx-auto px-4">
             <div class="flex items-center justify-between flex-wrap gap-4">
               <div class="flex items-center gap-3">
@@ -145,7 +145,7 @@ const filterTranslations = {
 
         <div class="mb-12">
           <h1
-            class="text-4xl md:text-5xl lg:text-6xl font-black mb-4 font-sans tracking-tight bg-gradient-to-r from-slate-900 via-indigo-600 to-slate-900 dark:from-slate-100 dark:via-indigo-400 dark:to-slate-100 bg-clip-text text-transparent"
+            class="text-4xl md:text-5xl lg:text-6xl font-black mb-4 font-sans tracking-tight bg-linear-to-r from-slate-900 via-indigo-600 to-slate-900 dark:from-slate-100 dark:via-indigo-400 dark:to-slate-100 bg-clip-text text-transparent"
           >
             {
               filterType
@@ -198,7 +198,7 @@ const filterTranslations = {
                   </p>
                   <div class="flex items-center justify-between">
                     <span
-                      class={`text-sm font-semibold bg-gradient-to-r ${platform.color} bg-clip-text text-transparent`}
+                      class={`text-sm font-semibold bg-linear-to-r ${platform.color} bg-clip-text text-transparent`}
                     >
                       {platform.count} writeup{platform.count !== 1 ? 's' : ''}
                     </span>
@@ -218,7 +218,7 @@ const filterTranslations = {
                   </div>
                 </div>
                 <div
-                  class={`absolute inset-0 bg-gradient-to-br ${platform.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}
+                  class={`absolute inset-0 bg-linear-to-br ${platform.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}
                 />
               </a>
             ))

@@ -71,7 +71,7 @@
 
 /* Hero sections */
 .hero {
-  @apply bg-gradient-to-br from-indigo-50 via-white to-pink-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 py-16 md:py-24;
+  @apply bg-linear-to-br from-indigo-50 via-white to-pink-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 py-16 md:py-24;
 }
 
 .hero-title {

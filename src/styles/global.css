@@ -1,3 +1,7 @@
+/* ===== IMPORTS (deben ir primero según spec CSS) ===== */
+/* Fuentes locales en lugar de Google Fonts para mejor rendimiento y GDPR */
+@import url('/fonts/fonts.css');
+
 /* ===== TAILWIND v4 ===== */
 @import 'tailwindcss';
 
@@ -50,9 +54,7 @@
   --animate-shimmer: shimmer 3s ease-in-out infinite;
 }
 
-/* ===== IMPORTS ===== */
-/* Fuentes locales en lugar de Google Fonts para mejor rendimiento y GDPR */
-@import url('/fonts/fonts.css');
+/* ===== LOCAL CSS IMPORTS ===== */
 @import './base/animations.css';
 @import './base/reset.css';
 @import './components/layout.css';

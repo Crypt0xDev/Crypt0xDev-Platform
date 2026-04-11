@@ -233,7 +233,7 @@ function getCleanSlug(fullSlug: string): string {
   lang={lang}
 >
   <main
-    class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950"
+    class="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950"
   >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <!-- Breadcrumb -->
@@ -247,7 +247,7 @@ function getCleanSlug(fullSlug: string): string {
 
       <!-- Header con diseño moderno -->
       <header
-        class="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 dark:from-indigo-900 dark:via-purple-900 dark:to-pink-900 rounded-3xl shadow-2xl mb-12 mt-6"
+        class="relative overflow-hidden bg-linear-to-br from-indigo-600 via-purple-600 to-pink-600 dark:from-indigo-900 dark:via-purple-900 dark:to-pink-900 rounded-3xl shadow-2xl mb-12 mt-6"
       >
         {/* Patrón de fondo decorativo */}
         <div
@@ -258,10 +258,10 @@ function getCleanSlug(fullSlug: string): string {
         <div class="relative px-8 py-12 lg:px-12 lg:py-16">
           <div class="flex flex-col lg:flex-row items-center gap-8">
             {/* Logo de la plataforma */}
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
               <div class="relative group">
                 <div
-                  class="absolute -inset-4 bg-gradient-to-r from-blue-400 to-purple-400 rounded-3xl blur-2xl opacity-50 group-hover:opacity-75 transition-opacity"
+                  class="absolute -inset-4 bg-linear-to-r from-blue-400 to-purple-400 rounded-3xl blur-2xl opacity-50 group-hover:opacity-75 transition-opacity"
                 >
                 </div>
                 <div
@@ -364,7 +364,7 @@ function getCleanSlug(fullSlug: string): string {
 
         {/* Decoración inferior */}
         <div
-          class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400"
+          class="absolute bottom-0 left-0 right-0 h-1 bg-linear-to-r from-blue-400 via-purple-400 to-pink-400"
         >
         </div>
       </header>
@@ -400,7 +400,7 @@ function getCleanSlug(fullSlug: string): string {
                           />
                         </div>
                       ) : (
-                        <div class="w-20 h-20 mb-5 flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-lg transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                        <div class="w-20 h-20 mb-5 flex items-center justify-center bg-linear-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-lg transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                           <span class="text-4xl filter drop-shadow-lg">
                             {category.icon}
                           </span>
@@ -415,7 +415,7 @@ function getCleanSlug(fullSlug: string): string {
                       </p>
 
                       <div class="flex items-center justify-between mb-4">
-                        <span class="text-sm font-bold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
+                        <span class="text-sm font-bold bg-linear-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
                           {category.count}{' '}
                           {lang === 'es'
                             ? category.count === 1
@@ -474,11 +474,11 @@ function getCleanSlug(fullSlug: string): string {
 
                     {/* Efecto de hover degradado */}
                     <div
-                      class={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
+                      class={`absolute inset-0 bg-linear-to-br ${category.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
                     />
 
                     {/* Brillo en hover */}
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/40 to-transparent rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -translate-y-16 translate-x-16" />
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-white/40 to-transparent rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -translate-y-16 translate-x-16" />
                   </a>
                 );
               })}

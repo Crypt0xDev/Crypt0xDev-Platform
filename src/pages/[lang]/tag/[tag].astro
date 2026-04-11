@@ -267,13 +267,16 @@ allEntries.some((entry) => {
             {allEntries.map((entry) => {
               const isWriteup = 'platform' in entry.data;
               const slugParts = entry.id.replace(/\.md$/, '').split('/');
-              const actualSlug = slugParts[slugParts.length - 1];
+              // slugParts: ['es', 'hackthebox', 'sau'] → plataforma en [1], máquina en [2+]
+              const actualSlug =
+                slugParts.slice(2).join('/') || slugParts[slugParts.length - 1];
+              const platformSlug = isWriteup ? slugParts[1] : null;
               const category =
                 !isWriteup && entry.data.category
                   ? entry.data.category
                   : 'tutorial';
               const baseUrl = isWriteup
-                ? `/${lang}/writeup`
+                ? `/${lang}/writeup/${platformSlug}`
                 : `/${lang}/blog/${category}`;
               const machineName = entry.data.title.split(' - ')[0];
               const machineLogo =
@@ -282,15 +285,15 @@ allEntries.some((entry) => {
 
               return (
                 <article
-                  class={`writeup-card group ${isWriteup ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'} rounded-2xl overflow-hidden border transition-all duration-300 hover:shadow-2xl transform hover:-translate-y-2 hover:scale-105`}
+                  class={`writeup-card group ${isWriteup ? 'bg-linear-to-br from-slate-800 to-slate-900 border-slate-700' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'} rounded-2xl overflow-hidden border transition-all duration-300 hover:shadow-2xl transform hover:-translate-y-2 hover:scale-105`}
                 >
                   {isWriteup && platform ? (
                     <>
                       {/* Logo circular con gradiente de plataforma */}
                       <div class="relative px-6 pt-8 pb-4 flex justify-center">
                         <div class="relative group-hover:scale-110 transition-transform duration-300">
-                          <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full blur-md opacity-75 group-hover:opacity-100 animate-pulse" />
-                          <div class="relative w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full p-1 group-hover:rotate-6 transition-transform duration-300">
+                          <div class="absolute inset-0 bg-linear-to-br from-blue-500 to-purple-600 rounded-full blur-md opacity-75 group-hover:opacity-100 animate-pulse" />
+                          <div class="relative w-32 h-32 bg-linear-to-br from-blue-500 to-purple-600 rounded-full p-1 group-hover:rotate-6 transition-transform duration-300">
                             <div class="w-full h-full bg-slate-900 rounded-full p-2 overflow-hidden">
                               <img
                                 src={machineLogo}
@@ -545,7 +548,7 @@ allEntries.some((entry) => {
     position: relative;
   }
 
-  .writeup-card:hover.bg-gradient-to-br {
+  .writeup-card:hover.bg-linear-to-br {
     border-color: var(--accent-color);
   }
 

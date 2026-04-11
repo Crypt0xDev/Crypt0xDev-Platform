@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+// @ts-ignore — @tailwindcss/vite types resolve at runtime (bundler mode)
 import tailwindcss from '@tailwindcss/vite';
 // import sentry from '@sentry/astro'; // Temporalmente deshabilitado por incompatibilidad de versiones
 

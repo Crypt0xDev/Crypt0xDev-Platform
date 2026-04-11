@@ -41,7 +41,7 @@ const categories = Object.values(BLOG_CATEGORIES).map(cat => ({
   description={t('blog.latest_posts')}
   lang={lang}
 >
-  <main class="min-h-[calc(100vh-16rem)] bg-gradient-to-br from-white via-white to-indigo-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/10">
+  <main class="min-h-[calc(100vh-16rem)] bg-linear-to-br from-white via-white to-indigo-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/10">
     <!-- Hero Section -->
     <section class="py-12 md:py-16">
       <div class="container max-w-7xl mx-auto px-4">
@@ -55,7 +55,7 @@ const categories = Object.values(BLOG_CATEGORIES).map(cat => ({
           <div class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full text-sm font-semibold mb-6">
             📝 {lang === 'es' ? 'Blog de Ciberseguridad' : 'Cybersecurity Blog'}
           </div>
-          <h1 class="text-4xl md:text-5xl lg:text-6xl font-black mb-4 font-sans tracking-tight bg-gradient-to-r from-slate-900 via-indigo-600 to-slate-900 dark:from-slate-100 dark:via-indigo-400 dark:to-slate-100 bg-clip-text text-transparent">
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-black mb-4 font-sans tracking-tight bg-linear-to-r from-slate-900 via-indigo-600 to-slate-900 dark:from-slate-100 dark:via-indigo-400 dark:to-slate-100 bg-clip-text text-transparent">
             {t('blog.title')}
           </h1>
           <div class="max-w-3xl">
@@ -140,7 +140,7 @@ const categories = Object.values(BLOG_CATEGORIES).map(cat => ({
                     </div>
                   )}
                 </div>
-                <div class="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-500 opacity-0 group-hover:opacity-5 transition-opacity duration-300"></div>
+                <div class="absolute inset-0 bg-linear-to-br from-indigo-500 to-purple-500 opacity-0 group-hover:opacity-5 transition-opacity duration-300"></div>
               </a>
             );
           })}

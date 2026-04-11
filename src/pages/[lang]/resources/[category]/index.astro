@@ -56,7 +56,7 @@ const categoryDescription = category.description[lang as 'es' | 'en'];
   lang={lang}
 >
   <main
-    class={`min-h-[calc(100vh-16rem)] bg-gradient-to-br from-white via-white to-${category.bgColor.split('bg-')[1].split('/')[0]}-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-${category.bgColor.split('bg-')[1].split('/')[0]}-950/10`}
+    class={`min-h-[calc(100vh-16rem)] bg-linear-to-br from-white via-white to-${category.bgColor.split('bg-')[1].split('/')[0]}-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-${category.bgColor.split('bg-')[1].split('/')[0]}-950/10`}
   >
     <div class="container max-w-7xl mx-auto px-4 py-12">
       <!-- Breadcrumb -->
@@ -124,7 +124,7 @@ const categoryDescription = category.description[lang as 'es' | 'en'];
                   class={`group bg-white dark:bg-slate-800 rounded-xl overflow-hidden border ${category.borderColor} hover:border-${category.textColor.split('text-')[1]} transition-all duration-300 hover:shadow-xl hover:-translate-y-1`}
                 >
                   <div
-                    class={`relative h-48 overflow-hidden bg-gradient-to-br ${category.gradient}`}
+                    class={`relative h-48 overflow-hidden bg-linear-to-br ${category.gradient}`}
                   >
                     <div class="w-full h-full flex items-center justify-center">
                       <span class="text-6xl transform group-hover:scale-110 transition-transform">
