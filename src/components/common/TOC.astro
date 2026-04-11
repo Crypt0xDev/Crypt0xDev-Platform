@@ -9,26 +9,35 @@ interface Props {
   headings: Heading[];
   title?: string;
   inline?: boolean;
-  platform?: 'blog' | 'htb' | 'thm' | 'vulnhub' | 'hackmyvm' | 'ctf' | 'default';
+  platform?:
+    | 'blog'
+    | 'htb'
+    | 'thm'
+    | 'vulnhub'
+    | 'hackmyvm'
+    | 'ctf'
+    | 'default';
 }
 
-const { headings, title = "Table of Contents", inline = false, platform = 'default' } = Astro.props;
+const {
+  headings,
+  title = 'Table of Contents',
+  inline = false,
+  platform = 'default',
+} = Astro.props;
 
 // Filtrar headings excluyendo solo "Tabla de Contenidos"
-const filteredHeadings = headings.filter(h => {
+const filteredHeadings = headings.filter((h) => {
   const isValidDepth = h.depth >= 2 && h.depth <= 3;
   const textLower = h.text.toLowerCase().trim();
-  
+
   // Solo excluir "Tabla de Contenidos" o "Table of Contents"
-  const excludedPatterns = [
-    'tabla de contenido',
-    'table of content'
-  ];
-  
-  const shouldExclude = excludedPatterns.some(pattern => 
-    textLower === pattern || textLower.startsWith(pattern)
+  const excludedPatterns = ['tabla de contenido', 'table of content'];
+
+  const shouldExclude = excludedPatterns.some(
+    (pattern) => textLower === pattern || textLower.startsWith(pattern)
   );
-  
+
   return isValidDepth && !shouldExclude;
 });
 
@@ -41,93 +50,110 @@ const platformStyles = {
     border: 'border-indigo-500 dark:border-indigo-400',
     titleBorder: 'border-indigo-600 dark:border-indigo-400',
     title: 'text-indigo-600 dark:text-indigo-400',
-    linkHover: 'hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/10 hover:border-l-indigo-600 dark:hover:border-l-indigo-400',
-    active: 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 border-l-indigo-600 dark:border-l-indigo-400'
+    linkHover:
+      'hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/10 hover:border-l-indigo-600 dark:hover:border-l-indigo-400',
+    active:
+      'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 border-l-indigo-600 dark:border-l-indigo-400',
   },
   htb: {
     border: 'border-[#9fef00]/30 dark:border-[#9fef00]/40',
     titleBorder: 'border-[#9fef00] dark:border-[#9fef00]',
     title: 'text-[#9fef00] dark:text-[#9fef00]',
-    linkHover: 'hover:text-[#9fef00] dark:hover:text-[#9fef00] hover:bg-[#9fef00]/10 dark:hover:bg-[#9fef00]/5 hover:border-l-[#9fef00] dark:hover:border-l-[#9fef00]',
-    active: 'text-[#9fef00] dark:text-[#9fef00] bg-[#9fef00]/15 dark:bg-[#9fef00]/10 border-l-[#9fef00] dark:border-l-[#9fef00]'
+    linkHover:
+      'hover:text-[#9fef00] dark:hover:text-[#9fef00] hover:bg-[#9fef00]/10 dark:hover:bg-[#9fef00]/5 hover:border-l-[#9fef00] dark:hover:border-l-[#9fef00]',
+    active:
+      'text-[#9fef00] dark:text-[#9fef00] bg-[#9fef00]/15 dark:bg-[#9fef00]/10 border-l-[#9fef00] dark:border-l-[#9fef00]',
   },
   thm: {
     border: 'border-purple-500/30 dark:border-purple-400/40',
     titleBorder: 'border-purple-600 dark:border-purple-400',
     title: 'text-purple-600 dark:text-purple-400',
-    linkHover: 'hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/10 hover:border-l-purple-600',
-    active: 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 border-l-purple-600'
+    linkHover:
+      'hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/10 hover:border-l-purple-600',
+    active:
+      'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 border-l-purple-600',
   },
   vulnhub: {
     border: 'border-emerald-500/30 dark:border-emerald-400/40',
     titleBorder: 'border-emerald-600 dark:border-emerald-400',
     title: 'text-emerald-600 dark:text-emerald-400',
-    linkHover: 'hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 hover:border-l-emerald-600',
-    active: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border-l-emerald-600'
+    linkHover:
+      'hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 hover:border-l-emerald-600',
+    active:
+      'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border-l-emerald-600',
   },
   hackmyvm: {
     border: 'border-orange-500/30 dark:border-orange-400/40',
     titleBorder: 'border-orange-600 dark:border-orange-400',
     title: 'text-orange-600 dark:text-orange-400',
-    linkHover: 'hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/10 hover:border-l-orange-600',
-    active: 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 border-l-orange-600'
+    linkHover:
+      'hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/10 hover:border-l-orange-600',
+    active:
+      'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 border-l-orange-600',
   },
   ctf: {
     border: 'border-purple-500 dark:border-purple-400',
     titleBorder: 'border-purple-600 dark:border-purple-400',
     title: 'text-purple-600 dark:text-purple-400',
-    linkHover: 'hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/10 hover:border-l-purple-600 dark:hover:border-l-purple-400',
-    active: 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 border-l-purple-600 dark:border-l-purple-400'
+    linkHover:
+      'hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/10 hover:border-l-purple-600 dark:hover:border-l-purple-400',
+    active:
+      'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 border-l-purple-600 dark:border-l-purple-400',
   },
   default: {
     border: 'border-slate-500 dark:border-slate-400',
     titleBorder: 'border-slate-600 dark:border-slate-400',
     title: 'text-slate-600 dark:text-slate-400',
-    linkHover: 'hover:text-slate-600 dark:hover:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/10 hover:border-l-slate-600 dark:hover:border-l-slate-400',
-    active: 'text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/20 border-l-slate-600 dark:border-l-slate-400'
-  }
+    linkHover:
+      'hover:text-slate-600 dark:hover:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/10 hover:border-l-slate-600 dark:hover:border-l-slate-400',
+    active:
+      'text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/20 border-l-slate-600 dark:border-l-slate-400',
+  },
 };
 
 const styles = platformStyles[platform];
 ---
 
-{limitedHeadings.length > 0 && (
-  <aside 
-    class={inline 
-      ? "toc-inline w-full block" 
-      : "toc-sidebar"
-    }
-    data-platform={platform}
-    aria-labelledby="toc-heading"
-  >
-    <nav class={`toc-nav ${inline ? 'bg-transparent border-none p-0 shadow-none' : `bg-white dark:bg-slate-900 border-2 ${styles.border} rounded-2xl p-6 shadow-lg backdrop-blur-lg`}`} data-platform={platform}>
-      <div class={`pb-4 mb-4 border-b-2 ${styles.titleBorder}`}>
-        <h2 
-          id="toc-heading" 
-          class={`text-sm font-bold ${styles.title} uppercase tracking-widest m-0`}
-        >
-          {title}
-        </h2>
-      </div>
-      <ul class="toc-list list-none m-0 p-0">
-        {limitedHeadings.map((heading) => (
-          <li class="m-0 p-0">
-            <a 
-              href={`#${heading.slug}`} 
-              class={`toc-link block py-2.5 px-3.5 text-slate-600 dark:text-slate-400 no-underline text-sm leading-relaxed transition-all duration-300 border-l-4 border-transparent rounded-md my-1 ${styles.linkHover} hover:translate-x-1.5 ${heading.depth === 3 ? 'pl-7 text-xs' : ''}`}
-              data-heading-id={heading.slug}
-              data-platform={platform}
-            >
-              {heading.text}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  </aside>
-)}
+{
+  limitedHeadings.length > 0 && (
+    <aside
+      class={inline ? 'toc-inline w-full block' : 'toc-sidebar'}
+      data-platform={platform}
+      aria-labelledby="toc-heading"
+    >
+      <nav
+        class={`toc-nav ${inline ? 'bg-transparent border-none p-0 shadow-none' : `bg-white dark:bg-slate-900 border-2 ${styles.border} rounded-2xl p-6 shadow-lg backdrop-blur-lg`}`}
+        data-platform={platform}
+      >
+        <div class={`pb-4 mb-4 border-b-2 ${styles.titleBorder}`}>
+          <h2
+            id="toc-heading"
+            class={`text-sm font-bold ${styles.title} uppercase tracking-widest m-0`}
+          >
+            {title}
+          </h2>
+        </div>
+        <ul class="toc-list list-none m-0 p-0">
+          {limitedHeadings.map((heading) => (
+            <li class="m-0 p-0">
+              <a
+                href={`#${heading.slug}`}
+                class={`toc-link block py-2.5 px-3.5 text-slate-600 dark:text-slate-400 no-underline text-sm leading-relaxed transition-all duration-300 border-l-4 border-transparent rounded-md my-1 ${styles.linkHover} hover:translate-x-1.5 ${heading.depth === 3 ? 'pl-7 text-xs' : ''}`}
+                data-heading-id={heading.slug}
+                data-platform={platform}
+              >
+                {heading.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </aside>
+  )
+}
 
 <style>
+  @reference "tailwindcss";
   /* TOC Sidebar - Estático con máximo 10 elementos */
   .toc-sidebar {
     position: fixed;
@@ -175,24 +201,30 @@ const styles = platformStyles[platform];
   }
 
   /* Enlaces activos dinámicos por plataforma con efectos mejorados */
-  .toc-link.active[data-platform="blog"] {
+  .toc-link.active[data-platform='blog'] {
     @apply text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 border-l-indigo-600 dark:border-l-indigo-400 font-semibold translate-x-1.5;
     box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
     animation: pulseActive 2s ease-in-out infinite;
   }
 
-  .toc-link.active[data-platform="htb"] {
+  .toc-link.active[data-platform='htb'] {
     color: #9fef00 !important;
-    background: linear-gradient(90deg, rgba(159, 239, 0, 0.15), rgba(159, 239, 0, 0.05)) !important;
+    background: linear-gradient(
+      90deg,
+      rgba(159, 239, 0, 0.15),
+      rgba(159, 239, 0, 0.05)
+    ) !important;
     border-left-color: #9fef00 !important;
     border-left-width: 4px !important;
     font-weight: 600;
     transform: translateX(0.375rem);
-    box-shadow: 0 2px 8px rgba(159, 239, 0, 0.2), inset 0 0 20px rgba(159, 239, 0, 0.05);
+    box-shadow:
+      0 2px 8px rgba(159, 239, 0, 0.2),
+      inset 0 0 20px rgba(159, 239, 0, 0.05);
     animation: glowPulse 2s ease-in-out infinite;
   }
 
-  .toc-link.active[data-platform="ctf"] {
+  .toc-link.active[data-platform='ctf'] {
     @apply text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 border-l-purple-600 dark:border-l-purple-400 font-semibold translate-x-1.5;
     box-shadow: 0 2px 8px rgba(168, 85, 247, 0.15);
     animation: pulseActive 2s ease-in-out infinite;
@@ -200,7 +232,8 @@ const styles = platformStyles[platform];
 
   /* Animaciones */
   @keyframes pulseActive {
-    0%, 100% {
+    0%,
+    100% {
       opacity: 1;
     }
     50% {
@@ -209,11 +242,16 @@ const styles = platformStyles[platform];
   }
 
   @keyframes glowPulse {
-    0%, 100% {
-      box-shadow: 0 2px 8px rgba(159, 239, 0, 0.2), inset 0 0 20px rgba(159, 239, 0, 0.05);
+    0%,
+    100% {
+      box-shadow:
+        0 2px 8px rgba(159, 239, 0, 0.2),
+        inset 0 0 20px rgba(159, 239, 0, 0.05);
     }
     50% {
-      box-shadow: 0 4px 16px rgba(159, 239, 0, 0.4), inset 0 0 30px rgba(159, 239, 0, 0.1);
+      box-shadow:
+        0 4px 16px rgba(159, 239, 0, 0.4),
+        inset 0 0 30px rgba(159, 239, 0, 0.1);
     }
   }
 
@@ -235,81 +273,82 @@ const styles = platformStyles[platform];
   }
 
   /* Estilos de navegación específicos por plataforma */
-  .toc-nav[data-platform="htb"] {
+  .toc-nav[data-platform='htb'] {
     border-color: rgba(159, 239, 0, 0.3) !important;
     background: rgba(10, 15, 10, 0.95) !important;
   }
 
-  :global(.dark) .toc-nav[data-platform="htb"] {
+  :global(.dark) .toc-nav[data-platform='htb'] {
     background: rgba(159, 239, 0, 0.03) !important;
     border-color: rgba(159, 239, 0, 0.4) !important;
   }
 
-  .toc-nav[data-platform="blog"] {
+  .toc-nav[data-platform='blog'] {
     border-color: rgba(99, 102, 241, 0.3) !important;
   }
 
-  .toc-nav[data-platform="ctf"] {
+  .toc-nav[data-platform='ctf'] {
     border-color: rgba(168, 85, 247, 0.3) !important;
   }
 
   /* Efectos hover específicos por plataforma */
-  .toc-link[data-platform="htb"]:hover {
+  .toc-link[data-platform='htb']:hover {
     color: #9fef00 !important;
     background: rgba(159, 239, 0, 0.08) !important;
     border-left-color: #9fef00 !important;
   }
 
-  .toc-link[data-platform="blog"]:hover {
+  .toc-link[data-platform='blog']:hover {
     @apply text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/10 border-l-indigo-600;
   }
 
-  .toc-link[data-platform="ctf"]:hover {
+  .toc-link[data-platform='ctf']:hover {
     @apply text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/10 border-l-purple-600;
   }
 
   /* Título por plataforma */
-  .toc-nav[data-platform="htb"] h2 {
+  .toc-nav[data-platform='htb'] h2 {
     color: #9fef00 !important;
     text-shadow: 0 0 10px rgba(159, 239, 0, 0.3);
   }
 
-  .toc-nav[data-platform="blog"] h2 {
+  .toc-nav[data-platform='blog'] h2 {
     @apply text-indigo-600 dark:text-indigo-400;
   }
 
-  .toc-nav[data-platform="ctf"] h2 {
+  .toc-nav[data-platform='ctf'] h2 {
     @apply text-purple-600 dark:text-purple-400;
   }
 
   /* TryHackMe */
-  .toc-link.active[data-platform="thm"] {
+  .toc-link.active[data-platform='thm'] {
     @apply text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 border-l-purple-600 font-semibold translate-x-1.5;
     box-shadow: 0 2px 8px rgba(124, 58, 237, 0.15);
     animation: pulseActive 2s ease-in-out infinite;
   }
 
-  .toc-nav[data-platform="thm"] {
+  .toc-nav[data-platform='thm'] {
     border-color: rgba(124, 58, 237, 0.3) !important;
   }
 
-  .toc-link[data-platform="thm"]:hover {
+  .toc-link[data-platform='thm']:hover {
     @apply text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/10 border-l-purple-600;
   }
 
-  .toc-nav[data-platform="thm"] h2 {
+  .toc-nav[data-platform='thm'] h2 {
     @apply text-purple-600 dark:text-purple-400;
   }
 
   /* VulnHub */
-  .toc-link.active[data-platform="vulnhub"] {
+  .toc-link.active[data-platform='vulnhub'] {
     @apply text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border-l-emerald-600 font-semibold translate-x-1.5;
     box-shadow: 0 2px 8px rgba(5, 150, 105, 0.15);
     animation: terminalBlink 1.5s ease-in-out infinite;
   }
 
   @keyframes terminalBlink {
-    0%, 100% {
+    0%,
+    100% {
       border-left-width: 4px;
     }
     50% {
@@ -317,35 +356,35 @@ const styles = platformStyles[platform];
     }
   }
 
-  .toc-nav[data-platform="vulnhub"] {
+  .toc-nav[data-platform='vulnhub'] {
     border-color: rgba(5, 150, 105, 0.3) !important;
   }
 
-  .toc-link[data-platform="vulnhub"]:hover {
+  .toc-link[data-platform='vulnhub']:hover {
     @apply text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/10 border-l-emerald-600;
   }
 
-  .toc-nav[data-platform="vulnhub"] h2 {
+  .toc-nav[data-platform='vulnhub'] h2 {
     @apply text-emerald-600 dark:text-emerald-400;
     font-family: 'Courier New', monospace;
   }
 
   /* HackMyVM */
-  .toc-link.active[data-platform="hackmyvm"] {
+  .toc-link.active[data-platform='hackmyvm'] {
     @apply text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 border-l-orange-600 font-semibold translate-x-1.5;
     box-shadow: 0 2px 8px rgba(249, 115, 22, 0.15);
     animation: pulseActive 2s ease-in-out infinite;
   }
 
-  .toc-nav[data-platform="hackmyvm"] {
+  .toc-nav[data-platform='hackmyvm'] {
     border-color: rgba(249, 115, 22, 0.3) !important;
   }
 
-  .toc-link[data-platform="hackmyvm"]:hover {
+  .toc-link[data-platform='hackmyvm']:hover {
     @apply text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/10 border-l-orange-600;
   }
 
-  .toc-nav[data-platform="hackmyvm"] h2 {
+  .toc-nav[data-platform='hackmyvm'] h2 {
     @apply text-orange-600 dark:text-orange-400;
   }
 
@@ -358,7 +397,8 @@ const styles = platformStyles[platform];
   }
 
   @keyframes bounce {
-    0%, 100% {
+    0%,
+    100% {
       transform: translateX(0);
     }
     50% {
@@ -425,22 +465,19 @@ const styles = platformStyles[platform];
     const tocSidebar = document.querySelector('.toc-sidebar') as HTMLElement;
     const tocList = document.querySelector('.toc-list') as HTMLElement;
     const headings = document.querySelectorAll('h2[id], h3[id]');
-    
+
     if (!tocList || !headings.length || !tocSidebar) return;
 
     const header = document.querySelector('header');
     const headerHeight = header ? header.offsetHeight : 80;
 
     // Filtrar headings excluyendo títulos no deseados
-    const excludedPatterns = [
-      'tabla de contenido',
-      'table of content',
-    ];
+    const excludedPatterns = ['tabla de contenido', 'table of content'];
 
-    const allHeadings = Array.from(headings).filter(heading => {
+    const allHeadings = Array.from(headings).filter((heading) => {
       const text = (heading.textContent || '').toLowerCase().trim();
-      return !excludedPatterns.some(pattern => 
-        text === pattern || text.startsWith(pattern)
+      return !excludedPatterns.some(
+        (pattern) => text === pattern || text.startsWith(pattern)
       );
     });
 
@@ -452,45 +489,48 @@ const styles = platformStyles[platform];
       const startIndex = Math.max(0, activeIndex - 5);
       const endIndex = Math.min(allHeadings.length, startIndex + 10);
       const adjustedStart = Math.max(0, endIndex - 10);
-      
+
       const visibleHeadings = allHeadings.slice(adjustedStart, endIndex);
-      
+
       // Limpiar el TOC
       tocList.innerHTML = '';
-      
+
       // Agregar los headings visibles
       visibleHeadings.forEach((heading, index) => {
         const id = heading.getAttribute('id');
         const text = heading.textContent || '';
         const depth = parseInt(heading.tagName.substring(1));
         const platform = tocSidebar.getAttribute('data-platform') || 'default';
-        
+
         const li = document.createElement('li');
         li.className = 'm-0 p-0';
-        
+
         const a = document.createElement('a');
         a.href = `#${id}`;
         a.className = `toc-link block py-2.5 px-3.5 text-slate-600 dark:text-slate-400 no-underline text-sm leading-relaxed transition-all duration-300 border-l-4 border-transparent rounded-md my-1 hover:translate-x-1.5 ${depth === 3 ? 'pl-7 text-xs' : ''}`;
         a.setAttribute('data-heading-id', id || '');
         a.setAttribute('data-platform', platform);
         a.textContent = text;
-        
+
         // Marcar como activo si es el heading activo
         if (adjustedStart + index === activeIndex) {
           a.classList.add('active');
         }
-        
+
         // Event listener para smooth scroll
         a.addEventListener('click', (e) => {
           e.preventDefault();
           const targetElement = document.getElementById(id || '');
           if (targetElement) {
             const yOffset = -(headerHeight + 20);
-            const y = targetElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            const y =
+              targetElement.getBoundingClientRect().top +
+              window.pageYOffset +
+              yOffset;
             window.scrollTo({ top: y, behavior: 'smooth' });
           }
         });
-        
+
         li.appendChild(a);
         tocList.appendChild(li);
       });
@@ -500,15 +540,17 @@ const styles = platformStyles[platform];
     const observerOptions = {
       root: null,
       rootMargin: '-100px 0px -70% 0px',
-      threshold: 0
+      threshold: 0,
     };
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           const id = entry.target.getAttribute('id');
-          const activeIndex = allHeadings.findIndex(h => h.getAttribute('id') === id);
-          
+          const activeIndex = allHeadings.findIndex(
+            (h) => h.getAttribute('id') === id
+          );
+
           if (activeIndex !== -1 && activeIndex !== currentActiveIndex) {
             currentActiveIndex = activeIndex;
             updateTOCList(activeIndex);
@@ -518,9 +560,8 @@ const styles = platformStyles[platform];
     }, observerOptions);
 
     allHeadings.forEach((heading) => observer.observe(heading));
-    
+
     // Inicializar TOC con los primeros 10 elementos
     updateTOCList(0);
   });
 </script>
-
