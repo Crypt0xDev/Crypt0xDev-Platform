@@ -49,13 +49,19 @@ export async function getStaticPaths() {
   });
 
   // Crear rutas para cada combinación de idioma y tag
+  // Deduplicar por slug normalizado para evitar rutas conflictivas
   const paths: any[] = [];
   ['es', 'en'].forEach((lang) => {
+    const seenSlugs = new Set<string>();
     allTags.forEach((tag) => {
-      paths.push({
-        params: { lang, tag: tag.toLowerCase().replace(/\s+/g, '-') },
-        props: { tag, lang },
-      });
+      const slug = tag.toLowerCase().replace(/\s+/g, '-');
+      if (!seenSlugs.has(slug)) {
+        seenSlugs.add(slug);
+        paths.push({
+          params: { lang, tag: slug },
+          props: { tag, lang },
+        });
+      }
     });
   });
 

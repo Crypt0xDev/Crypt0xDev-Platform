@@ -77,15 +77,6 @@ export default defineConfig({
   // Performance optimizations (Astro ya optimiza por defecto)
   vite: {
     plugins: [tailwindcss()],
-    build: {
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            vendor: ['astro'],
-          },
-        },
-      },
-    },
   },
 
   // Configuración del servidor de desarrollo
