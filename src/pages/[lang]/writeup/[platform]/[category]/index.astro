@@ -1,0 +1,323 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '@layouts/Layout.astro';
+import Breadcrumb from '@components/common/Breadcrumb.astro';
+import { useTranslations } from '@i18n/core';
+import { sortByDate, filterByLang } from '@i18n/utils';
+import { PLATFORMS, getPlatform, type PlatformId } from '@i18n/constants/platforms';
+
+export async function getStaticPaths() {
+  const platforms: PlatformId[] = ['htb', 'tryhackme', 'vulnhub', 'hackmyvm', 'portswigger'];
+  const languages = ['es', 'en'];
+  const paths = [];
+
+  for (const platformId of platforms) {
+    const platform = getPlatform(platformId);
+    
+    // Para cada categoría de la plataforma
+    for (const category of platform.categories) {
+      for (const lang of languages) {
+        paths.push({
+          params: { 
+            lang, 
+            platform: platform.slug,
+            category: category
+          },
+          props: { platformId, platform, categoryId: category }
+        });
+      }
+    }
+  }
+
+  return paths;
+}
+
+const { lang, category } = Astro.params;
+const { platformId, platform, categoryId } = Astro.props as { 
+  platformId: PlatformId; 
+  platform: typeof PLATFORMS[PlatformId];
+  categoryId: string;
+};
+const t = useTranslations(lang as 'es' | 'en');
+
+// Configuración de categorías
+const categoryConfig: Record<string, any> = {
+  machines: {
+    name: { es: 'Máquinas', en: 'Machines' },
+    description: { es: 'Máquinas virtuales vulnerables', en: 'Vulnerable virtual machines' },
+    icon: '🖥️',
+    gradient: 'from-blue-500 to-blue-700',
+    bgColor: 'bg-blue-50 dark:bg-blue-950/20',
+    borderColor: 'border-blue-200 dark:border-blue-900'
+  },
+  fortresses: {
+    name: { es: 'Fortalezas', en: 'Fortresses' },
+    description: { es: 'Laboratorios avanzados de pentesting', en: 'Advanced pentesting labs' },
+    icon: '🏰',
+    gradient: 'from-purple-500 to-purple-700',
+    bgColor: 'bg-purple-50 dark:bg-purple-950/20',
+    borderColor: 'border-purple-200 dark:border-purple-900'
+  },
+  endgames: {
+    name: { es: 'Endgames', en: 'Endgames' },
+    description: { es: 'Entornos de red completos', en: 'Complete network environments' },
+    icon: '🎮',
+    gradient: 'from-red-500 to-red-700',
+    bgColor: 'bg-red-50 dark:bg-red-950/20',
+    borderColor: 'border-red-200 dark:border-red-900'
+  },
+  prolabs: {
+    name: { es: 'Pro Labs', en: 'Pro Labs' },
+    description: { es: 'Laboratorios profesionales empresariales', en: 'Professional enterprise labs' },
+    icon: '⚡',
+    gradient: 'from-yellow-500 to-yellow-700',
+    bgColor: 'bg-yellow-50 dark:bg-yellow-950/20',
+    borderColor: 'border-yellow-200 dark:border-yellow-900'
+  },
+  challenges: {
+    name: { es: 'Retos', en: 'Challenges' },
+    description: { es: 'Desafíos técnicos específicos', en: 'Specific technical challenges' },
+    icon: '🏆',
+    gradient: 'from-green-500 to-green-700',
+    bgColor: 'bg-green-50 dark:bg-green-950/20',
+    borderColor: 'border-green-200 dark:border-green-900'
+  },
+  rooms: {
+    name: { es: 'Salas', en: 'Rooms' },
+    description: { es: 'Salas interactivas de aprendizaje', en: 'Interactive learning rooms' },
+    icon: '🚪',
+    gradient: 'from-cyan-500 to-cyan-700',
+    bgColor: 'bg-cyan-50 dark:bg-cyan-950/20',
+    borderColor: 'border-cyan-200 dark:border-cyan-900'
+  },
+  paths: {
+    name: { es: 'Rutas', en: 'Paths' },
+    description: { es: 'Rutas de aprendizaje guiadas', en: 'Guided learning paths' },
+    icon: '🛤️',
+    gradient: 'from-indigo-500 to-indigo-700',
+    bgColor: 'bg-indigo-50 dark:bg-indigo-950/20',
+    borderColor: 'border-indigo-200 dark:border-indigo-900'
+  },
+  labs: {
+    name: { es: 'Laboratorios', en: 'Labs' },
+    description: { es: 'Laboratorios de seguridad web', en: 'Web security labs' },
+    icon: '🔬',
+    gradient: 'from-pink-500 to-pink-700',
+    bgColor: 'bg-pink-50 dark:bg-pink-950/20',
+    borderColor: 'border-pink-200 dark:border-pink-900'
+  },
+  other: {
+    name: { es: 'Otros', en: 'Other' },
+    description: { es: 'Otros recursos y materiales', en: 'Other resources and materials' },
+    icon: '📦',
+    gradient: 'from-gray-500 to-gray-700',
+    bgColor: 'bg-gray-50 dark:bg-gray-950/20',
+    borderColor: 'border-gray-200 dark:border-gray-900'
+  }
+};
+
+const categoryData = categoryConfig[categoryId] || categoryConfig.other;
+
+// Obtener todos los writeups de esta plataforma y categoría
+const allWriteups = await getCollection('writeups');
+const categoryWriteups = sortByDate(
+  filterByLang(allWriteups, lang as string)
+    .filter(w => w.data.platform === platformId && w.data.category === categoryId)
+);
+
+// Helper para obtener logo de categoría si existe en categoryIcons
+function getCategoryLogo(platformId: string, categoryId: string): string | null {
+  const platformData = Object.values(PLATFORMS).find(p => p.id === platformId);
+  if (platformData && 'categoryIcons' in platformData) {
+    const categoryIcons = platformData.categoryIcons as Record<string, string>;
+    return categoryIcons[categoryId] || null;
+  }
+  return null;
+}
+
+const categoryLogo = getCategoryLogo(platformId, categoryId);
+
+// Función para limpiar el slug
+function getCleanSlug(fullSlug: string): string {
+  const parts = fullSlug.split('/');
+  return parts.slice(2).join('/');
+}
+
+// Obtener logo de plataforma
+const platformLogo = 'logo' in platform ? platform.logo as string : undefined;
+
+// Colores de dificultad
+const difficultyColors = {
+  easy: 'bg-green-500',
+  medium: 'bg-amber-500',
+  hard: 'bg-red-500',
+  insane: 'bg-purple-500'
+};
+---
+
+<Layout
+  title={`${categoryData.name[lang as 'es' | 'en']} - ${platform.name}`}
+  description={`${categoryData.description[lang as 'es' | 'en']} en ${platform.name}`}
+  lang={lang}
+>
+  <main class="min-h-[calc(100vh-16rem)] bg-gradient-to-br from-white via-white to-slate-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950/10">
+    <!-- Hero Section -->
+    <section class="py-12 md:py-16">
+      <div class="container max-w-7xl mx-auto px-4">
+        <!-- Breadcrumb -->
+        <Breadcrumb items={[
+          { label: 'Inicio', href: `/${lang}` },
+          { label: 'Writeups', href: `/${lang}/writeup` },
+          { label: platform.name, href: `/${lang}/writeup/${platform.slug}` },
+          { label: categoryData.name[lang as 'es' | 'en'] }
+        ]} />
+
+        <!-- Header -->
+        <div class="mb-12">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-20 h-20 flex items-center justify-center bg-white dark:bg-slate-800 rounded-xl p-3 border-2 border-slate-200 dark:border-slate-700">
+              {categoryLogo ? (
+                <img 
+                  src={categoryLogo} 
+                  alt={categoryData.name[lang as 'es' | 'en']}
+                  class="w-full h-full object-contain"
+                />
+              ) : (
+                <span class="text-4xl">{categoryData.icon}</span>
+              )}
+            </div>
+          </div>
+
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-black mb-4 font-sans tracking-tight bg-gradient-to-r from-slate-900 via-indigo-600 to-slate-900 dark:from-slate-100 dark:via-indigo-400 dark:to-slate-100 bg-clip-text text-transparent">
+            {categoryData.name[lang as 'es' | 'en']}
+          </h1>
+          
+          <p class="text-lg md:text-xl text-slate-700 dark:text-slate-300 leading-relaxed max-w-3xl mb-6">
+            {categoryData.description[lang as 'es' | 'en']} {lang === 'es' ? 'en' : 'from'} {platform.name}
+          </p>
+        </div>
+
+        <!-- Writeups Grid -->
+        {categoryWriteups.length === 0 ? (
+          <div class="text-center py-16 bg-white dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700">
+            <div class="text-6xl mb-4">{categoryData.icon}</div>
+            <h3 class="text-2xl font-bold mb-2 text-slate-900 dark:text-white">
+              {lang === 'es' ? 'Sin Writeups' : 'No Writeups'}
+            </h3>
+            <p class="text-slate-600 dark:text-slate-400">
+              {lang === 'es' 
+                ? 'No hay writeups disponibles en esta categoría aún.' 
+                : 'No writeups available in this category yet.'}
+            </p>
+          </div>
+        ) : (
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {categoryWriteups.map((writeup) => {
+              const cleanSlug = getCleanSlug(writeup.slug);
+              const machineName = writeup.data.title.split(' - ')[0];
+              const machineLogo = writeup.data.logo || `/images/platforms/${platformId}/${categoryId}.png`;
+              
+              return (
+                <a 
+                  href={`/${lang}/writeup/${platform.slug}/${cleanSlug}`}
+                  class="group bg-white dark:bg-gradient-to-br dark:from-slate-800 dark:to-slate-900 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl overflow-hidden border border-slate-300 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/20 transform hover:-translate-y-2 hover:scale-105"
+                >
+                  {/* Logo circular con gradiente de plataforma */}
+                  <div class="relative px-6 pt-8 pb-4 flex justify-center">
+                    <div class="relative group-hover:scale-110 transition-transform duration-300">
+                      <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full blur-md opacity-75 group-hover:opacity-100 animate-pulse"></div>
+                      <div class="relative w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full p-1 group-hover:rotate-6 transition-transform duration-300">
+                        <div class="w-full h-full bg-white dark:bg-slate-900 rounded-full p-2 overflow-hidden">
+                          <img 
+                            src={machineLogo} 
+                            alt={machineName}
+                            class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Badges superiores */}
+                  <div class="px-6 flex items-center justify-center gap-3 mb-4">
+                    <span class="px-4 py-1.5 bg-blue-500/20 border border-blue-500/50 text-blue-400 rounded-full text-xs font-bold uppercase transition-all duration-300 hover:scale-110">
+                      {platformId.toUpperCase()}
+                    </span>
+                    <span class={`px-4 py-1.5 rounded-full text-xs font-bold uppercase transition-all duration-300 hover:scale-110 ${
+                      writeup.data.difficulty === 'easy' ? 'bg-emerald-500/20 border border-emerald-500/50 text-emerald-400' :
+                      writeup.data.difficulty === 'medium' ? 'bg-amber-500/20 border border-amber-500/50 text-amber-400' :
+                      writeup.data.difficulty === 'hard' ? 'bg-red-500/20 border border-red-500/50 text-red-400' :
+                      'bg-purple-500/20 border border-purple-500/50 text-purple-400'
+                    }`}>
+                      {writeup.data.difficulty}
+                    </span>
+                  </div>
+                  
+                  {/* Contenido */}
+                  <div class="px-6 pb-6">
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 text-center group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors duration-300">
+                      {machineName}
+                      <span class="text-slate-500 dark:text-slate-400"> - {platform.name}</span>
+                    </h3>
+                    
+                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 line-clamp-2 text-center">
+                      {writeup.data.description}
+                    </p>
+
+                    {/* Metadata */}
+                    <div class="flex items-center justify-center gap-4 mb-4 text-xs text-slate-600 dark:text-slate-400">
+                      <div class="flex items-center gap-1">
+                        <span>{writeup.data.os === 'linux' ? '🐧' : writeup.data.os === 'windows' ? '🪟' : '💻'}</span>
+                        <span class="capitalize">{writeup.data.os}</span>
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <span>{writeup.data.difficulty === 'easy' ? '●' : writeup.data.difficulty === 'medium' ? '●●' : writeup.data.difficulty === 'hard' ? '●●●' : '●●●●'}</span>
+                        <span class="capitalize">{writeup.data.difficulty}</span>
+                      </div>
+                      {writeup.data.points && (
+                        <div class="flex items-center gap-1">
+                          <span>⭐</span>
+                          <span>{writeup.data.points}</span>
+                        </div>
+                      )}
+                      <div class="flex items-center gap-1">
+                        <span>📅</span>
+                        <span>{new Date(writeup.data.pubDate).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric'
+                        })}</span>
+                      </div>
+                    </div>
+                    
+                    {/* Tags */}
+                    {writeup.data.tags && writeup.data.tags.length > 0 && (
+                      <div class="flex flex-wrap gap-2 justify-center">
+                        {writeup.data.tags.slice(0, 3).map((tag: string) => (
+                          <span class="text-xs px-3 py-1 bg-indigo-100 dark:bg-indigo-500/20 border border-indigo-200 dark:border-indigo-500/30 text-indigo-700 dark:text-indigo-300 rounded-full">
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* CVEs si existen */}
+                    {writeup.data.vulnerabilities && writeup.data.vulnerabilities.length > 0 && (
+                      <div class="flex flex-wrap gap-2 justify-center mt-3">
+                        {writeup.data.vulnerabilities.slice(0, 2).map((cve: string) => (
+                          <span class="text-xs px-3 py-1 bg-red-100 dark:bg-red-500/20 border border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-300 rounded-full">
+                            #{cve}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </section>
+  </main>
+</Layout>

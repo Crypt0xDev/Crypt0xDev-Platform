@@ -1,0 +1,60 @@
+# ─── Build output ─────────────────────────────────────────────
+dist/
+.output/
+
+# ─── Astro generated ──────────────────────────────────────────
+.astro/
+
+# ─── Dependencies ─────────────────────────────────────────────
+node_modules/
+
+# ─── Environment variables ────────────────────────────────────
+# Nunca subir .env con secretos reales; usa .env.example como plantilla
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+.env.staging
+
+# ─── Logs ─────────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ─── Testing & coverage ───────────────────────────────────────
+coverage/
+.nyc_output/
+
+# ─── TypeScript ───────────────────────────────────────────────
+*.tsbuildinfo
+
+# ─── VS Code ──────────────────────────────────────────────────
+# Ignorar configuraciones personales, conservar recomendaciones de extensiones
+.vscode/*
+!.vscode/extensions.json
+
+# ─── JetBrains IDEs ───────────────────────────────────────────
+.idea/
+
+# ─── macOS ────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ─── Windows ──────────────────────────────────────────────────
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ─── Editors / temp files ─────────────────────────────────────
+*.swp
+*.swo
+*~
+*.orig

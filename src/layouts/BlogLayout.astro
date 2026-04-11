@@ -1,0 +1,46 @@
+---
+import Layout from './Layout.astro';
+import { useTranslations } from '../i18n/core';
+
+interface Props {
+  title: string;
+  description: string;
+  lang: string;
+  image?: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  tags?: string[];
+}
+
+const { title, description, lang, image, pubDate, updatedDate, tags } = Astro.props;
+const t = useTranslations(lang as 'es' | 'en');
+---
+
+<Layout
+  title={title}
+  description={description}
+  lang={lang}
+  image={image}
+  canonical={Astro.url.href}
+  type="article"
+  pubDate={pubDate}
+  modDate={updatedDate}
+  section="Cybersecurity"
+  tags={tags}
+  keywords={tags?.join(', ')}
+>
+  <article class="min-h-[calc(100vh-16rem)]">
+    <slot />
+    
+    <footer class="max-w-[1000px] mx-auto mt-12 p-8 border-t border-slate-200 dark:border-slate-700">
+      <div class="flex justify-between items-center">
+        <a 
+          href={`/${lang}/blog`} 
+          class="text-indigo-600 dark:text-indigo-400 no-underline font-semibold transition-colors duration-200 hover:text-indigo-700 dark:hover:text-indigo-300 hover:underline"
+        >
+          ← {t('blog.back_to_blog')}
+        </a>
+      </div>
+    </footer>
+  </article>
+</Layout>

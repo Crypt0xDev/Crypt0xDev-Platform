@@ -1,0 +1,49 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { useTranslations, getLangFromUrl } from '../i18n/core';
+
+// Detectar idioma de la URL actual
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<Layout title={`404`} description={t('common.404')} lang={lang}>
+  <main class="min-h-[calc(100vh-8rem)] flex items-center justify-center py-8">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="text-center max-w-[600px] mx-auto">
+        <div class="text-[8rem] font-black leading-none bg-gradient-to-br from-indigo-600 to-pink-600 dark:from-indigo-400 dark:to-pink-400 bg-clip-text text-transparent mb-4 animate-float">
+          404
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-slate-100 mb-4">
+          {t('common.404_title')}
+        </h1>
+        <p class="text-lg text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
+          {t('common.404_description')}
+        </p>
+        <div class="flex gap-4 justify-center flex-wrap">
+          <a 
+            href={`/${lang}`} 
+            class="inline-block py-3 px-6 rounded-lg font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/50"
+          >
+            {t('common.404_button')}
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+</style>

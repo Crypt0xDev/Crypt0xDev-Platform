@@ -1,0 +1,526 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+  title?: string;
+  inline?: boolean;
+  platform?: 'blog' | 'htb' | 'thm' | 'vulnhub' | 'hackmyvm' | 'ctf' | 'default';
+}
+
+const { headings, title = "Table of Contents", inline = false, platform = 'default' } = Astro.props;
+
+// Filtrar headings excluyendo solo "Tabla de Contenidos"
+const filteredHeadings = headings.filter(h => {
+  const isValidDepth = h.depth >= 2 && h.depth <= 3;
+  const textLower = h.text.toLowerCase().trim();
+  
+  // Solo excluir "Tabla de Contenidos" o "Table of Contents"
+  const excludedPatterns = [
+    'tabla de contenido',
+    'table of content'
+  ];
+  
+  const shouldExclude = excludedPatterns.some(pattern => 
+    textLower === pattern || textLower.startsWith(pattern)
+  );
+  
+  return isValidDepth && !shouldExclude;
+});
+
+// Limitar a 10 elementos máximo
+const limitedHeadings = filteredHeadings.slice(0, 5);
+
+// Configuración de colores por plataforma
+const platformStyles = {
+  blog: {
+    border: 'border-indigo-500 dark:border-indigo-400',
+    titleBorder: 'border-indigo-600 dark:border-indigo-400',
+    title: 'text-indigo-600 dark:text-indigo-400',
+    linkHover: 'hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/10 hover:border-l-indigo-600 dark:hover:border-l-indigo-400',
+    active: 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 border-l-indigo-600 dark:border-l-indigo-400'
+  },
+  htb: {
+    border: 'border-[#9fef00]/30 dark:border-[#9fef00]/40',
+    titleBorder: 'border-[#9fef00] dark:border-[#9fef00]',
+    title: 'text-[#9fef00] dark:text-[#9fef00]',
+    linkHover: 'hover:text-[#9fef00] dark:hover:text-[#9fef00] hover:bg-[#9fef00]/10 dark:hover:bg-[#9fef00]/5 hover:border-l-[#9fef00] dark:hover:border-l-[#9fef00]',
+    active: 'text-[#9fef00] dark:text-[#9fef00] bg-[#9fef00]/15 dark:bg-[#9fef00]/10 border-l-[#9fef00] dark:border-l-[#9fef00]'
+  },
+  thm: {
+    border: 'border-purple-500/30 dark:border-purple-400/40',
+    titleBorder: 'border-purple-600 dark:border-purple-400',
+    title: 'text-purple-600 dark:text-purple-400',
+    linkHover: 'hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/10 hover:border-l-purple-600',
+    active: 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 border-l-purple-600'
+  },
+  vulnhub: {
+    border: 'border-emerald-500/30 dark:border-emerald-400/40',
+    titleBorder: 'border-emerald-600 dark:border-emerald-400',
+    title: 'text-emerald-600 dark:text-emerald-400',
+    linkHover: 'hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 hover:border-l-emerald-600',
+    active: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border-l-emerald-600'
+  },
+  hackmyvm: {
+    border: 'border-orange-500/30 dark:border-orange-400/40',
+    titleBorder: 'border-orange-600 dark:border-orange-400',
+    title: 'text-orange-600 dark:text-orange-400',
+    linkHover: 'hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/10 hover:border-l-orange-600',
+    active: 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 border-l-orange-600'
+  },
+  ctf: {
+    border: 'border-purple-500 dark:border-purple-400',
+    titleBorder: 'border-purple-600 dark:border-purple-400',
+    title: 'text-purple-600 dark:text-purple-400',
+    linkHover: 'hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/10 hover:border-l-purple-600 dark:hover:border-l-purple-400',
+    active: 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 border-l-purple-600 dark:border-l-purple-400'
+  },
+  default: {
+    border: 'border-slate-500 dark:border-slate-400',
+    titleBorder: 'border-slate-600 dark:border-slate-400',
+    title: 'text-slate-600 dark:text-slate-400',
+    linkHover: 'hover:text-slate-600 dark:hover:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/10 hover:border-l-slate-600 dark:hover:border-l-slate-400',
+    active: 'text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/20 border-l-slate-600 dark:border-l-slate-400'
+  }
+};
+
+const styles = platformStyles[platform];
+---
+
+{limitedHeadings.length > 0 && (
+  <aside 
+    class={inline 
+      ? "toc-inline w-full block" 
+      : "toc-sidebar"
+    }
+    data-platform={platform}
+    aria-labelledby="toc-heading"
+  >
+    <nav class={`toc-nav ${inline ? 'bg-transparent border-none p-0 shadow-none' : `bg-white dark:bg-slate-900 border-2 ${styles.border} rounded-2xl p-6 shadow-lg backdrop-blur-lg`}`} data-platform={platform}>
+      <div class={`pb-4 mb-4 border-b-2 ${styles.titleBorder}`}>
+        <h2 
+          id="toc-heading" 
+          class={`text-sm font-bold ${styles.title} uppercase tracking-widest m-0`}
+        >
+          {title}
+        </h2>
+      </div>
+      <ul class="toc-list list-none m-0 p-0">
+        {limitedHeadings.map((heading) => (
+          <li class="m-0 p-0">
+            <a 
+              href={`#${heading.slug}`} 
+              class={`toc-link block py-2.5 px-3.5 text-slate-600 dark:text-slate-400 no-underline text-sm leading-relaxed transition-all duration-300 border-l-4 border-transparent rounded-md my-1 ${styles.linkHover} hover:translate-x-1.5 ${heading.depth === 3 ? 'pl-7 text-xs' : ''}`}
+              data-heading-id={heading.slug}
+              data-platform={platform}
+            >
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </aside>
+)}
+
+<style>
+  /* TOC Sidebar - Estático con máximo 10 elementos */
+  .toc-sidebar {
+    position: fixed;
+    top: 5rem;
+    right: -6rem;
+    width: 280px;
+    height: auto;
+    max-height: fit-content;
+    overflow: hidden;
+    z-index: 40;
+  }
+
+  /* Cuando hay espacio, pegarlo al borde del viewport */
+  @media (min-width: 1440px) {
+    .toc-sidebar {
+      right: calc((100vw - 1200px - 280px - 6rem) / 2 - 8rem);
+    }
+  }
+
+  /* En pantallas extra grandes */
+  @media (min-width: 1536px) {
+    .toc-sidebar {
+      width: 300px;
+      right: calc((100vw - 1200px - 300px - 8rem) / 2 - 8rem);
+    }
+  }
+
+  /* Ocultar en móvil, tablets y pantallas medianas */
+  @media (max-width: 1439px) {
+    .toc-sidebar {
+      display: none;
+    }
+  }
+
+  /* Navegación con efectos dinámicos */
+  .toc-nav {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .toc-nav:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  /* Enlaces activos dinámicos por plataforma con efectos mejorados */
+  .toc-link.active[data-platform="blog"] {
+    @apply text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 border-l-indigo-600 dark:border-l-indigo-400 font-semibold translate-x-1.5;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
+    animation: pulseActive 2s ease-in-out infinite;
+  }
+
+  .toc-link.active[data-platform="htb"] {
+    color: #9fef00 !important;
+    background: linear-gradient(90deg, rgba(159, 239, 0, 0.15), rgba(159, 239, 0, 0.05)) !important;
+    border-left-color: #9fef00 !important;
+    border-left-width: 4px !important;
+    font-weight: 600;
+    transform: translateX(0.375rem);
+    box-shadow: 0 2px 8px rgba(159, 239, 0, 0.2), inset 0 0 20px rgba(159, 239, 0, 0.05);
+    animation: glowPulse 2s ease-in-out infinite;
+  }
+
+  .toc-link.active[data-platform="ctf"] {
+    @apply text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 border-l-purple-600 dark:border-l-purple-400 font-semibold translate-x-1.5;
+    box-shadow: 0 2px 8px rgba(168, 85, 247, 0.15);
+    animation: pulseActive 2s ease-in-out infinite;
+  }
+
+  /* Animaciones */
+  @keyframes pulseActive {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.85;
+    }
+  }
+
+  @keyframes glowPulse {
+    0%, 100% {
+      box-shadow: 0 2px 8px rgba(159, 239, 0, 0.2), inset 0 0 20px rgba(159, 239, 0, 0.05);
+    }
+    50% {
+      box-shadow: 0 4px 16px rgba(159, 239, 0, 0.4), inset 0 0 30px rgba(159, 239, 0, 0.1);
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* Animación de entrada para nuevos elementos */
+  .toc-link {
+    position: relative;
+    animation: slideIn 0.3s ease-out;
+  }
+
+  /* Estilos de navegación específicos por plataforma */
+  .toc-nav[data-platform="htb"] {
+    border-color: rgba(159, 239, 0, 0.3) !important;
+    background: rgba(10, 15, 10, 0.95) !important;
+  }
+
+  :global(.dark) .toc-nav[data-platform="htb"] {
+    background: rgba(159, 239, 0, 0.03) !important;
+    border-color: rgba(159, 239, 0, 0.4) !important;
+  }
+
+  .toc-nav[data-platform="blog"] {
+    border-color: rgba(99, 102, 241, 0.3) !important;
+  }
+
+  .toc-nav[data-platform="ctf"] {
+    border-color: rgba(168, 85, 247, 0.3) !important;
+  }
+
+  /* Efectos hover específicos por plataforma */
+  .toc-link[data-platform="htb"]:hover {
+    color: #9fef00 !important;
+    background: rgba(159, 239, 0, 0.08) !important;
+    border-left-color: #9fef00 !important;
+  }
+
+  .toc-link[data-platform="blog"]:hover {
+    @apply text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/10 border-l-indigo-600;
+  }
+
+  .toc-link[data-platform="ctf"]:hover {
+    @apply text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/10 border-l-purple-600;
+  }
+
+  /* Título por plataforma */
+  .toc-nav[data-platform="htb"] h2 {
+    color: #9fef00 !important;
+    text-shadow: 0 0 10px rgba(159, 239, 0, 0.3);
+  }
+
+  .toc-nav[data-platform="blog"] h2 {
+    @apply text-indigo-600 dark:text-indigo-400;
+  }
+
+  .toc-nav[data-platform="ctf"] h2 {
+    @apply text-purple-600 dark:text-purple-400;
+  }
+
+  /* TryHackMe */
+  .toc-link.active[data-platform="thm"] {
+    @apply text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 border-l-purple-600 font-semibold translate-x-1.5;
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.15);
+    animation: pulseActive 2s ease-in-out infinite;
+  }
+
+  .toc-nav[data-platform="thm"] {
+    border-color: rgba(124, 58, 237, 0.3) !important;
+  }
+
+  .toc-link[data-platform="thm"]:hover {
+    @apply text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/10 border-l-purple-600;
+  }
+
+  .toc-nav[data-platform="thm"] h2 {
+    @apply text-purple-600 dark:text-purple-400;
+  }
+
+  /* VulnHub */
+  .toc-link.active[data-platform="vulnhub"] {
+    @apply text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border-l-emerald-600 font-semibold translate-x-1.5;
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.15);
+    animation: terminalBlink 1.5s ease-in-out infinite;
+  }
+
+  @keyframes terminalBlink {
+    0%, 100% {
+      border-left-width: 4px;
+    }
+    50% {
+      border-left-width: 6px;
+    }
+  }
+
+  .toc-nav[data-platform="vulnhub"] {
+    border-color: rgba(5, 150, 105, 0.3) !important;
+  }
+
+  .toc-link[data-platform="vulnhub"]:hover {
+    @apply text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/10 border-l-emerald-600;
+  }
+
+  .toc-nav[data-platform="vulnhub"] h2 {
+    @apply text-emerald-600 dark:text-emerald-400;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* HackMyVM */
+  .toc-link.active[data-platform="hackmyvm"] {
+    @apply text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 border-l-orange-600 font-semibold translate-x-1.5;
+    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.15);
+    animation: pulseActive 2s ease-in-out infinite;
+  }
+
+  .toc-nav[data-platform="hackmyvm"] {
+    border-color: rgba(249, 115, 22, 0.3) !important;
+  }
+
+  .toc-link[data-platform="hackmyvm"]:hover {
+    @apply text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/10 border-l-orange-600;
+  }
+
+  .toc-nav[data-platform="hackmyvm"] h2 {
+    @apply text-orange-600 dark:text-orange-400;
+  }
+
+  /* Indicador de progreso */
+  .toc-link.active::before {
+    content: '▶';
+    position: absolute;
+    left: 0.5rem;
+    animation: bounce 1s ease-in-out infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(3px);
+    }
+  }
+
+  /* Barra de progreso lateral */
+  .toc-link.active::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: currentColor;
+    opacity: 0.3;
+    animation: progressBar 2s ease-in-out infinite;
+  }
+
+  @keyframes progressBar {
+    0% {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 0.7;
+    }
+    100% {
+      opacity: 0.3;
+    }
+  }
+
+  /* Scroll margin para headings */
+  :global(h2[id], h3[id]) {
+    scroll-margin-top: 6rem;
+  }
+
+  /* Animación de entrada dinámica */
+  .toc-sidebar:not(.toc-inline) {
+    animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 1023px) {
+    .toc-sidebar:not(.toc-inline) {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tocSidebar = document.querySelector('.toc-sidebar') as HTMLElement;
+    const tocList = document.querySelector('.toc-list') as HTMLElement;
+    const headings = document.querySelectorAll('h2[id], h3[id]');
+    
+    if (!tocList || !headings.length || !tocSidebar) return;
+
+    const header = document.querySelector('header');
+    const headerHeight = header ? header.offsetHeight : 80;
+
+    // Filtrar headings excluyendo títulos no deseados
+    const excludedPatterns = [
+      'tabla de contenido',
+      'table of content',
+    ];
+
+    const allHeadings = Array.from(headings).filter(heading => {
+      const text = (heading.textContent || '').toLowerCase().trim();
+      return !excludedPatterns.some(pattern => 
+        text === pattern || text.startsWith(pattern)
+      );
+    });
+
+    let currentActiveIndex = 0;
+
+    // Función para actualizar el TOC con 10 elementos centrados en el índice activo
+    function updateTOCList(activeIndex: number) {
+      // Calcular el rango de 10 elementos centrado en el activo
+      const startIndex = Math.max(0, activeIndex - 5);
+      const endIndex = Math.min(allHeadings.length, startIndex + 10);
+      const adjustedStart = Math.max(0, endIndex - 10);
+      
+      const visibleHeadings = allHeadings.slice(adjustedStart, endIndex);
+      
+      // Limpiar el TOC
+      tocList.innerHTML = '';
+      
+      // Agregar los headings visibles
+      visibleHeadings.forEach((heading, index) => {
+        const id = heading.getAttribute('id');
+        const text = heading.textContent || '';
+        const depth = parseInt(heading.tagName.substring(1));
+        const platform = tocSidebar.getAttribute('data-platform') || 'default';
+        
+        const li = document.createElement('li');
+        li.className = 'm-0 p-0';
+        
+        const a = document.createElement('a');
+        a.href = `#${id}`;
+        a.className = `toc-link block py-2.5 px-3.5 text-slate-600 dark:text-slate-400 no-underline text-sm leading-relaxed transition-all duration-300 border-l-4 border-transparent rounded-md my-1 hover:translate-x-1.5 ${depth === 3 ? 'pl-7 text-xs' : ''}`;
+        a.setAttribute('data-heading-id', id || '');
+        a.setAttribute('data-platform', platform);
+        a.textContent = text;
+        
+        // Marcar como activo si es el heading activo
+        if (adjustedStart + index === activeIndex) {
+          a.classList.add('active');
+        }
+        
+        // Event listener para smooth scroll
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetElement = document.getElementById(id || '');
+          if (targetElement) {
+            const yOffset = -(headerHeight + 20);
+            const y = targetElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+          }
+        });
+        
+        li.appendChild(a);
+        tocList.appendChild(li);
+      });
+    }
+
+    // Intersection Observer para detectar el heading activo
+    const observerOptions = {
+      root: null,
+      rootMargin: '-100px 0px -70% 0px',
+      threshold: 0
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          const activeIndex = allHeadings.findIndex(h => h.getAttribute('id') === id);
+          
+          if (activeIndex !== -1 && activeIndex !== currentActiveIndex) {
+            currentActiveIndex = activeIndex;
+            updateTOCList(activeIndex);
+          }
+        }
+      });
+    }, observerOptions);
+
+    allHeadings.forEach((heading) => observer.observe(heading));
+    
+    // Inicializar TOC con los primeros 10 elementos
+    updateTOCList(0);
+  });
+</script>
+

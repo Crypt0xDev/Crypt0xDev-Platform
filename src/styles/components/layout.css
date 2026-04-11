@@ -1,0 +1,145 @@
+/* ===== COMPONENTS LAYER ===== */
+@layer components {
+  /* Container */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow duration-300;
+  }
+
+  .card-hover {
+    @apply hover:shadow-lg hover:-translate-y-1 transition-all duration-300;
+  }
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg font-medium transition-all duration-200 text-sm sm:text-base;
+  }
+
+  .btn-primary {
+    @apply bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm hover:shadow-md;
+  }
+
+  .btn-secondary {
+    @apply bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-100;
+  }
+
+  /* Tags */
+  .tag {
+    @apply inline-flex items-center px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300;
+  }
+
+  /* Badges */
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 sm:px-2.5 rounded-md text-xs font-semibold;
+  }
+
+  .badge-success {
+    @apply bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300;
+  }
+
+  .badge-warning {
+    @apply bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300;
+  }
+
+  .badge-danger {
+    @apply bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300;
+  }
+
+  .badge-info {
+    @apply bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300;
+  }
+
+  /* Links */
+  .link {
+    @apply text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors duration-200;
+  }
+
+  /* Code blocks */
+  .code-inline {
+    @apply px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-pink-600 dark:text-pink-400 font-mono text-sm;
+  }
+}
+
+/* Cards grid */
+.cards-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+}
+
+/* Hero sections */
+.hero {
+  @apply bg-gradient-to-br from-indigo-50 via-white to-pink-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 py-16 md:py-24;
+}
+
+.hero-title {
+  @apply text-4xl md:text-5xl lg:text-6xl font-black mb-6 leading-tight;
+}
+
+.hero-description {
+  @apply text-xl md:text-2xl text-slate-600 dark:text-slate-400 mb-8 leading-relaxed;
+}
+
+/* Section */
+.section {
+  @apply py-12 md:py-16;
+}
+
+.section-title {
+  @apply text-3xl md:text-4xl font-bold mb-8 text-center;
+}
+
+/* ===== TAG STYLES (CONSISTENT ACROSS ALL PAGES) ===== */
+.tag,
+.writeup-tag,
+.card-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  background: rgba(99, 102, 241, 0.1);
+  color: rgb(99, 102, 241);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+:global(.dark) .tag,
+:global(.dark) .writeup-tag,
+:global(.dark) .card-tag {
+  background: rgba(129, 140, 248, 0.15);
+  color: rgb(165, 180, 252);
+  border-color: rgba(129, 140, 248, 0.3);
+}
+
+.tag:hover,
+.writeup-tag:hover,
+.card-tag:hover,
+a.tag:hover,
+a.writeup-tag:hover {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.4);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+:global(.dark) .tag:hover,
+:global(.dark) .writeup-tag:hover,
+:global(.dark) .card-tag:hover,
+:global(.dark) a.tag:hover,
+:global(.dark) a.writeup-tag:hover {
+  background: rgba(129, 140, 248, 0.25);
+  border-color: rgba(129, 140, 248, 0.5);
+}
+
+/* Tag container styles */
+.writeup-tags,
+.card-tags,
+.tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}

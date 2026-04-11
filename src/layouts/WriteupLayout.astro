@@ -1,0 +1,38 @@
+---
+import Layout from './Layout.astro';
+import { useTranslations } from '../i18n/core';
+
+interface Props {
+  title: string;
+  description: string;
+  lang: string;
+  image?: string;
+  heroImage?: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  platform: string;
+  difficulty: string;
+  os: string;
+  tags?: string[];
+  retired: boolean;
+}
+
+const { title, description, lang, image, heroImage, pubDate, updatedDate, platform, difficulty, os, tags, retired } = Astro.props;
+const t = useTranslations(lang as 'es' | 'en');
+---
+
+<Layout
+  title={title}
+  description={description}
+  lang={lang}
+  image={image}
+  canonical={Astro.url.href}
+  type="article"
+  pubDate={pubDate}
+  modDate={updatedDate}
+  section={`${platform} - ${difficulty}`}
+  tags={tags}
+  keywords={tags ? `${platform}, ${difficulty}, ${os}, ${tags.join(', ')}` : `${platform}, ${difficulty}, ${os}`}
+>
+  <slot />
+</Layout>

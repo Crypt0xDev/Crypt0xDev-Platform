@@ -1,0 +1,161 @@
+{
+  "nav": {
+    "home": "Home",
+    "ctf": "CTF",
+    "writeups": "Writeups",
+    "blog": "Blog",
+    "archive": "Archive",
+    "tools": "Tools",
+    "certifications": "Certifications",
+    "labs": "Labs",
+    "cheatsheets": "Cheatsheets",
+    "videos": "Videos",
+    "achievements": "Achievements",
+    "projects": "Projects",
+    "vulnerabilities": "Vulnerabilities (CVEs)",
+    "about": "About",
+    "contact": "Contact",
+    "search": "Search",
+    "menu": "Menu",
+    "resources": "Resources",
+    "allWriteups": "View All Writeups"
+  },
+  "footer": {
+    "rights": "All rights reserved",
+    "built_with": "Built with",
+    "by": "by"
+  },
+  "blog": {
+    "title": "Blog",
+    "latest_posts": "Latest Posts",
+    "read_more": "Read more",
+    "all_posts": "All Posts",
+    "no_posts": "No posts available yet",
+    "tags": "Tags",
+    "published_on": "Published on",
+    "updated_on": "Updated on",
+    "reading_time": "min read",
+    "back_to_blog": "Back to Blog",
+    "table_of_contents": "Table of Contents",
+    "related_posts": "Related Posts",
+    "categories_title": "Blog Categories",
+    "categories_description": "Explore our content organized by categories",
+    "posts_in_category": "Posts in category",
+    "view_all_categories": "View all categories",
+    "category": {
+      "tutorial": "Tutorial",
+      "writeup": "Writeup",
+      "research": "Research",
+      "tools": "Tools",
+      "news": "News"
+    }
+  },
+  "writeups": {
+    "title": "Writeups",
+    "latest": "Latest Writeups",
+    "all": "All Writeups",
+    "platform": "Platform",
+    "difficulty": "Difficulty",
+    "os": "Operating System",
+    "retired": "Retired",
+    "active": "Active",
+    "no_writeups": "No writeups available yet",
+    "back_to_writeups": "Back to Writeups",
+    "filter_by": "Filter by",
+    "table_of_contents": "Table of Contents",
+    "related_writeups": "Related Writeups"
+  },
+  "common": {
+    "welcome_to": "Welcome to",
+    "hero_description": "CTF Writeups · Cybersecurity Insights · Programming & Tech Blog",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error",
+    "404": "Page not found",
+    "404_title": "Page Not Found",
+    "404_description": "The page you're looking for doesn't exist or has been moved.",
+    "404_button": "Go to Home",
+    "go_home": "Go to Home",
+    "theme": {
+      "light": "Light",
+      "dark": "Dark",
+      "toggle": "Toggle theme"
+    },
+    "language": {
+      "select": "Select language",
+      "en": "English",
+      "es": "Spanish"
+    }
+  },
+  "difficulty": {
+    "easy": "Easy",
+    "medium": "Medium",
+    "hard": "Hard",
+    "insane": "Insane"
+  },
+  "platform": {
+    "htb": "HackTheBox",
+    "tryhackme": "TryHackMe",
+    "vulnhub": "VulnHub",
+    "hackmyvm": "HackMyVM",
+    "portswigger": "PortSwigger"
+  },
+  "category": {
+    "machines": "Machines",
+    "fortresses": "Fortresses",
+    "endgames": "EndGames",
+    "prolabs": "Pro Labs",
+    "challenges": "Challenges",
+    "rooms": "Rooms",
+    "paths": "Paths",
+    "other": "Other"
+  },
+  "os": {
+    "linux": "Linux",
+    "windows": "Windows",
+    "other": "Other"
+  },
+  "skillLevel": {
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced",
+    "expert": "Expert"
+  },
+  "attackVector": {
+    "web": "Web",
+    "network": "Network",
+    "binary": "Binary",
+    "crypto": "Cryptography",
+    "forensics": "Forensics",
+    "steganography": "Steganography",
+    "reverse-engineering": "Reverse Engineering",
+    "pwn": "Pwn",
+    "osint": "OSINT",
+    "wireless": "Wireless",
+    "mobile": "Mobile",
+    "cloud": "Cloud",
+    "active-directory": "Active Directory",
+    "privilege-escalation": "Privilege Escalation",
+    "lateral-movement": "Lateral Movement"
+  },
+  "ctf": {
+    "title": "CTF Writeups",
+    "latest": "Latest Challenges",
+    "all": "All Challenges",
+    "category": "Category",
+    "challenges": "Challenges",
+    "points": "Points",
+    "solves": "Solves",
+    "no_challenges": "No CTF writeups available yet",
+    "back_to_ctf": "Back to CTF"
+  },
+  "archive": {
+    "title": "Knowledge Archive",
+    "latest": "Recently Added",
+    "all": "All Archive",
+    "topic": "Topic",
+    "articles": "Articles",
+    "no_articles": "No articles available yet",
+    "back_to_archive": "Back to Archive"
+  }
+}

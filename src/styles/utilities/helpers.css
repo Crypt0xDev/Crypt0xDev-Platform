@@ -1,0 +1,38 @@
+/* ===== UTILITIES LAYER ===== */
+@layer utilities {
+  /* Gradients */
+  .gradient-primary {
+    @apply bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent;
+  }
+
+  /* Animations */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out;
+  }
+
+  .animate-slide-down {
+    animation: slideDown 0.5s ease-out;
+  }
+
+  /* Glass effect */
+  .glass {
+    @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-md;
+  }
+
+  /* Shadows */
+  .shadow-glow {
+    box-shadow: 0 0 20px rgba(79, 70, 229, 0.3);
+  }
+
+  .shadow-glow-lg {
+    box-shadow: 0 0 40px rgba(79, 70, 229, 0.4);
+  }
+}

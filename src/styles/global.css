@@ -1,0 +1,15 @@
+/* ===== IMPORTS ===== */
+/* Fuentes locales en lugar de Google Fonts para mejor rendimiento y GDPR */
+@import url('/fonts/fonts.css');
+@import './base/animations.css';
+@import './base/reset.css';
+@import './components/layout.css';
+@import './components/prose.css';
+@import './components/platforms.css';
+@import './utilities/helpers.css';
+
+/* ===== TAILWIND BASE ===== */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+

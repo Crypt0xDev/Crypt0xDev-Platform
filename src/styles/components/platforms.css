@@ -1,0 +1,37 @@
+/* ===== DIFFICULTY BADGES ===== */
+.difficulty-easy {
+  @apply bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-700;
+}
+
+.difficulty-medium {
+  @apply bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700;
+}
+
+.difficulty-hard {
+  @apply bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-700;
+}
+
+.difficulty-insane {
+  @apply bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-700;
+}
+
+/* ===== PLATFORM BADGES ===== */
+.platform-badge {
+  @apply badge bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600;
+}
+
+.platform-htb, .badge-platform[data-platform="htb"] {
+  @apply bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-700;
+}
+
+.platform-tryhackme, .badge-platform[data-platform="tryhackme"] {
+  @apply bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-700;
+}
+
+.platform-vulnhub, .badge-platform[data-platform="vulnhub"] {
+  @apply bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-700;
+}
+
+.platform-hackmyvm, .badge-platform[data-platform="hackmyvm"] {
+  @apply bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-700;
+}

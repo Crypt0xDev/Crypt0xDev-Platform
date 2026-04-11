@@ -1,0 +1,111 @@
+---
+import { formatDate } from '@i18n/utils';
+
+interface Post {
+  id?: string;
+  slug: string;
+  title: string;
+  description: string;
+  pubDate: Date;
+  tags?: string[];
+  language?: string;
+  difficulty?: string;
+  platform?: string;
+  heroImage?: string;
+  readTime?: number;
+  category?: string;
+}
+
+interface Props {
+  posts: Post[];
+  title: string;
+  lang: string;
+  type: 'blog' | 'writeup';
+}
+
+const { posts, title, lang, type } = Astro.props;
+
+// Limpiar slugs para generar URLs correctas
+const cleanSlug = (slug: string) => {
+  return slug.replace(/^(es|en)\//, '');
+};
+
+const getPostUrl = (post: Post) => {
+  const cleanedSlug = cleanSlug(post.slug);
+  if (type === 'blog') {
+    const category = post.category || 'tutorial';
+    // Extraer solo el slug del post (última parte)
+    const postSlug = cleanedSlug.split('/').pop() || cleanedSlug;
+    return `/${lang}/blog/${category}/${postSlug}/`;
+  } else {
+    // Para writeups: /lang/writeup/platform/slug
+    return `/${lang}/writeup/${cleanedSlug}/`;
+  }
+};
+---
+
+{posts.length > 0 && (
+  <aside class="my-16 py-8 border-t-2 border-slate-200 dark:border-slate-700">
+    <h2 class="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-8 text-center">
+      {title}
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {posts.map((post) => (
+        <article class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-indigo-500 dark:hover:border-indigo-400 h-full">
+          <a href={getPostUrl(post)} class="no-underline text-inherit flex flex-col h-full">
+            {post.heroImage && (
+              <div class="w-full h-48 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 relative">
+                <img 
+                  src={post.heroImage} 
+                  alt={post.title} 
+                  loading="lazy"
+                  class="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-105 block"
+                />
+              </div>
+            )}
+            
+            <div class="p-6 flex flex-col flex-grow">
+              <div class="flex gap-2 mb-4 flex-wrap">
+                {type === 'writeup' && post.platform && (
+                  <span class={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase platform-${post.platform}`}>
+                    {post.platform.toUpperCase()}
+                  </span>
+                )}
+                {type === 'writeup' && post.difficulty && (
+                  <span class={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase difficulty-${post.difficulty}`}>
+                    {post.difficulty.toUpperCase()}
+                  </span>
+                )}
+              </div>
+              
+              <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 mb-3 leading-snug line-clamp-2">
+                {post.title}
+              </h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed line-clamp-3 flex-grow">
+                {post.description}
+              </p>
+              
+              <div class="flex flex-col gap-3 mt-auto">
+                <time 
+                  datetime={post.pubDate.toISOString()}
+                  class="text-xs text-slate-500 dark:text-slate-400"
+                >
+                  {formatDate(post.pubDate, lang)}
+                </time>
+                {post.tags && post.tags.length > 0 && (
+                  <div class="flex flex-wrap gap-2">
+                    {post.tags.slice(0, 3).map((tag: string) => (
+                      <span class="inline-block px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded text-xs font-medium">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </a>
+        </article>
+      ))}
+    </div>
+  </aside>
+)}
