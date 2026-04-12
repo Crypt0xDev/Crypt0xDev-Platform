@@ -16,7 +16,7 @@ export const DIFFICULTIES = {
       border: 'border-green-500',
       hex: '#10b981',
     },
-    icon: '🟢',
+    icon: '<svg fill="currentColor" viewBox="0 0 24 24" class="text-emerald-500"><circle cx="12" cy="12" r="10"/></svg>',
     order: 1,
   },
   medium: {
@@ -31,7 +31,7 @@ export const DIFFICULTIES = {
       border: 'border-yellow-500',
       hex: '#f59e0b',
     },
-    icon: '🟡',
+    icon: '<svg fill="currentColor" viewBox="0 0 24 24" class="text-amber-500"><circle cx="12" cy="12" r="10"/></svg>',
     order: 2,
   },
   hard: {
@@ -46,7 +46,7 @@ export const DIFFICULTIES = {
       border: 'border-red-500',
       hex: '#ef4444',
     },
-    icon: '🔴',
+    icon: '<svg fill="currentColor" viewBox="0 0 24 24" class="text-red-500"><circle cx="12" cy="12" r="10"/></svg>',
     order: 3,
   },
   insane: {
@@ -61,7 +61,7 @@ export const DIFFICULTIES = {
       border: 'border-purple-500',
       hex: '#a855f7',
     },
-    icon: '🟣',
+    icon: '<svg fill="currentColor" viewBox="0 0 24 24" class="text-purple-500"><circle cx="12" cy="12" r="10"/></svg>',
     order: 4,
   },
 } as const;

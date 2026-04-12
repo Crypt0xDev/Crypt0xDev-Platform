@@ -111,7 +111,10 @@ if (related.length < 3) {
                 href={`/${entry.data.language}/blog/${entry.data.category}`}
                 class={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold ${categoryInfo.color} no-underline hover:opacity-80 transition-all border border-current`}
               >
-                <span>{categoryInfo.icon}</span>
+                <span
+                  class="inline-flex items-center [&>svg]:w-4 [&>svg]:h-4"
+                  set:html={categoryInfo.icon}
+                />
                 {categoryInfo.label[entry.data.language as 'es' | 'en']}
               </a>
             )

@@ -27,6 +27,19 @@ interface Props {
 
 const { writeups, title, lang } = Astro.props;
 
+const OS_ICONS: Record<string, string> = {
+  linux:
+    '<svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8 2 5 5 5 9c0 2 .8 3.8 2 5.1V20h10v-5.9c1.2-1.3 2-3.1 2-5.1 0-4-3-7-7-7zm-1 11H9v-2h2v2zm4 0h-2v-2h2v2z"/></svg>',
+  windows:
+    '<svg fill="currentColor" viewBox="0 0 24 24"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>',
+  other:
+    '<svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>',
+};
+const STAR_ICON =
+  '<svg fill="currentColor" viewBox="0 0 24 24"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+const CALENDAR_ICON =
+  '<svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/></svg>';
+
 // Mapeo de nombres de plataformas
 const platformNames: Record<string, string> = {
   htb: 'HackTheBox',
@@ -34,7 +47,7 @@ const platformNames: Record<string, string> = {
   tryhackme: 'TryHackMe',
   vulnhub: 'VulnHub',
   hackmyvm: 'HackMyVM',
-  portswigger: 'PortSwigger'
+  portswigger: 'PortSwigger',
 };
 
 // Derivar slug efectivo desde id (v6) o slug legacy (v5)
@@ -62,97 +75,142 @@ const getMachineName = (title: string) => {
 };
 ---
 
-{writeups.length > 0 && (
-  <section class="related-writeups-container">
-    <h2 class="related-title">
-      {title}
-    </h2>
-    <div class="related-grid">
-      {writeups.map((writeup) => {
-        const writeupUrl = getWriteupUrl(writeup);
-        const machineName = getMachineName(writeup.data.title);
-        const machineLogo = writeup.data.logo || `/images/platforms/${writeup.data.platform}/machines.png`;
-        
-        return (
-          <a 
-            href={writeupUrl}
-            class="related-card"
-          >
-            {/* Logo circular con gradiente */}
-            <div class="related-logo-container">
-              <div class="related-logo-ring bg-linear-to-br from-blue-500 to-purple-600">
-                <div class="related-logo-inner">
-                  <img 
-                    src={machineLogo} 
-                    alt={machineName}
-                    loading="lazy"
-                    class="related-logo-img"
-                  />
+{
+  writeups.length > 0 && (
+    <section class="related-writeups-container">
+      <h2 class="related-title">{title}</h2>
+      <div class="related-grid">
+        {writeups.map((writeup) => {
+          const writeupUrl = getWriteupUrl(writeup);
+          const machineName = getMachineName(writeup.data.title);
+          const machineLogo =
+            writeup.data.logo ||
+            `/images/platforms/${writeup.data.platform}/machines.png`;
+
+          return (
+            <a href={writeupUrl} class="related-card">
+              {/* Logo circular con gradiente */}
+              <div class="related-logo-container">
+                <div class="related-logo-ring bg-linear-to-br from-blue-500 to-purple-600">
+                  <div class="related-logo-inner">
+                    <img
+                      src={machineLogo}
+                      alt={machineName}
+                      loading="lazy"
+                      class="related-logo-img"
+                      onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+                    />
+                    <div
+                      style="display:none"
+                      class="w-full h-full items-center justify-center text-white/70"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="w-8 h-8"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0H3"
+                        />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Badges */}
-            <div class="related-badges">
-              <span class="related-badge bg-blue-500/20 border border-blue-500/50 text-blue-400">
-                {platformNames[writeup.data.platform]?.toUpperCase() || writeup.data.platform.toUpperCase()}
-              </span>
-              <span class={`related-badge ${
-                writeup.data.difficulty === 'easy' ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400' :
-                writeup.data.difficulty === 'medium' ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' :
-                writeup.data.difficulty === 'hard' ? 'bg-red-500/20 border-red-500/50 text-red-400' :
-                'bg-purple-500/20 border-purple-500/50 text-purple-400'
-              }`}>
-                {writeup.data.difficulty.toUpperCase()}
-              </span>
-            </div>
+              {/* Badges */}
+              <div class="related-badges">
+                <span class="related-badge bg-blue-500/20 border border-blue-500/50 text-blue-400">
+                  {platformNames[writeup.data.platform]?.toUpperCase() ||
+                    writeup.data.platform.toUpperCase()}
+                </span>
+                <span
+                  class={`related-badge ${
+                    writeup.data.difficulty === 'easy'
+                      ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400'
+                      : writeup.data.difficulty === 'medium'
+                        ? 'bg-amber-500/20 border-amber-500/50 text-amber-400'
+                        : writeup.data.difficulty === 'hard'
+                          ? 'bg-red-500/20 border-red-500/50 text-red-400'
+                          : 'bg-purple-500/20 border-purple-500/50 text-purple-400'
+                  }`}
+                >
+                  {writeup.data.difficulty.toUpperCase()}
+                </span>
+              </div>
 
-            {/* Título y descripción */}
-            <h3 class="related-card-title">
-              {machineName}
-              <span class="related-card-platform"> - {platformNames[writeup.data.platform] || writeup.data.platform}</span>
-            </h3>
-            
-            <p class="related-card-description">
-              {writeup.data.description}
-            </p>
+              {/* Título y descripción */}
+              <h3 class="related-card-title">
+                {machineName}
+                <span class="related-card-platform">
+                  {' '}
+                  -{' '}
+                  {platformNames[writeup.data.platform] ||
+                    writeup.data.platform}
+                </span>
+              </h3>
 
-            {/* Metadata */}
-            <div class="related-metadata">
-              <div class="related-meta-item">
-                <span>{writeup.data.os === 'linux' ? '🐧' : writeup.data.os === 'windows' ? '🪟' : '💻'}</span>
-                <span class="capitalize">{writeup.data.os}</span>
-              </div>
-              <div class="related-meta-item">
-                <span>{writeup.data.difficulty === 'easy' ? '●' : writeup.data.difficulty === 'medium' ? '●●' : writeup.data.difficulty === 'hard' ? '●●●' : '●●●●'}</span>
-                <span class="capitalize">{writeup.data.difficulty}</span>
-              </div>
-              <div class="related-meta-item">
-                <span>⭐</span>
-                <span>20</span>
-              </div>
-              <div class="related-meta-item">
-                <span>📅</span>
-                <span>{formatDate(writeup.data.pubDate, lang).split(' ').slice(0, 3).join(' ')}</span>
-              </div>
-            </div>
+              <p class="related-card-description">{writeup.data.description}</p>
 
-            {/* Tags */}
-            {writeup.data.tags && writeup.data.tags.length > 0 && (
-              <div class="related-tags">
-                {writeup.data.tags.slice(0, 3).map((tag: string) => (
-                  <span class="related-tag">
-                    #{tag}
+              {/* Metadata */}
+              <div class="related-metadata">
+                <div class="related-meta-item">
+                  <span
+                    class="[&>svg]:w-4 [&>svg]:h-4"
+                    set:html={OS_ICONS[writeup.data.os] ?? OS_ICONS.other}
+                  />
+                  <span class="capitalize">{writeup.data.os}</span>
+                </div>
+                <div class="related-meta-item">
+                  <span>
+                    {writeup.data.difficulty === 'easy'
+                      ? '●'
+                      : writeup.data.difficulty === 'medium'
+                        ? '●●'
+                        : writeup.data.difficulty === 'hard'
+                          ? '●●●'
+                          : '●●●●'}
                   </span>
-                ))}
+                  <span class="capitalize">{writeup.data.difficulty}</span>
+                </div>
+                <div class="related-meta-item">
+                  <span class="[&>svg]:w-4 [&>svg]:h-4" set:html={STAR_ICON} />
+                  <span>20</span>
+                </div>
+                <div class="related-meta-item">
+                  <span
+                    class="[&>svg]:w-4 [&>svg]:h-4"
+                    set:html={CALENDAR_ICON}
+                  />
+                  <span>
+                    {formatDate(writeup.data.pubDate, lang)
+                      .split(' ')
+                      .slice(0, 3)
+                      .join(' ')}
+                  </span>
+                </div>
               </div>
-            )}
-          </a>
-        );
-      })}
-    </div>
-  </section>
-)}
+
+              {/* Tags */}
+              {writeup.data.tags && writeup.data.tags.length > 0 && (
+                <div class="related-tags">
+                  {writeup.data.tags.slice(0, 3).map((tag: string) => (
+                    <span class="related-tag">#{tag}</span>
+                  ))}
+                </div>
+              )}
+            </a>
+          );
+        })}
+      </div>
+    </section>
+  )
+}
 
 <style>
   .related-writeups-container {
@@ -174,7 +232,11 @@ const getMachineName = (title: string) => {
   }
 
   .related-card {
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba(15, 23, 42, 0.95) 0%,
+      rgba(30, 41, 59, 0.9) 100%
+    );
     border-radius: 1.5rem;
     overflow: hidden;
     border: 2px solid rgba(100, 116, 139, 0.3);

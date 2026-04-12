@@ -136,7 +136,11 @@ const difficultyLabels = {
             <span
               class={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${categoryInfo.textColor} ${categoryInfo.bgColor} ${categoryInfo.borderColor} border`}
             >
-              {categoryInfo.icon} {categoryName}
+              <span
+                class="inline-flex items-center [&>svg]:w-4 [&>svg]:h-4 mr-1"
+                set:html={categoryInfo.icon}
+              />{' '}
+              {categoryName}
             </span>
           )
         }

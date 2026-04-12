@@ -2,6 +2,7 @@
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import Layout from '@layouts/Layout.astro';
 import TOC from '@components/common/TOC.astro';
+import Breadcrumb from '@components/common/Breadcrumb.astro';
 import { getCategoryById } from '@i18n/constants/resources';
 
 interface Props {
@@ -73,27 +74,17 @@ const { Content, headings } = await render(resource);
   <main class="min-h-screen bg-white dark:bg-slate-900">
     <div class="resource-article">
       <!-- Breadcrumb -->
-      <nav
-        class="flex items-center gap-2 text-sm mb-8 text-slate-600 dark:text-slate-400"
-      >
-        <a
-          href={`/${lang}/resources`}
-          class={`hover:${category.textColor} transition-colors`}
-        >
-          {lang === 'es' ? 'Recursos' : 'Resources'}
-        </a>
-        <span>/</span>
-        <a
-          href={`/${lang}/resources/${categoryId}`}
-          class={`hover:${category.textColor} transition-colors`}
-        >
-          {categoryName}
-        </a>
-        <span>/</span>
-        <span class="text-slate-900 dark:text-white font-semibold">
-          {resource.data.title}
-        </span>
-      </nav>
+      <Breadcrumb
+        items={[
+          { label: lang === 'es' ? 'Inicio' : 'Home', href: `/${lang}` },
+          {
+            label: lang === 'es' ? 'Recursos' : 'Resources',
+            href: `/${lang}/resources`,
+          },
+          { label: categoryName, href: `/${lang}/resources/${categoryId}` },
+          { label: resource.data.title },
+        ]}
+      />
 
       <!-- Header -->
       <header class="mb-12">
@@ -101,7 +92,10 @@ const { Content, headings } = await render(resource);
           <span
             class={`px-3 py-1 ${category.bgColor} ${category.textColor} rounded-lg text-sm font-semibold flex items-center gap-2`}
           >
-            <span>{category.icon}</span>
+            <span
+              class="inline-flex items-center [&>svg]:w-4 [&>svg]:h-4"
+              set:html={category.icon}
+            />
             {categoryName}
           </span>
         </div>

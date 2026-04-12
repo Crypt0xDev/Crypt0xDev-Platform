@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Layout from '@layouts/Layout.astro';
+import Breadcrumb from '@components/common/Breadcrumb.astro';
 import { useTranslations } from '@i18n/core';
 import { filterByLang } from '@i18n/utils';
 import {
@@ -56,51 +57,55 @@ const categoryDescription = category.description[lang as 'es' | 'en'];
   lang={lang}
 >
   <main
-    class={`min-h-[calc(100vh-16rem)] bg-linear-to-br from-white via-white to-${category.bgColor.split('bg-')[1].split('/')[0]}-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-${category.bgColor.split('bg-')[1].split('/')[0]}-950/10`}
+    class="min-h-[calc(100vh-16rem)] bg-linear-to-br from-white via-white to-slate-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950/10"
   >
-    <div class="container max-w-7xl mx-auto px-4 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <!-- Breadcrumb -->
-      <nav
-        class="flex items-center gap-2 text-sm mb-8 text-slate-600 dark:text-slate-400"
-      >
-        <a
-          href={`/${lang}/resources`}
-          class={`hover:${category.textColor} transition-colors`}
-        >
-          {lang === 'es' ? 'Recursos' : 'Resources'}
-        </a>
-        <span>/</span>
-        <span class="text-slate-900 dark:text-white font-semibold"
-          >{categoryName}</span
-        >
-      </nav>
+      <Breadcrumb
+        items={[
+          { label: lang === 'es' ? 'Inicio' : 'Home', href: `/${lang}` },
+          {
+            label: lang === 'es' ? 'Recursos' : 'Resources',
+            href: `/${lang}/resources`,
+          },
+          { label: categoryName },
+        ]}
+      />
 
       <!-- Header -->
-      <header class="mb-12">
+      <div class="mb-12">
         <div class="flex items-center gap-4 mb-4">
           <div
-            class={`w-16 h-16 ${category.bgColor} rounded-xl flex items-center justify-center`}
+            class={`p-4 rounded-2xl bg-linear-to-br ${category.gradient} text-white`}
           >
-            <span class="text-4xl">{category.icon}</span>
+            <span class="[&>svg]:w-10 [&>svg]:h-10" set:html={category.icon} />
           </div>
           <div>
-            <h1 class="text-4xl font-bold text-slate-900 dark:text-white">
+            <h1 class="text-4xl font-bold text-slate-900 dark:text-white mb-2">
               {categoryName}
             </h1>
-            <p class="text-slate-600 dark:text-slate-400 mt-1">
+            <p class="text-lg text-slate-600 dark:text-slate-400">
               {categoryDescription}
             </p>
           </div>
         </div>
-        <div class="flex items-center gap-4 mt-6">
-          <div
-            class={`px-4 py-2 ${category.bgColor} ${category.textColor} rounded-lg font-semibold`}
+        <div class="mt-4">
+          <span
+            class={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${category.textColor} ${category.bgColor} ${category.borderColor} border`}
           >
-            📦 {categoryResources.length}
-            {lang === 'es' ? 'recursos' : 'resources'}
-          </div>
+            {categoryResources.length}
+            {
+              lang === 'es'
+                ? categoryResources.length === 1
+                  ? 'recurso'
+                  : 'recursos'
+                : categoryResources.length === 1
+                  ? 'resource'
+                  : 'resources'
+            }
+          </span>
         </div>
-      </header>
+      </div>
 
       <!-- Grid de recursos -->
       {
@@ -127,9 +132,10 @@ const categoryDescription = category.description[lang as 'es' | 'en'];
                     class={`relative h-48 overflow-hidden bg-linear-to-br ${category.gradient}`}
                   >
                     <div class="w-full h-full flex items-center justify-center">
-                      <span class="text-6xl transform group-hover:scale-110 transition-transform">
-                        {category.icon}
-                      </span>
+                      <span
+                        class="[&>svg]:w-14 [&>svg]:h-14 transform group-hover:scale-110 transition-transform"
+                        set:html={category.icon}
+                      />
                     </div>
                     {resource.data.url && (
                       <div class="absolute top-3 right-3 bg-white/90 dark:bg-slate-900/90 rounded-full p-2">
@@ -182,7 +188,20 @@ const categoryDescription = category.description[lang as 'es' | 'en'];
           </div>
         ) : (
           <div class="text-center py-20">
-            <div class="text-6xl mb-4">📭</div>
+            <div class="[&>svg]:w-14 [&>svg]:h-14 text-slate-400 dark:text-slate-600 mb-4 flex justify-center">
+              <svg
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859m-19.5.338V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H6.911a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661Z"
+                />
+              </svg>
+            </div>
             <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">
               {lang === 'es'
                 ? 'No hay recursos disponibles'

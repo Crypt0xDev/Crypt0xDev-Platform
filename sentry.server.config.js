@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/astro';
 
 Sentry.init({
   // Reemplaza con tu DSN de Sentry
-  dsn: process.env.PUBLIC_SENTRY_DSN,
+  dsn: process.env.SENTRY_DSN || process.env.PUBLIC_SENTRY_DSN,
 
   // Configuración del entorno
   environment: process.env.NODE_ENV || 'development',

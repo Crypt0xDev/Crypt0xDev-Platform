@@ -137,9 +137,12 @@ const difficultyLabels = {
     <div class="mb-12">
       <div class="flex items-center gap-4 mb-4">
         <div
-          class={`p-4 rounded-2xl bg-linear-to-br ${categoryInfo.gradient} text-white text-4xl`}
+          class={`p-4 rounded-2xl bg-linear-to-br ${categoryInfo.gradient} text-white`}
         >
-          {categoryInfo.icon}
+          <span
+            class="[&>svg]:w-10 [&>svg]:h-10"
+            set:html={categoryInfo.icon}
+          />
         </div>
         <div>
           <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">

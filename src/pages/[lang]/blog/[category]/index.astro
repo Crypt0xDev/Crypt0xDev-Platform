@@ -99,9 +99,12 @@ const difficultyLabels = {
       <div class="mb-12">
         <div class="flex items-center gap-4 mb-4">
           <div
-            class={`p-4 rounded-2xl bg-linear-to-br from-indigo-500 to-purple-500 text-white text-4xl`}
+            class={`p-4 rounded-2xl bg-linear-to-br from-indigo-500 to-purple-500 text-white`}
           >
-            {categoryInfo.icon}
+            <span
+              class="[&>svg]:w-10 [&>svg]:h-10"
+              set:html={categoryInfo.icon}
+            />
           </div>
           <div>
             <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">
@@ -232,7 +235,10 @@ const difficultyLabels = {
                       <span
                         class={`px-2 py-1 rounded-md text-xs font-medium ${categoryInfo.color}`}
                       >
-                        {categoryInfo.icon}{' '}
+                        <span
+                          class="inline-flex [&>svg]:w-4 [&>svg]:h-4 mr-1"
+                          set:html={categoryInfo.icon}
+                        />{' '}
                         {categoryInfo.label[lang as 'es' | 'en']}
                       </span>
                     </div>

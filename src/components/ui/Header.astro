@@ -32,18 +32,30 @@ const resourcesItems = [
   { label: t('nav.cheatsheets'), href: `/${lang}/resources/cheatsheets` },
   { label: t('nav.labs'), href: `/${lang}/resources/labs` },
   { label: t('nav.projects'), href: `/${lang}/resources/projects` },
-  { label: t('nav.vulnerabilities') || 'Vulnerabilities (CVEs)', href: `/${lang}/resources/vulnerabilities` },
+  {
+    label: t('nav.vulnerabilities') || 'Vulnerabilities (CVEs)',
+    href: `/${lang}/resources/vulnerabilities`,
+  },
   { label: t('nav.archive'), href: `/${lang}/archive` },
 ];
 ---
 
-<header class="sticky top-0 z-[100] bg-white/95 dark:bg-slate-900/95 border-b border-slate-200 dark:border-slate-800 backdrop-blur-md transition-all duration-300">
+<header
+  class="sticky top-0 z-100 bg-white/95 dark:bg-slate-900/95 border-b border-slate-200 dark:border-slate-800 backdrop-blur-md transition-all duration-300"
+>
   <div class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-    <nav class="flex items-center justify-between h-14 sm:h-16 lg:h-18 gap-2 sm:gap-4 lg:gap-8">
+    <nav
+      class="flex items-center justify-between h-14 sm:h-16 lg:h-18 gap-2 sm:gap-4 lg:gap-8"
+    >
       <!-- Logo -->
       <div class="shrink-0">
-        <a href={`/${lang}`} class="transition-transform duration-200 hover:scale-105">
-          <span class="text-lg sm:text-xl lg:text-2xl font-extrabold gradient-text tracking-tight">
+        <a
+          href={`/${lang}`}
+          class="transition-transform duration-200 hover:scale-105"
+        >
+          <span
+            class="text-lg sm:text-xl lg:text-2xl font-extrabold gradient-text tracking-tight"
+          >
             Crypt0xDev
           </span>
         </a>
@@ -53,7 +65,7 @@ const resourcesItems = [
       <ul class="hidden lg:flex list-none m-0 p-0 gap-1 flex-1 justify-center">
         <!-- Blog -->
         <li>
-          <a 
+          <a
             href={`/${lang}/blog`}
             class={`flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
               isActive(`/${lang}/blog`, currentPath)
@@ -81,7 +93,7 @@ const resourcesItems = [
 
         <!-- CTF -->
         <li>
-          <a 
+          <a
             href={`/${lang}/ctf`}
             class={`flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
               isActive(`/${lang}/ctf`, currentPath)
@@ -98,7 +110,8 @@ const resourcesItems = [
           <a
             href={`/${lang}/resources`}
             class={`flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
-              (currentPath.startsWith(`/${lang}/resources`) || currentPath.startsWith(`/${lang}/archive`))
+              currentPath.startsWith(`/${lang}/resources`) ||
+              currentPath.startsWith(`/${lang}/archive`)
                 ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
                 : 'text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400'
             }`}
@@ -109,7 +122,7 @@ const resourcesItems = [
 
         <!-- About -->
         <li>
-          <a 
+          <a
             href={`/${lang}/about`}
             class={`flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
               isActive(`/${lang}/about`, currentPath)
@@ -125,15 +138,25 @@ const resourcesItems = [
       <!-- Actions -->
       <div class="flex items-center gap-2 lg:gap-3">
         <!-- Search Button -->
-        <button 
+        <button
           class="flex items-center justify-center w-10 h-10 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200"
           id="search-toggle"
           aria-label={t('nav.search')}
           title={t('nav.search')}
         >
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
-            <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <svg
+            class="w-5 h-5"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"
+            ></circle>
+            <path
+              d="M21 21L16.65 16.65"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"></path>
           </svg>
         </button>
 
@@ -141,27 +164,50 @@ const resourcesItems = [
         <LanguageSwitcher currentLang={lang} />
 
         <!-- Mobile Menu Button -->
-        <button 
+        <button
           class="lg:hidden flex items-center justify-center w-10 h-10 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all duration-200"
           id="mobile-menu-toggle"
           aria-label={t('nav.menu')}
         >
-          <svg class="w-5 h-5 menu-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <svg
+            class="w-5 h-5 menu-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M3 12H21M3 6H21M3 18H21"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"></path>
           </svg>
-          <svg class="w-5 h-5 close-icon hidden" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <svg
+            class="w-5 h-5 close-icon hidden"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18 6L6 18M6 6L18 18"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"></path>
           </svg>
         </button>
       </div>
     </nav>
 
     <!-- Mobile Menu -->
-    <div class="hidden max-h-0 overflow-hidden transition-all duration-300 ease-in-out" id="mobile-menu">
-      <ul class="flex flex-col gap-2 py-4 border-t border-slate-200 dark:border-slate-800">
+    <div
+      class="hidden max-h-0 overflow-hidden transition-all duration-300 ease-in-out"
+      id="mobile-menu"
+    >
+      <ul
+        class="flex flex-col gap-2 py-4 border-t border-slate-200 dark:border-slate-800"
+      >
         <!-- Blog -->
         <li>
-          <a 
+          <a
             href={`/${lang}/blog`}
             class={`block px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
               isActive(`/${lang}/blog`, currentPath)
@@ -175,7 +221,7 @@ const resourcesItems = [
 
         <!-- Writeups -->
         <li>
-          <a 
+          <a
             href={`/${lang}/writeup`}
             class={`block px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
               isActive(`/${lang}/writeup`, currentPath)
@@ -189,7 +235,7 @@ const resourcesItems = [
 
         <!-- CTF -->
         <li>
-          <a 
+          <a
             href={`/${lang}/ctf`}
             class={`block px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
               isActive(`/${lang}/ctf`, currentPath)
@@ -203,10 +249,16 @@ const resourcesItems = [
 
         <!-- Resources -->
         <li>
-          <a 
+          <a
             href={`/${lang}/resources`}
             class={`block px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
-              currentPath.includes('/resources') || currentPath.includes('/tools') || currentPath.includes('/cheatsheets') || currentPath.includes('/labs') || currentPath.includes('/projects') || currentPath.includes('/vulnerabilities') || currentPath.includes('/archive')
+              currentPath.includes('/resources') ||
+              currentPath.includes('/tools') ||
+              currentPath.includes('/cheatsheets') ||
+              currentPath.includes('/labs') ||
+              currentPath.includes('/projects') ||
+              currentPath.includes('/vulnerabilities') ||
+              currentPath.includes('/archive')
                 ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
                 : 'text-slate-600 dark:text-slate-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400'
             }`}
@@ -217,7 +269,7 @@ const resourcesItems = [
 
         <!-- About -->
         <li>
-          <a 
+          <a
             href={`/${lang}/about`}
             class={`block px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
               isActive(`/${lang}/about`, currentPath)
@@ -232,42 +284,72 @@ const resourcesItems = [
     </div>
 
     <!-- Search Modal -->
-    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200] opacity-0 invisible transition-all duration-300 flex items-start justify-center p-4 lg:p-8 pt-20" id="search-modal">
-      <div class="w-full max-w-3xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden transform -translate-y-8 transition-transform duration-300">
+    <div
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm z-200 opacity-0 invisible transition-all duration-300 flex items-start justify-center p-4 lg:p-8 pt-20"
+      id="search-modal"
+    >
+      <div
+        class="w-full max-w-3xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden transform -translate-y-8 transition-transform duration-300"
+      >
         <div class="p-6">
           <div class="flex items-center justify-between mb-4">
             <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100">
               {t('common.search')}
             </h2>
-            <button 
-              class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors" 
-              id="search-close" 
+            <button
+              class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+              id="search-close"
               aria-label="Close"
             >
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <svg
+                class="w-5 h-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M18 6L6 18M6 6L18 18"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"></path>
               </svg>
             </button>
           </div>
-          
+
           <PagefindSearch lang={lang} />
-          
-          <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+
+          <div
+            class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400"
+          >
             <div class="flex items-center gap-4">
               <span class="flex items-center gap-1">
-                <kbd class="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded border border-slate-300 dark:border-slate-600">↩</kbd>
+                <kbd
+                  class="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded border border-slate-300 dark:border-slate-600"
+                  >↩</kbd
+                >
                 para seleccionar
               </span>
               <span class="flex items-center gap-1">
-                <kbd class="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded border border-slate-300 dark:border-slate-600">↑↓</kbd>
+                <kbd
+                  class="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded border border-slate-300 dark:border-slate-600"
+                  >↑↓</kbd
+                >
                 para navegar
               </span>
               <span class="flex items-center gap-1">
-                <kbd class="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded border border-slate-300 dark:border-slate-600">esc</kbd>
+                <kbd
+                  class="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded border border-slate-300 dark:border-slate-600"
+                  >esc</kbd
+                >
                 para cerrar
               </span>
             </div>
-            <span class="text-slate-400">Búsqueda por <span class="font-semibold text-indigo-600 dark:text-indigo-400">Pagefind</span></span>
+            <span class="text-slate-400"
+              >Búsqueda por <span
+                class="font-semibold text-indigo-600 dark:text-indigo-400"
+                >Pagefind</span
+              ></span
+            >
           </div>
         </div>
       </div>
@@ -285,7 +367,7 @@ const resourcesItems = [
   if (mobileMenuToggle && mobileMenu) {
     mobileMenuToggle.addEventListener('click', () => {
       const isOpen = mobileMenu.classList.contains('block');
-      
+
       if (isOpen) {
         mobileMenu.classList.remove('block', 'max-h-screen');
         mobileMenu.classList.add('hidden', 'max-h-0');
@@ -301,7 +383,7 @@ const resourcesItems = [
 
     // Close mobile menu when clicking on a link
     const mobileLinks = mobileMenu.querySelectorAll('a');
-    mobileLinks.forEach(link => {
+    mobileLinks.forEach((link) => {
       link.addEventListener('click', () => {
         mobileMenu.classList.remove('block', 'max-h-screen');
         mobileMenu.classList.add('hidden', 'max-h-0');
@@ -321,10 +403,12 @@ const resourcesItems = [
       searchModal.classList.remove('opacity-0', 'invisible');
       searchModal.querySelector('div')?.classList.remove('-translate-y-8');
       document.body.style.overflow = 'hidden';
-      
+
       // Focus on search input after animation
       setTimeout(() => {
-        const searchInput = searchModal.querySelector('.pagefind-ui__search-input') as HTMLInputElement;
+        const searchInput = searchModal.querySelector(
+          '.pagefind-ui__search-input'
+        ) as HTMLInputElement;
         searchInput?.focus();
       }, 100);
     }
@@ -362,9 +446,13 @@ const resourcesItems = [
       e.preventDefault();
       openSearchModal();
     }
-    
+
     // ESC to close search
-    if (e.key === 'Escape' && searchModal && !searchModal.classList.contains('invisible')) {
+    if (
+      e.key === 'Escape' &&
+      searchModal &&
+      !searchModal.classList.contains('invisible')
+    ) {
       closeSearchModal();
     }
   });
@@ -372,18 +460,18 @@ const resourcesItems = [
 
 <style>
   /* Ensure dropdown stays visible on hover and transitions smoothly */
-  .group:hover > div[role="menu"],
+  .group:hover > div[role='menu'],
   .group:hover > div.absolute {
     pointer-events: auto;
   }
 
   /* Prevent dropdown from disappearing when moving mouse to it */
-  .group > div[role="menu"],
+  .group > div[role='menu'],
   .group > div.absolute {
     pointer-events: none;
   }
 
-  .group:hover > div[role="menu"],
+  .group:hover > div[role='menu'],
   .group:hover > div.absolute {
     pointer-events: auto;
   }

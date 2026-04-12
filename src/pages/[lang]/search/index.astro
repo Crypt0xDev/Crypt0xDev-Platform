@@ -47,25 +47,25 @@ const t = useTranslations(lang as 'es' | 'en');
           Todos
         </button>
         <button class="filter-btn" data-filter="blog">
-          📝 Blog
+          Blog
         </button>
         <button class="filter-btn" data-filter="writeups">
-          🎯 Writeups
+          Writeups
         </button>
         <button class="filter-btn" data-filter="ctf">
-          🚩 CTF
+          CTF
         </button>
         <button class="filter-btn" data-filter="tools">
-          🛠️ Tools
+          Tools
         </button>
         <button class="filter-btn" data-filter="labs">
-          🔬 Labs
+          Labs
         </button>
         <button class="filter-btn" data-filter="cheatsheets">
-          📖 Cheatsheets
+          Cheatsheets
         </button>
         <button class="filter-btn" data-filter="projects">
-          💼 Projects
+          Projects
         </button>
       </div>
 
@@ -577,12 +577,12 @@ const t = useTranslations(lang as 'es' | 'en');
       // Render results
       resultsContainer.innerHTML = filteredResults.map((result: any) => {
         const typeEmojiMap: Record<string, string> = {
-          'blog': '📝',
-          'writeup': '🎯',
-          'ctf': '🚩',
-          'archive': '📦'
+          'blog': '[blog]',
+          'writeup': '[wu]',
+          'ctf': '[ctf]',
+          'archive': '[arch]'
         };
-        const typeEmoji = typeEmojiMap[result.type] || '📄';
+        const typeEmoji = typeEmojiMap[result.type] || '[doc]';
 
         const metaInfo = [];
         if (result.platform) metaInfo.push(`Platform: ${result.platform.toUpperCase()}`);
