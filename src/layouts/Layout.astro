@@ -243,5 +243,15 @@ const alternateUrl = metaCanonical.replace(`/${lang}/`, `/${alternateLang}/`);
     <slot />
     <Footer />
     <SpeedInsights />
+    <script>
+      // Abrir enlaces externos en nueva pestaña
+      document.querySelectorAll('a[href]').forEach((el) => {
+        const a = el as HTMLAnchorElement;
+        if (a.hostname && a.hostname !== window.location.hostname) {
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+        }
+      });
+    </script>
   </body>
 </html>

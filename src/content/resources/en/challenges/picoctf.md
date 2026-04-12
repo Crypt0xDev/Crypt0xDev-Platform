@@ -1,9 +1,20 @@
 ---
-title: "picoCTF - Beginner CTF Platform"
-description: "Free CTF competition for beginners created by Carnegie Mellon University. Challenges in web, crypto, forensics, reversing, binary exploitation and more."
-category: "challenges"
-url: "https://picoctf.org/"
-tags: ["ctf", "beginner", "free", "challenges", "web", "crypto", "forensics", "reversing", "pwn"]
+title: 'picoCTF - Beginner CTF Platform'
+description: 'Free CTF competition for beginners created by Carnegie Mellon University. Challenges in web, crypto, forensics, reversing, binary exploitation and more.'
+category: 'challenges'
+url: 'https://picoctf.org/'
+tags:
+  [
+    'ctf',
+    'beginner',
+    'free',
+    'challenges',
+    'web',
+    'crypto',
+    'forensics',
+    'reversing',
+    'pwn',
+  ]
 ---
 
 # picoCTF - Beginner-Friendly CTF
@@ -21,6 +32,7 @@ tags: ["ctf", "beginner", "free", "challenges", "web", "crypto", "forensics", "r
 ## Challenge Categories
 
 ### Web Exploitation
+
 - SQL Injection
 - XSS (Cross-Site Scripting)
 - Command Injection
@@ -29,6 +41,7 @@ tags: ["ctf", "beginner", "free", "challenges", "web", "crypto", "forensics", "r
 - Server-Side vulnerabilities
 
 ### Cryptography
+
 - Caesar cipher, ROT13
 - RSA encryption
 - Hash cracking
@@ -37,6 +50,7 @@ tags: ["ctf", "beginner", "free", "challenges", "web", "crypto", "forensics", "r
 - Modern cryptography
 
 ### Forensics
+
 - File analysis (metadata, strings)
 - Image steganography
 - Packet capture analysis (pcap)
@@ -45,6 +59,7 @@ tags: ["ctf", "beginner", "free", "challenges", "web", "crypto", "forensics", "r
 - Log analysis
 
 ### Reverse Engineering
+
 - Binary analysis
 - Decompilation
 - Static and dynamic analysis
@@ -53,6 +68,7 @@ tags: ["ctf", "beginner", "free", "challenges", "web", "crypto", "forensics", "r
 - Debugging with GDB
 
 ### Binary Exploitation (Pwn)
+
 - Buffer overflows
 - Format string vulnerabilities
 - Return-oriented programming (ROP)
@@ -60,6 +76,7 @@ tags: ["ctf", "beginner", "free", "challenges", "web", "crypto", "forensics", "r
 - Stack canaries bypass
 
 ### General Skills
+
 - Linux commands
 - Python scripting
 - Bash scripting
@@ -78,12 +95,14 @@ Challenges range from **very easy** to **hard**:
 ## Competition Format
 
 ### picoCTF Competition (Annual)
+
 - **Duration**: 2 weeks in March/April
 - **Participants**: Students from around the world
 - **Prizes**: For top performers
 - **Categories**: Middle School, High School, College
 
 ### picoGym (Always-On)
+
 - Practice platform available 24/7
 - All challenges from previous years
 - No time limit
@@ -100,24 +119,28 @@ Challenges range from **very easy** to **hard**:
 ## Recommended Tools
 
 ### Basic
+
 - **Linux Terminal**: Essential commands
 - **Python**: Scripting and automation
 - **CyberChef**: Online encoding/decoding
 - **Burp Suite**: Web exploitation
 
 ### Forensics
+
 - **Wireshark**: Network traffic analysis
 - **Binwalk**: Binary file analysis
 - **Strings**: Extract strings from files
 - **Exiftool**: Image metadata
 
 ### Reverse Engineering
+
 - **Ghidra**: Free decompiler (NSA)
 - **GDB**: Binary debugger
 - **Radare2**: Reverse engineering framework
 - **ltrace/strace**: Call tracing
 
 ### Crypto
+
 - **RsaCtfTool**: RSA tools
 - **John the Ripper**: Password cracking
 - **Hashcat**: GPU-accelerated cracking
@@ -126,24 +149,28 @@ Challenges range from **very easy** to **hard**:
 ## Suggested Progression
 
 ### Week 1: General Skills & Web
+
 - Familiarize with Linux
 - Learn basic commands
 - Solve General Skills challenges
 - Start with easy Web Exploitation
 
 ### Week 2: Cryptography
+
 - Learn classic ciphers
 - Practice encoding/decoding
 - Understand hashing
 - Basic crypto challenges
 
 ### Week 3: Forensics
+
 - File analysis
 - Basic tools (strings, file)
 - Simple steganography
 - Basic PCAPs
 
 ### Week 4: Reverse Engineering
+
 - Assembly concepts
 - Using Ghidra
 - Debugging with GDB
@@ -161,14 +188,16 @@ Challenges range from **very easy** to **hard**:
 ## Learning Resources
 
 ### Official
+
 - [picoCTF Gym](https://play.picoctf.org/)
 - [Resources Page](https://picoctf.org/resources)
 - [Practice Challenges](https://play.picoctf.org/practice)
 
 ### Community
+
 - **CTFtime**: Rankings and writeups
 - **YouTube**: Challenge walkthroughs
-- **GitHub**: picoCTF writeups and scripts
+- **GitHub**: picoCTF and scripts
 - **Reddit r/picoCTF**: Active community
 
 ## Similar Competitions
@@ -181,6 +210,7 @@ Challenges range from **very easy** to **hard**:
 ## Certification Preparation
 
 picoCTF is excellent preparation for:
+
 - **CEH**: Certified Ethical Hacker
 - **CompTIA Security+**: Security concepts
 - **OSCP**: Pentesting fundamentals

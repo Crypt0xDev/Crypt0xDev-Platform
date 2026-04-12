@@ -16,7 +16,7 @@ export async function getStaticPaths() {
 const { lang } = Astro.params;
 const t = useTranslations(lang as 'es' | 'en');
 
-// Obtener solo los CTF writeups del idioma actual
+// Obtener solo los CTF del idioma actual
 const allCtf = await getCollection('ctf');
 const ctfWriteups = sortByDate(filterByLang(allCtf, lang as 'es' | 'en'));
 
@@ -57,7 +57,7 @@ const uniqueCtfs = [...new Set(ctfWriteups.map((w) => w.data.ctfName))];
 ---
 
 <Layout
-  title={lang === 'es' ? 'CTF Writeups' : 'CTF Writeups'}
+  title={lang === 'es' ? 'CTF' : 'CTF'}
   description={lang === 'es'
     ? 'Writeups de retos de Capture The Flag'
     : 'Capture The Flag challenge writeups'}
@@ -90,7 +90,7 @@ const uniqueCtfs = [...new Set(ctfWriteups.map((w) => w.data.ctfName))];
           <h1
             class="text-4xl md:text-5xl lg:text-6xl font-black mb-4 font-sans tracking-tight bg-linear-to-r from-slate-900 via-red-600 to-slate-900 dark:from-slate-100 dark:via-red-400 dark:to-slate-100 bg-clip-text text-transparent"
           >
-            {lang === 'es' ? 'CTF Writeups' : 'CTF Writeups'}
+            {lang === 'es' ? 'CTF' : 'CTF'}
           </h1>
           <div class="max-w-3xl">
             <p
@@ -248,7 +248,7 @@ const uniqueCtfs = [...new Set(ctfWriteups.map((w) => w.data.ctfName))];
               <p class="text-slate-600 dark:text-slate-400">
                 {lang === 'es'
                   ? 'Estamos preparando writeups de CTF. ¡Vuelve pronto!'
-                  : 'We are preparing CTF writeups. Come back soon!'}
+                  : 'We are preparing CTF. Come back soon!'}
               </p>
             </div>
           </div>

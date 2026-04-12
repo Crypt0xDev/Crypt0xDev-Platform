@@ -67,7 +67,7 @@
   },
   "common": {
     "welcome_to": "Welcome to",
-    "hero_description": "CTF Writeups · Cybersecurity Insights · Programming & Tech Blog",
+    "hero_description": "CTF · Cybersecurity Insights · Programming & Tech Blog",
     "search": "Search",
     "loading": "Loading...",
     "error": "Error",
@@ -139,14 +139,14 @@
     "lateral-movement": "Lateral Movement"
   },
   "ctf": {
-    "title": "CTF Writeups",
+    "title": "CTF",
     "latest": "Latest Challenges",
     "all": "All Challenges",
     "category": "Category",
     "challenges": "Challenges",
     "points": "Points",
     "solves": "Solves",
-    "no_challenges": "No CTF writeups available yet",
+    "no_challenges": "No CTF available yet",
     "back_to_ctf": "Back to CTF"
   },
   "archive": {

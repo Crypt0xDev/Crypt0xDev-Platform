@@ -1,6 +1,6 @@
 # 📚 Documentación Crypt0xDev
 
-Bienvenido a la documentación completa del proyecto **Crypt0xDev** - una plataforma profesional de ciberseguridad y CTF writeups.
+Bienvenido a la documentación completa del proyecto **Crypt0xDev** - una plataforma profesional de ciberseguridad y CTF.
 
 ## 📑 Índice de Documentación
 

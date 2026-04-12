@@ -291,7 +291,11 @@ allEntries.some((entry) => {
 
               return (
                 <article
-                  class={`writeup-card group ${isWriteup ? 'bg-linear-to-br from-slate-800 to-slate-900 border-slate-700' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'} rounded-2xl overflow-hidden border transition-all duration-300 hover:shadow-2xl transform hover:-translate-y-2 hover:scale-105`}
+                  class={`writeup-card group ${
+                    isWriteup
+                      ? 'bg-white dark:bg-linear-to-br dark:from-slate-800 dark:to-slate-900 border-slate-200 dark:border-slate-700'
+                      : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
+                  } rounded-2xl overflow-hidden border transition-all duration-300 hover:shadow-2xl transform hover:-translate-y-2 hover:scale-105`}
                 >
                   {isWriteup && platform ? (
                     <>
@@ -300,7 +304,7 @@ allEntries.some((entry) => {
                         <div class="relative group-hover:scale-110 transition-transform duration-300">
                           <div class="absolute inset-0 bg-linear-to-br from-blue-500 to-purple-600 rounded-full blur-md opacity-75 group-hover:opacity-100 animate-pulse" />
                           <div class="relative w-32 h-32 bg-linear-to-br from-blue-500 to-purple-600 rounded-full p-1 group-hover:rotate-6 transition-transform duration-300">
-                            <div class="w-full h-full bg-slate-900 rounded-full p-2 overflow-hidden">
+                            <div class="w-full h-full bg-white dark:bg-slate-900 rounded-full p-2 overflow-hidden">
                               <img
                                 src={machineLogo}
                                 alt={machineName}
@@ -313,26 +317,26 @@ allEntries.some((entry) => {
 
                       {/* Badges superiores */}
                       <div class="px-6 flex items-center justify-center gap-3 mb-4">
-                        <span class="px-4 py-1.5 bg-blue-500/20 border border-blue-500/50 text-blue-400 rounded-full text-xs font-bold uppercase transition-all duration-300 hover:scale-110">
+                        <span class="px-4 py-1.5 bg-blue-500/20 dark:bg-blue-500/20 border border-blue-500/50 text-blue-700 dark:text-blue-400 rounded-full text-xs font-bold uppercase transition-all duration-300 hover:scale-110">
                           {platform?.toUpperCase()}
                         </span>
                         {'difficulty' in entry.data && (
                           <span
                             class={`px-4 py-1.5 rounded-full text-xs font-bold uppercase transition-all duration-300 hover:scale-110 ${
                               entry.data.difficulty === 'easy'
-                                ? 'bg-emerald-500/20 border border-emerald-500/50 text-emerald-400'
+                                ? 'bg-emerald-500/20 border border-emerald-500/50 text-emerald-700 dark:text-emerald-400'
                                 : entry.data.difficulty === 'medium'
-                                  ? 'bg-amber-500/20 border border-amber-500/50 text-amber-400'
+                                  ? 'bg-amber-500/20 border border-amber-500/50 text-amber-700 dark:text-amber-400'
                                   : entry.data.difficulty === 'hard'
-                                    ? 'bg-red-500/20 border border-red-500/50 text-red-400'
-                                    : 'bg-purple-500/20 border border-purple-500/50 text-purple-400'
+                                    ? 'bg-red-500/20 border border-red-500/50 text-red-700 dark:text-red-400'
+                                    : 'bg-purple-500/20 border border-purple-500/50 text-purple-700 dark:text-purple-400'
                             }`}
                           >
                             {entry.data.difficulty}
                           </span>
                         )}
                         {'retired' in entry.data && entry.data.retired && (
-                          <span class="px-4 py-1.5 bg-slate-500/20 border border-slate-500/50 text-slate-400 rounded-full text-xs font-bold uppercase">
+                          <span class="px-4 py-1.5 bg-slate-500/20 border border-slate-500/50 text-slate-600 dark:text-slate-400 rounded-full text-xs font-bold uppercase">
                             {lang === 'es' ? 'Retirada' : 'Retired'}
                           </span>
                         )}
@@ -340,19 +344,19 @@ allEntries.some((entry) => {
 
                       {/* Contenido */}
                       <div class="px-6 pb-6">
-                        <h2 class="text-xl font-bold text-white mb-2 text-center group-hover:text-blue-400 transition-colors duration-300">
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2 text-center group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                           <a href={`${baseUrl}/${actualSlug}`}>{machineName}</a>
                         </h2>
 
-                        <p class="text-sm text-slate-400 mb-4 line-clamp-2 text-center">
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-4 line-clamp-2 text-center">
                           {entry.data.description}
                         </p>
 
                         {/* Metadata */}
-                        <div class="flex items-center justify-center gap-4 mb-4 text-xs text-slate-400 flex-wrap">
+                        <div class="flex items-center justify-center gap-4 mb-4 text-xs text-slate-500 dark:text-slate-400 flex-wrap">
                           {'os' in entry.data && (
                             <div class="flex items-center gap-1">
-                              <span class="[&>svg]:w-3.5 [&>svg]:h-3.5 [&>svg]:text-slate-400">
+                              <span class="[&>svg]:w-3.5 [&>svg]:h-3.5 [&>svg]:text-slate-500 dark:[&>svg]:text-slate-400">
                                 {entry.data.os === 'linux' ? (
                                   <svg viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" />
@@ -412,7 +416,7 @@ allEntries.some((entry) => {
                           )}
                           <div class="flex items-center gap-1">
                             <svg
-                              class="w-3.5 h-3.5 text-slate-400"
+                              class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400"
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
@@ -446,15 +450,15 @@ allEntries.some((entry) => {
                                 class={`text-xs px-3 py-1 border rounded-full ${
                                   t.toLowerCase().replace(/\s+/g, '-') ===
                                   tag.toLowerCase().replace(/\s+/g, '-')
-                                    ? 'bg-indigo-500/40 border-indigo-400 text-indigo-200 font-bold'
-                                    : 'bg-indigo-500/20 border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/30'
+                                    ? 'bg-indigo-500/40 border-indigo-400 text-indigo-700 dark:text-indigo-200 font-bold'
+                                    : 'bg-indigo-500/10 dark:bg-indigo-500/20 border-indigo-300 dark:border-indigo-500/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-500/20 dark:hover:bg-indigo-500/30'
                                 } transition-colors`}
                               >
                                 #{t}
                               </a>
                             ))}
                             {entry.data.tags.length > 3 && (
-                              <span class="text-xs text-slate-400">
+                              <span class="text-xs text-slate-400 dark:text-slate-500">
                                 +{entry.data.tags.length - 3}
                               </span>
                             )}
@@ -469,7 +473,7 @@ allEntries.some((entry) => {
                               {entry.data.vulnerabilities
                                 .slice(0, 2)
                                 .map((cve: string) => (
-                                  <span class="text-xs px-3 py-1 bg-red-500/20 border border-red-500/30 text-red-300 rounded-full">
+                                  <span class="text-xs px-3 py-1 bg-red-500/10 dark:bg-red-500/20 border border-red-400/50 dark:border-red-500/30 text-red-700 dark:text-red-300 rounded-full">
                                     #{cve}
                                   </span>
                                 ))}
@@ -571,8 +575,12 @@ allEntries.some((entry) => {
   .page-title {
     font-size: 2.5rem;
     font-weight: 800;
-    color: var(--text-color);
+    color: #0f172a;
     margin: 0;
+  }
+
+  :global(.dark) .page-title {
+    color: #f1f5f9;
   }
 
   .no-results {

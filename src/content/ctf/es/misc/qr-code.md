@@ -1,19 +1,19 @@
 ---
-title: "Código QR Corrupto - Misc CTF 2024"
-description: "Reparar y decodificar un código QR parcialmente dañado."
-ctfName: "Misc CTF 2024"
-category: "misc"
-difficulty: "easy"
+title: 'Código QR Corrupto - Misc CTF 2024'
+description: 'Reparar y decodificar un código QR parcialmente dañado.'
+ctfName: 'Misc CTF 2024'
+category: 'misc'
+difficulty: 'easy'
 points: 125
-pubDate: 2024-10-10
-heroImage: "/images/ctf/default-ctf.png"
-tags: ["misc", "qr-code", "image-manipulation", "python"]
+pubDate: 2026-01-08
+heroImage: '/images/ctf/default-ctf.png'
+tags: ['misc', 'qr-code', 'image-manipulation', 'python']
 language: es
 solves: 1345
-author: "Misc Team"
-skillLevel: "beginner"
-estimatedTime: "25-40 minutos"
-tools: ["python", "pil", "zbar", "qr-code-generator"]
+author: 'Misc Team'
+skillLevel: 'beginner'
+estimatedTime: '25-40 minutos'
+tools: ['python', 'pil', 'zbar', 'qr-code-generator']
 ---
 
 # Código QR Corrupto - Misc CTF 2024
@@ -55,6 +55,7 @@ if result:
 ## Reconstrucción
 
 Si la corrupción es severa, podemos:
+
 1. Identificar el nivel de corrección
 2. Reconstruir manualmente los bits faltantes
 3. Usar herramientas de reparación de QR

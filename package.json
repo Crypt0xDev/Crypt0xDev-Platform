@@ -2,7 +2,7 @@
   "name": "crypt0xdev",
   "type": "module",
   "version": "1.0.0",
-  "description": "Plataforma profesional de ciberseguridad y CTF writeups desarrollada con Astro",
+  "description": "Plataforma profesional de ciberseguridad y CTF desarrollada con Astro",
   "author": "Crypt0xDev",
   "license": "MIT",
   "repository": {

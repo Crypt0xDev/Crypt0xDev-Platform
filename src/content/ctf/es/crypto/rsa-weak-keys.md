@@ -1,19 +1,19 @@
 ---
-title: "RSA con Claves Débiles - Crypto CTF 2024"
-description: "Factorizar un módulo RSA pequeño para descifrar el mensaje."
-ctfName: "Crypto CTF 2024"
-category: "crypto"
-difficulty: "easy"
+title: 'RSA con Claves Débiles - Crypto CTF 2024'
+description: 'Factorizar un módulo RSA pequeño para descifrar el mensaje.'
+ctfName: 'Crypto CTF 2024'
+category: 'crypto'
+difficulty: 'easy'
 points: 150
-pubDate: 2024-10-28
-heroImage: "/images/ctf/default-ctf.png"
-tags: ["crypto", "rsa", "factorization", "number-theory"]
+pubDate: 2026-03-10
+heroImage: '/images/ctf/default-ctf.png'
+tags: ['crypto', 'rsa', 'factorization', 'number-theory']
 language: es
 solves: 1234
-author: "Crypto Team"
-skillLevel: "beginner"
-estimatedTime: "30-45 minutos"
-tools: ["python", "sympy", "rsatool"]
+author: 'Crypto Team'
+skillLevel: 'beginner'
+estimatedTime: '30-45 minutos'
+tools: ['python', 'sympy', 'rsatool']
 ---
 
 # RSA con Claves Débiles - Crypto CTF 2024

@@ -1,11 +1,11 @@
 ---
-title: "Noticias: Vulnerabilidad Crítica en Apache Log4j (Log4Shell)"
-description: "Análisis detallado de CVE-2021-44228, una de las vulnerabilidades más críticas de la historia, cómo explotarla y cómo protegerse."
-pubDate: 2025-02-01
-category: "news"
-difficulty: "intermediate"
-tags: ["noticias", "vulnerabilidad", "log4j", "CVE", "java"]
-language: "es"
+title: 'Noticias: Vulnerabilidad Crítica en Apache Log4j (Log4Shell)'
+description: 'Análisis detallado de CVE-2021-44228, una de las vulnerabilidades más críticas de la historia, cómo explotarla y cómo protegerse.'
+pubDate: 2026-04-05
+category: 'news'
+difficulty: 'intermediate'
+tags: ['noticias', 'vulnerabilidad', 'log4j', 'CVE', 'java']
+language: 'es'
 readTime: 10
 ---
 
@@ -87,6 +87,7 @@ public class Exploit {
 ```
 
 Compilar y servir:
+
 ```bash
 javac Exploit.java
 python3 -m http.server 8000
@@ -229,14 +230,14 @@ SecRule REQUEST_LINE|ARGS|ARGS_NAMES|REQUEST_HEADERS \
 # Sigma rule
 title: Log4Shell Exploitation Attempt
 logsource:
-    category: proxy
+  category: proxy
 detection:
-    selection:
-        c-uri|contains:
-            - '${jndi:'
-            - '${jndi:ldap:'
-            - '${jndi:rmi:'
-    condition: selection
+  selection:
+    c-uri|contains:
+      - '${jndi:'
+      - '${jndi:ldap:'
+      - '${jndi:rmi:'
+  condition: selection
 ```
 
 ## 💡 Lecciones Aprendidas

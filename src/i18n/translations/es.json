@@ -67,7 +67,7 @@
   },
   "common": {
     "welcome_to": "Bienvenido a",
-    "hero_description": "CTF Writeups · Ciberseguridad · Programación y Tecnología",
+    "hero_description": "CTF · Ciberseguridad · Programación y Tecnología",
     "search": "Buscar",
     "loading": "Cargando...",
     "error": "Error",
@@ -139,7 +139,7 @@
     "lateral-movement": "Movimiento Lateral"
   },
   "ctf": {
-    "title": "CTF Writeups",
+    "title": "CTF",
     "latest": "Últimos Retos",
     "all": "Todos los Retos",
     "category": "Categoría",

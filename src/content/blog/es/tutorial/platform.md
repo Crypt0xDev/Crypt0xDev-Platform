@@ -1,15 +1,23 @@
 ---
-title: "Plataforma Crypt0xDev - Hub de Aprendizaje en Ciberseguridad"
-description: "Plataforma completa de aprendizaje en ciberseguridad con writeups, tutoriales, desafíos CTF y guías prácticas de hacking para hackers éticos y pentesters."
-pubDate: 2025-01-15
-category: "tutorial"
-tags: ["ciberseguridad", "hacking", "pentesting", "plataforma", "aprendizaje", "writeups"]
-difficulty: "beginner"
+title: 'Plataforma Crypt0xDev - Hub de Aprendizaje en Ciberseguridad'
+description: 'Plataforma completa de aprendizaje en ciberseguridad con writeups, tutoriales, desafíos CTF y guías prácticas de hacking para hackers éticos y pentesters.'
+pubDate: 2026-01-15
+category: 'tutorial'
+tags:
+  [
+    'ciberseguridad',
+    'hacking',
+    'pentesting',
+    'plataforma',
+    'aprendizaje',
+    'writeups',
+  ]
+difficulty: 'beginner'
 featured: true
-language: "es"
-logo: "/images/blog/platform/card.png"
-heroImage: "/images/blog/platform/card.png"
-author: "Crypt0xDev"
+language: 'es'
+logo: '/images/blog/platform/card.png'
+heroImage: '/images/blog/platform/card.png'
+author: 'Crypt0xDev'
 ---
 
 # Plataforma Crypt0xDev - Tu Hub de Aprendizaje en Ciberseguridad
@@ -21,18 +29,21 @@ Crypt0xDev es una plataforma integral de aprendizaje en ciberseguridad diseñada
 ## ✨ Características
 
 ### 📝 Writeups Detallados
+
 - **Máquinas de HackTheBox**: Walkthroughs paso a paso de boxes HTB con técnicas de explotación detalladas
 - **Rooms de TryHackMe**: Guías completas para desafíos y rutas de aprendizaje de THM
 - **VulnHub & HackMyVM**: Soluciones para máquinas vulnerables con escenarios del mundo real
 - **PortSwigger Academy**: Soluciones y explicaciones de laboratorios de seguridad web
 
 ### 🎓 Contenido Educativo
+
 - **Tutoriales**: Aprende fundamentos de hacking, herramientas y técnicas avanzadas
 - **Desafíos CTF**: Compite y aprende de eventos Capture The Flag
 - **Guía de Herramientas**: Domina herramientas esenciales de pentesting como Burp Suite, Nmap, Metasploit
 - **Cheatsheets**: Guías de referencia rápida para escalada de privilegios, enumeración y explotación
 
 ### 🛡️ Áreas de Enfoque
+
 - Seguridad de Aplicaciones Web (SQLi, XSS, CSRF, SSRF, XXE, etc.)
 - Pentesting de Redes
 - Ataques a Active Directory
@@ -107,21 +118,27 @@ Sigue rutas de aprendizaje estructuradas para alcanzar tus objetivos:
 ## 📚 Categorías de Contenido
 
 ### Writeups
+
 Walkthroughs detallados de máquinas con:
+
 - Reconocimiento inicial y enumeración
 - Técnicas de explotación y pruebas de concepto
 - Métodos de escalada de privilegios
 - Lecciones aprendidas y conclusiones clave
 
 ### Tutoriales de Blog
+
 Guías paso a paso que cubren:
+
 - Uso y configuración de herramientas
 - Análisis de vulnerabilidades
 - Metodología de ataque
 - Estrategias de defensa y mitigación
 
 ### Desafíos CTF
+
 Soluciones y explicaciones para:
+
 - Desafíos estilo Jeopardy
 - Escenarios Attack-Defense
 - Competiciones King of the Hill
@@ -130,18 +147,23 @@ Soluciones y explicaciones para:
 ## 🌟 ¿Por Qué Elegir Crypt0xDev?
 
 ### Cobertura Integral
+
 Desde tutoriales para principiantes hasta técnicas avanzadas de explotación, cubrimos todos los aspectos del hacking ético y pentesting.
 
 ### Escenarios del Mundo Real
+
 Aprende de máquinas y aplicaciones vulnerables reales utilizadas por profesionales de seguridad en todo el mundo.
 
 ### Explicaciones Detalladas
+
 Cada writeup incluye explicaciones exhaustivas de técnicas, herramientas y metodologías utilizadas.
 
 ### Comunidad Activa
+
 Únete a miles de estudiantes, comparte conocimiento y desarrolla tus habilidades de seguridad juntos.
 
 ### Actualizaciones Regulares
+
 Nuevos writeups, tutoriales y desafíos añadidos regularmente para mantener el contenido fresco y relevante.
 
 ## 🎯 Preparación para Certificaciones

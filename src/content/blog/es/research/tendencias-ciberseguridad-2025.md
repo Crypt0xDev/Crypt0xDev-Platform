@@ -1,11 +1,11 @@
 ---
-title: "Investigación: Tendencias en Ciberseguridad 2025"
-description: "Análisis profundo de las tendencias emergentes en ciberseguridad, nuevas amenazas y tecnologías defensivas para el año 2025."
-pubDate: 2025-01-20
-category: "research"
-difficulty: "advanced"
-tags: ["investigación", "tendencias", "IA", "zero-trust", "quantum"]
-language: "es"
+title: 'Investigación: Tendencias en Ciberseguridad 2025'
+description: 'Análisis profundo de las tendencias emergentes en ciberseguridad, nuevas amenazas y tecnologías defensivas para el año 2025.'
+pubDate: 2026-02-10
+category: 'research'
+difficulty: 'advanced'
+tags: ['investigación', 'tendencias', 'IA', 'zero-trust', 'quantum']
+language: 'es'
 readTime: 12
 ---
 
@@ -18,6 +18,7 @@ La ciberseguridad evoluciona a un ritmo acelerado. Este artículo analiza las te
 ### IA en Ciberataques
 
 Los atacantes están utilizando IA para:
+
 - **Phishing inteligente**: Emails personalizados generados por LLMs
 - **Deepfakes**: Suplantación de identidad mediante voz y video
 - **Automatización**: Bots que aprenden de sistemas de defensa
@@ -43,6 +44,7 @@ predictions = clf.predict(network_traffic)
 El modelo de confianza cero se ha convertido en estándar:
 
 ### Principios Clave
+
 1. **Verificar explícitamente**: Autenticar y autorizar siempre
 2. **Acceso mínimo privilegio**: Limitar acceso solo a lo necesario
 3. **Asumir brecha**: Diseñar asumiendo que hay compromisos
@@ -58,12 +60,12 @@ metadata:
 spec:
   action: ALLOW
   rules:
-  - from:
-    - source:
-        requestPrincipals: ["*"]
-    when:
-    - key: request.auth.claims[iss]
-      values: ["https://accounts.google.com"]
+    - from:
+        - source:
+            requestPrincipals: ['*']
+      when:
+        - key: request.auth.claims[iss]
+          values: ['https://accounts.google.com']
 ```
 
 ## 🌐 Seguridad en la Nube
@@ -89,6 +91,7 @@ aws iam get-account-authorization-details
 ### Amenaza a la Criptografía Actual
 
 Los ordenadores cuánticos amenazan algoritmos actuales:
+
 - RSA vulnerable a algoritmo de Shor
 - Necesidad de criptografía post-cuántica
 
@@ -131,6 +134,7 @@ ciphertext, shared_secret = encrypt(public_key)
 ### SASE (Secure Access Service Edge)
 
 Convergencia de SD-WAN y seguridad en la nube:
+
 - Acceso seguro desde cualquier lugar
 - Políticas unificadas
 - Rendimiento optimizado

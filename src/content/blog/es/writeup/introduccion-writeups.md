@@ -1,11 +1,11 @@
 ---
-title: "Introducción a los Writeups de Seguridad"
-description: "Aprende qué son los writeups, cómo escribirlos y por qué son fundamentales en tu camino como profesional de ciberseguridad."
-pubDate: 2025-01-15
-category: "writeup"
-difficulty: "beginner"
-tags: ["writeups", "documentación", "metodología", "ciberseguridad"]
-language: "es"
+title: 'Introducción a los Writeups de Seguridad'
+description: 'Aprende qué son los writeups, cómo escribirlos y por qué son fundamentales en tu camino como profesional de ciberseguridad.'
+pubDate: 2026-01-22
+category: 'writeup'
+difficulty: 'beginner'
+tags: ['writeups', 'documentación', 'metodología', 'ciberseguridad']
+language: 'es'
 readTime: 8
 ---
 
@@ -39,6 +39,7 @@ Documenta todos los servicios encontrados y puertos abiertos.
 ### 2. Enumeración Detallada
 
 Profundiza en cada servicio descubierto:
+
 - Versiones de software
 - Configuraciones expuestas
 - Archivos interesantes
@@ -57,6 +58,7 @@ response = requests.post(f"{target}/upload.php", files={'file': payload})
 ```
 
 Explica claramente:
+
 - La vulnerabilidad encontrada
 - El exploit utilizado
 - Por qué funciona
@@ -64,6 +66,7 @@ Explica claramente:
 ### 4. Post-Explotación
 
 Una vez dentro del sistema:
+
 - Enumera privilegios
 - Busca vectores de escalada
 - Documenta hallazgos
@@ -71,16 +74,19 @@ Una vez dentro del sistema:
 ## 🛠️ Herramientas Esenciales
 
 ### Reconocimiento
+
 - **Nmap**: Escaneo de puertos y servicios
 - **Gobuster/Ffuf**: Fuzzing de directorios
 - **WhatWeb**: Identificación de tecnologías web
 
 ### Explotación
+
 - **Metasploit**: Framework de explotación
 - **Burp Suite**: Proxy de interceptación
 - **SQLMap**: Explotación de SQL Injection
 
 ### Post-Explotación
+
 - **LinPEAS/WinPEAS**: Enumeración de privilegios
 - **GTFOBins**: Comandos para escalada
 - **PayloadsAllTheThings**: Biblioteca de payloads

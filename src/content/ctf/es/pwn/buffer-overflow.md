@@ -1,19 +1,19 @@
 ---
-title: "Buffer Overflow Básico - CTF Example 2024"
-description: "Explotar un buffer overflow clásico para obtener ejecución de código arbitrario."
-ctfName: "CTF Example 2024"
-category: "pwn"
-difficulty: "medium"
+title: 'Buffer Overflow Básico - CTF Example 2024'
+description: 'Explotar un buffer overflow clásico para obtener ejecución de código arbitrario.'
+ctfName: 'CTF Example 2024'
+category: 'pwn'
+difficulty: 'medium'
 points: 250
-pubDate: 2024-11-01
-heroImage: "/images/ctf/default-ctf.png"
-tags: ["pwn", "buffer-overflow", "binary-exploitation", "x86"]
+pubDate: 2026-03-22
+heroImage: '/images/ctf/default-ctf.png'
+tags: ['pwn', 'buffer-overflow', 'binary-exploitation', 'x86']
 language: es
 solves: 856
-author: "CTF Team"
-skillLevel: "intermediate"
-estimatedTime: "60-90 minutos"
-tools: ["gdb", "pwntools", "python"]
+author: 'CTF Team'
+skillLevel: 'intermediate'
+estimatedTime: '60-90 minutos'
+tools: ['gdb', 'pwntools', 'python']
 ---
 
 # Buffer Overflow Básico - CTF Example 2024
@@ -31,6 +31,7 @@ checksec vulnerable_binary
 ```
 
 Resultado:
+
 - NX: Disabled
 - PIE: No
 - Stack Canary: No

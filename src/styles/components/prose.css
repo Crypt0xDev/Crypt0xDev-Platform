@@ -1,25 +1,88 @@
 /* ===== CODE SYNTAX HIGHLIGHTING ===== */
 
-/* Terminal/Code block styling - Kitty Mate Theme */
+/*
+  Shiki dual-theme con defaultColor: false
+  Genera --shiki-dark / --shiki-light en cada span.
+  Activamos la variable correcta según la clase .dark en <html>.
+*/
+
+/* Modo oscuro → usar colores del tema one-dark-pro */
+html.dark .astro-code span,
+html.dark .shiki span,
+html.dark .astro-code code span,
+html.dark .shiki code span {
+  color: var(--shiki-dark) !important;
+  font-style: var(--shiki-dark-font-style, inherit) !important;
+  font-weight: var(--shiki-dark-font-weight, inherit) !important;
+  text-decoration: var(--shiki-dark-text-decoration, inherit) !important;
+}
+
+/* Modo claro → usar colores del tema github-light */
+html:not(.dark) .astro-code span,
+html:not(.dark) .shiki span,
+html:not(.dark) .astro-code code span,
+html:not(.dark) .shiki code span {
+  color: var(--shiki-light) !important;
+  font-style: var(--shiki-light-font-style, inherit) !important;
+  font-weight: var(--shiki-light-font-weight, inherit) !important;
+  text-decoration: var(--shiki-light-text-decoration, inherit) !important;
+}
+
+/* Los spans nunca deben poner background — el pre tiene el suyo */
+.astro-code span,
+.shiki span {
+  background-color: transparent !important;
+}
+
+/* Terminal/Code block styling - One Dark (Kitty) */
+/* Palette: bg #282c34 · fg #abb2bf · green #98c379 · red #e06c75 · blue #61afef · yellow #e5c07b · cyan #56b6c2 · purple #c678dd */
 pre.astro-code,
 pre.shiki {
-  @apply font-mono text-sm leading-relaxed rounded-lg overflow-x-auto;
+  @apply font-mono text-sm leading-relaxed rounded-lg;
   font-variant-ligatures: normal;
-  font-feature-settings: "liga" 1, "calt" 1;
+  font-feature-settings:
+    'liga' 1,
+    'calt' 1;
   tab-size: 2;
   position: relative;
-  background: #1e1e1e !important;
-  border: 1px solid #2d2d2d;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  overflow-x: auto;
+  overflow-y: clip;
+  background: rgba(40, 44, 52, 0.88) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(171, 178, 191, 0.08);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(171, 178, 191, 0.04);
   padding: 1.5rem;
   margin: 1.5rem 0;
+}
+
+/* Terminal header bar with macOS-style dots */
+pre.astro-code::before,
+pre.shiki::before {
+  content: '';
+  display: block;
+  height: 2.5rem;
+  margin: -1.5rem -1.5rem 1rem -1.5rem;
+  background:
+    radial-gradient(circle 5px at 18px 50%, #ff5f57 100%, transparent 100%),
+    radial-gradient(circle 5px at 38px 50%, #febc2e 100%, transparent 100%),
+    radial-gradient(circle 5px at 58px 50%, #28c840 100%, transparent 100%),
+    rgba(255, 255, 255, 0.022);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 /* Adjust content padding */
 pre.astro-code code,
 pre.shiki code {
   display: block;
-  color: #d4d4d4;
+  color: #abb2bf;
+}
+
+html:not(.dark) pre.astro-code code,
+html:not(.dark) pre.shiki code {
+  color: #24292e;
 }
 
 .astro-code .line {
@@ -39,56 +102,66 @@ pre.shiki code {
   padding: 0.125rem 1rem;
 }
 
-/* Prompt styling para comandos bash - Kitty Mate colors */
+/* Prompt styling para comandos bash - ZSH One Dark style */
 .astro-code .line::before,
 .shiki .line::before {
   content: '❯ ';
-  color: #89ddff;
-  font-weight: bold;
+  color: #98c379;
+  font-weight: 600;
   margin-right: 0.5rem;
   user-select: none;
 }
 
+html:not(.dark) .astro-code .line::before,
+html:not(.dark) .shiki .line::before {
+  color: #50a14f;
+}
+
 /* Remove prompt for non-bash code blocks */
-pre.astro-code[data-language="javascript"] .line::before,
-pre.astro-code[data-language="typescript"] .line::before,
-pre.astro-code[data-language="python"] .line::before,
-pre.astro-code[data-language="php"] .line::before,
-pre.astro-code[data-language="java"] .line::before,
-pre.astro-code[data-language="c"] .line::before,
-pre.astro-code[data-language="cpp"] .line::before,
-pre.astro-code[data-language="go"] .line::before,
-pre.astro-code[data-language="rust"] .line::before,
-pre.astro-code[data-language="json"] .line::before,
-pre.astro-code[data-language="yaml"] .line::before,
-pre.astro-code[data-language="xml"] .line::before,
-pre.astro-code[data-language="html"] .line::before,
-pre.astro-code[data-language="css"] .line::before,
-pre.astro-code[data-language="sql"] .line::before,
-pre.shiki[data-language="javascript"] .line::before,
-pre.shiki[data-language="typescript"] .line::before,
-pre.shiki[data-language="python"] .line::before,
-pre.shiki[data-language="php"] .line::before,
-pre.shiki[data-language="java"] .line::before,
-pre.shiki[data-language="c"] .line::before,
-pre.shiki[data-language="cpp"] .line::before,
-pre.shiki[data-language="go"] .line::before,
-pre.shiki[data-language="rust"] .line::before,
-pre.shiki[data-language="json"] .line::before,
-pre.shiki[data-language="yaml"] .line::before,
-pre.shiki[data-language="xml"] .line::before,
-pre.shiki[data-language="html"] .line::before,
-pre.shiki[data-language="css"] .line::before,
-pre.shiki[data-language="sql"] .line::before {
+pre.astro-code[data-language='javascript'] .line::before,
+pre.astro-code[data-language='typescript'] .line::before,
+pre.astro-code[data-language='python'] .line::before,
+pre.astro-code[data-language='php'] .line::before,
+pre.astro-code[data-language='java'] .line::before,
+pre.astro-code[data-language='c'] .line::before,
+pre.astro-code[data-language='cpp'] .line::before,
+pre.astro-code[data-language='go'] .line::before,
+pre.astro-code[data-language='rust'] .line::before,
+pre.astro-code[data-language='json'] .line::before,
+pre.astro-code[data-language='yaml'] .line::before,
+pre.astro-code[data-language='xml'] .line::before,
+pre.astro-code[data-language='html'] .line::before,
+pre.astro-code[data-language='css'] .line::before,
+pre.astro-code[data-language='sql'] .line::before,
+pre.shiki[data-language='javascript'] .line::before,
+pre.shiki[data-language='typescript'] .line::before,
+pre.shiki[data-language='python'] .line::before,
+pre.shiki[data-language='php'] .line::before,
+pre.shiki[data-language='java'] .line::before,
+pre.shiki[data-language='c'] .line::before,
+pre.shiki[data-language='cpp'] .line::before,
+pre.shiki[data-language='go'] .line::before,
+pre.shiki[data-language='rust'] .line::before,
+pre.shiki[data-language='json'] .line::before,
+pre.shiki[data-language='yaml'] .line::before,
+pre.shiki[data-language='xml'] .line::before,
+pre.shiki[data-language='html'] .line::before,
+pre.shiki[data-language='css'] .line::before,
+pre.shiki[data-language='sql'] .line::before {
   content: '';
   margin-right: 0;
 }
 
-/* Root prompt - Kitty Mate red */
-.astro-code[data-language="bash"] .line.root::before,
-.shiki[data-language="bash"] .line.root::before {
+/* Root prompt - One Dark red */
+.astro-code[data-language='bash'] .line.root::before,
+.shiki[data-language='bash'] .line.root::before {
   content: '# ';
-  color: #ff6b68;
+  color: #e06c75;
+}
+
+html:not(.dark) .astro-code[data-language='bash'] .line.root::before,
+html:not(.dark) .shiki[data-language='bash'] .line.root::before {
+  color: #e45649;
 }
 
 /* Números de línea */
@@ -99,30 +172,30 @@ pre.shiki[data-language="sql"] .line::before {
   text-align: right;
   padding-right: 1em;
   user-select: none;
-  color: #858585;
-  opacity: 0.5;
+  color: #5c6370;
+  opacity: 0.9;
 }
 
-/* Highlight de línea - Kitty Mate accent */
+/* Highlight de línea - One Dark blue */
 .astro-code .highlighted,
 .shiki .highlighted {
-  background-color: rgba(137, 221, 255, 0.1);
-  border-left: 3px solid #89ddff;
+  background-color: rgba(97, 175, 239, 0.1);
+  border-left: 3px solid #61afef;
   padding-left: 0.75rem;
   margin-left: -1rem;
 }
 
-/* Diff syntax - Kitty Mate colors */
+/* Diff syntax - One Dark colors */
 .astro-code .line.diff.add,
 .shiki .line.diff.add {
-  background-color: rgba(195, 232, 141, 0.15);
-  border-left: 3px solid #c3e88d;
+  background-color: rgba(152, 195, 121, 0.15);
+  border-left: 3px solid #98c379;
 }
 
 .astro-code .line.diff.remove,
 .shiki .line.diff.remove {
-  background-color: rgba(255, 107, 104, 0.15);
-  border-left: 3px solid #ff6b68;
+  background-color: rgba(224, 108, 117, 0.15);
+  border-left: 3px solid #e06c75;
 }
 
 /* Output lines (without prompt) */
@@ -134,8 +207,13 @@ pre.shiki[data-language="sql"] .line::before {
 
 .astro-code .line.output,
 .shiki .line.output {
-  color: #c3e88d;
+  color: #98c379;
   font-style: normal;
+}
+
+html:not(.dark) .astro-code .line.output,
+html:not(.dark) .shiki .line.output {
+  color: #50a14f;
 }
 
 /* Scrollbar personalizado para bloques de código */
@@ -147,7 +225,7 @@ pre.shiki::-webkit-scrollbar {
 
 pre.astro-code::-webkit-scrollbar-track,
 pre.shiki::-webkit-scrollbar-track {
-  background: #1e1e1e;
+  background: rgba(40, 44, 52, 0.88);
   border-radius: 4px;
 }
 
@@ -160,6 +238,91 @@ pre.shiki::-webkit-scrollbar-thumb {
 pre.astro-code::-webkit-scrollbar-thumb:hover,
 pre.shiki::-webkit-scrollbar-thumb:hover {
   background: #4d4d4d;
+}
+
+/* ===== LIGHT MODE — Code blocks ===== */
+/* Atom One Light palette: bg #fafafa · fg #383a42 · green #50a14f · red #e45649 · blue #4078f2 */
+html:not(.dark) pre.astro-code,
+html:not(.dark) pre.shiki {
+  background: rgba(246, 248, 250, 0.96) !important;
+  border-color: rgba(56, 58, 66, 0.14);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+html:not(.dark) pre.astro-code::before,
+html:not(.dark) pre.shiki::before {
+  background:
+    radial-gradient(circle 5px at 18px 50%, #ff5f57 100%, transparent 100%),
+    radial-gradient(circle 5px at 38px 50%, #febc2e 100%, transparent 100%),
+    radial-gradient(circle 5px at 58px 50%, #28c840 100%, transparent 100%),
+    rgba(56, 58, 66, 0.04);
+  border-bottom-color: rgba(56, 58, 66, 0.08);
+}
+
+html:not(.dark) pre.astro-code code,
+html:not(.dark) pre.shiki code {
+  color: #383a42;
+}
+
+html:not(.dark) .astro-code .line::before,
+html:not(.dark) .shiki .line::before {
+  color: #50a14f;
+}
+
+html:not(.dark) .astro-code[data-language='bash'] .line.root::before,
+html:not(.dark) .shiki[data-language='bash'] .line.root::before {
+  color: #e45649;
+}
+
+html:not(.dark) .astro-code .highlighted,
+html:not(.dark) .shiki .highlighted {
+  background-color: rgba(64, 120, 242, 0.08);
+  border-left-color: #4078f2;
+}
+
+html:not(.dark) .astro-code .line.diff.add,
+html:not(.dark) .shiki .line.diff.add {
+  background-color: rgba(80, 161, 79, 0.12);
+  border-left-color: #50a14f;
+}
+
+html:not(.dark) .astro-code .line.diff.remove,
+html:not(.dark) .shiki .line.diff.remove {
+  background-color: rgba(228, 86, 73, 0.1);
+  border-left-color: #e45649;
+}
+
+html:not(.dark) .astro-code .line.output,
+html:not(.dark) .shiki .line.output {
+  color: #50a14f;
+}
+
+html:not(.dark) .astro-code .line-number,
+html:not(.dark) .shiki .line-number {
+  color: #9d9d9f;
+}
+
+html:not(.dark) pre.astro-code::-webkit-scrollbar-track,
+html:not(.dark) pre.shiki::-webkit-scrollbar-track {
+  background: rgba(250, 250, 250, 0.92);
+}
+
+html:not(.dark) pre.astro-code::-webkit-scrollbar-thumb,
+html:not(.dark) pre.shiki::-webkit-scrollbar-thumb {
+  background: #c8c8c8;
+}
+
+html:not(.dark) pre.astro-code::-webkit-scrollbar-thumb:hover,
+html:not(.dark) pre.shiki::-webkit-scrollbar-thumb:hover {
+  background: #b0b0b0;
+}
+
+html:not(.dark) .prose code {
+  background: rgba(56, 58, 66, 0.06);
+  color: #4078f2;
+  border-color: rgba(56, 58, 66, 0.1);
 }
 
 /* ===== PROSE (MARKDOWN CONTENT) ===== */
@@ -193,9 +356,9 @@ pre.shiki::-webkit-scrollbar-thumb:hover {
 
 .prose code {
   @apply px-2 py-1 rounded font-mono text-sm;
-  background: #1e1e1e;
-  color: #89ddff;
-  border: 1px solid #2d2d2d;
+  background: rgba(40, 44, 52, 0.85);
+  color: #61afef;
+  border: 1px solid rgba(171, 178, 191, 0.12);
   font-weight: 500;
 }
 
@@ -211,7 +374,8 @@ pre.shiki::-webkit-scrollbar-thumb:hover {
   font-weight: normal;
 }
 
-.prose ul, .prose ol {
+.prose ul,
+.prose ol {
   @apply mb-4 pl-6;
 }
 

@@ -20,7 +20,11 @@ const langWriteups = filterByLang(allWriteups, lang as string);
 const langPosts = filterByLang(allPosts, lang as string);
 
 const recentPosts = sortByDate(langPosts).slice(0, 3);
-const recentWriteups = sortByDate(langWriteups).slice(0, 6);
+const recentWriteups = sortByDate(langWriteups).slice(0, 3);
+
+const allCtf = await getCollection('ctf');
+const langCtf = filterByLang(allCtf, lang as string);
+const recentCtf = sortByDate(langCtf).slice(0, 3);
 
 // Estadísticas generales
 const stats = {
@@ -139,20 +143,39 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
     class="min-h-[calc(100vh-16rem)] bg-linear-to-br from-white via-white to-indigo-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/10"
   >
     <!-- Hero Section -->
-    <section class="relative py-16 md:py-24 bg-transparent overflow-hidden">
-      <!-- Patrón de puntos decorativo -->
+    <section class="relative py-20 md:py-32 bg-transparent overflow-hidden">
+      <!-- Grid pattern decorativo -->
       <div
         class="absolute inset-0 z-0"
-        style="background-image: radial-gradient(circle, rgba(99, 102, 241, 0.15) 2px, transparent 2px); background-size: 40px 40px;"
+        style="background-image: linear-gradient(rgba(99,102,241,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.07) 1px, transparent 1px); background-size: 40px 40px;"
+      >
+      </div>
+      <!-- Glow central -->
+      <div
+        class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-150 h-150 rounded-full z-0 pointer-events-none"
+        style="background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%);"
       >
       </div>
       <div
-        class="absolute inset-0 bg-linear-to-b from-transparent via-white/50 to-white dark:from-transparent dark:via-slate-900/50 dark:to-slate-900 z-0"
+        class="absolute inset-0 bg-linear-to-b from-transparent via-white/60 to-white dark:via-slate-900/60 dark:to-slate-900 z-0"
       >
       </div>
+
       <div
         class="container max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10"
       >
+        <!-- Terminal line -->
+        <div
+          class="mb-6 inline-flex items-center gap-2 font-mono text-sm text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2"
+        >
+          <span class="text-green-500 font-bold select-none">❯</span>
+          <span id="typewriter" class="text-slate-700 dark:text-slate-300"
+          ></span>
+          <span class="animate-pulse text-indigo-500 font-bold select-none"
+            >_</span
+          >
+        </div>
+
         <div class="animate-fadeInDown">
           <div
             class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full text-sm font-semibold mb-6"
@@ -163,40 +186,45 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
               viewBox="0 0 24 24"
               stroke="currentColor"
               stroke-width="2"
-              ><path
+            >
+              <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"
-              ></path></svg
-            >
+              ></path>
+            </svg>
             {
               lang === 'es'
                 ? 'Ciberseguridad & Pentesting'
                 : 'Cybersecurity & Pentesting'
             }
           </div>
+
           <h1
-            class="text-4xl md:text-5xl lg:text-7xl font-black mb-4 leading-tight font-sans tracking-tight"
+            class="text-5xl md:text-6xl lg:text-8xl font-black mb-6 leading-[0.95] font-sans tracking-tight"
           >
             {t('common.welcome_to')}
+            <br />
             <span
               class="relative inline-block bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent"
             >
               Crypt0xDev
               <span
-                class="absolute -bottom-1 left-0 w-full h-1 bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full shadow-lg shadow-purple-500/40"
+                class="absolute -bottom-2 left-0 w-full h-1.5 bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full shadow-lg shadow-purple-500/40"
               ></span>
             </span>
           </h1>
+
           <p
-            class="text-lg md:text-xl text-slate-600 dark:text-slate-400 leading-relaxed font-sans mb-8 max-w-2xl"
+            class="text-lg md:text-xl text-slate-600 dark:text-slate-400 leading-relaxed font-sans mb-10 max-w-2xl"
           >
             {t('common.hero_description')}
           </p>
+
           <div class="flex flex-wrap gap-3">
             <a
               href={`/${lang}/writeup`}
-              class="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/40 no-underline"
+              class="inline-flex items-center gap-2 px-7 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/40 no-underline text-base"
             >
               <svg
                 class="w-5 h-5"
@@ -204,17 +232,18 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
                 viewBox="0 0 24 24"
                 stroke="currentColor"
                 stroke-width="2"
-                ><path
+              >
+                <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z"
-                ></path></svg
-              >
+                ></path>
+              </svg>
               Writeups
             </a>
             <a
               href={`/${lang}/blog`}
-              class="inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-100 font-bold rounded-xl border-2 border-slate-200 dark:border-slate-700 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl no-underline"
+              class="inline-flex items-center gap-2 px-7 py-3.5 bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-100 font-bold rounded-xl border-2 border-slate-200 dark:border-slate-700 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl no-underline text-base"
             >
               <svg
                 class="w-5 h-5"
@@ -222,17 +251,18 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
                 viewBox="0 0 24 24"
                 stroke="currentColor"
                 stroke-width="2"
-                ><path
+              >
+                <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                ></path></svg
-              >
+                ></path>
+              </svg>
               Blog
             </a>
             <a
               href={`/${lang}/ctf`}
-              class="inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-900 dark:text-slate-100 font-bold rounded-xl border-2 border-slate-200 dark:border-slate-700 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl no-underline"
+              class="inline-flex items-center gap-2 px-7 py-3.5 bg-white dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-900 dark:text-slate-100 font-bold rounded-xl border-2 border-slate-200 dark:border-slate-700 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl no-underline text-base"
             >
               <svg
                 class="w-5 h-5 text-red-500"
@@ -240,12 +270,13 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
                 viewBox="0 0 24 24"
                 stroke="currentColor"
                 stroke-width="2"
-                ><path
+              >
+                <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"
-                ></path></svg
-              >
+                ></path>
+              </svg>
               CTF
             </a>
           </div>
@@ -253,25 +284,63 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
       </div>
     </section>
 
+    <script>
+      // Typewriter effect para el hero
+      const phrases = [
+        'nmap -sC -sV -oN recon.txt target',
+        'python3 exploit.py --lhost 10.10.14.1',
+        'hashcat -m 1000 hash.txt rockyou.txt',
+        'gobuster dir -u http://target -w common.txt',
+        'nc -lvnp 4444',
+      ];
+      let phraseIndex = 0;
+      let charIndex = 0;
+      let deleting = false;
+      const el = document.getElementById('typewriter');
+      if (el) {
+        function type() {
+          const phrase = phrases[phraseIndex];
+          if (!deleting) {
+            el!.textContent = phrase.slice(0, ++charIndex);
+            if (charIndex === phrase.length) {
+              deleting = true;
+              setTimeout(type, 2200);
+              return;
+            }
+          } else {
+            el!.textContent = phrase.slice(0, --charIndex);
+            if (charIndex === 0) {
+              deleting = false;
+              phraseIndex = (phraseIndex + 1) % phrases.length;
+            }
+          }
+          setTimeout(type, deleting ? 30 : 55);
+        }
+        setTimeout(type, 600);
+      }
+    </script>
+
     <!-- Estadísticas Section -->
     <section class="py-8 md:py-12 animate-fadeInUp">
       <div class="container max-w-7xl mx-auto px-4">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           <!-- Total Writeups -->
-          <div class="stat-card">
+          <div class="stat-card stat-card-indigo">
             <div class="stat-icon">
-              <svg
-                class="w-8 h-8 text-indigo-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="1.5"
-                ><path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z"
-                ></path></svg
-              >
+              <div class="stat-icon-inner stat-icon-indigo">
+                <svg
+                  class="w-7 h-7 text-indigo-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z"
+                  ></path></svg
+                >
+              </div>
             </div>
             <div class="stat-number">{stats.totalWriteups}</div>
             <div class="stat-label">
@@ -280,20 +349,22 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
           </div>
 
           <!-- Total Posts -->
-          <div class="stat-card">
+          <div class="stat-card stat-card-purple">
             <div class="stat-icon">
-              <svg
-                class="w-8 h-8 text-purple-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="1.5"
-                ><path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                ></path></svg
-              >
+              <div class="stat-icon-inner stat-icon-purple">
+                <svg
+                  class="w-7 h-7 text-purple-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                  ></path></svg
+                >
+              </div>
             </div>
             <div class="stat-number">{stats.totalPosts}</div>
             <div class="stat-label">
@@ -302,20 +373,22 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
           </div>
 
           <!-- Plataformas -->
-          <div class="stat-card">
+          <div class="stat-card stat-card-cyan">
             <div class="stat-icon">
-              <svg
-                class="w-8 h-8 text-cyan-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="1.5"
-                ><path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5a17.92 17.92 0 0 1-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418"
-                ></path></svg
-              >
+              <div class="stat-icon-inner stat-icon-cyan">
+                <svg
+                  class="w-7 h-7 text-cyan-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5a17.92 17.92 0 0 1-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418"
+                  ></path></svg
+                >
+              </div>
             </div>
             <div class="stat-number">{stats.platforms}</div>
             <div class="stat-label">
@@ -324,20 +397,22 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
           </div>
 
           <!-- Técnicas -->
-          <div class="stat-card">
+          <div class="stat-card stat-card-orange">
             <div class="stat-icon">
-              <svg
-                class="w-8 h-8 text-orange-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="1.5"
-                ><path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l5.654-4.654m5.58-5.58 4.243-4.243a1 1 0 0 1 1.414 1.414l-4.243 4.243m-5.58 5.58L8.19 8.19m3.23 6.98L8.19 8.19"
-                ></path></svg
-              >
+              <div class="stat-icon-inner stat-icon-orange">
+                <svg
+                  class="w-7 h-7 text-orange-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l5.654-4.654m5.58-5.58 4.243-4.243a1 1 0 0 1 1.414 1.414l-4.243 4.243m-5.58 5.58L8.19 8.19m3.23 6.98L8.19 8.19"
+                  ></path></svg
+                >
+              </div>
             </div>
             <div class="stat-number">{stats.techniques}</div>
             <div class="stat-label">
@@ -348,125 +423,43 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
       </div>
     </section>
 
-    <!-- Filtros Rápidos -->
-    <section class="py-6 md:py-8">
-      <div class="container max-w-7xl mx-auto px-4">
-        <h3
-          class="text-xl md:text-2xl font-bold mb-4 text-slate-900 dark:text-slate-100 font-sans flex items-center gap-2"
-        >
-          <svg
-            class="w-5 h-5 text-indigo-500 shrink-0"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-            ><path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M3 7h4m0 0a2 2 0 1 0 4 0m-4 0a2 2 0 1 1 4 0m0 0h10M3 12h10m0 0a2 2 0 1 0 4 0m-4 0a2 2 0 1 1 4 0m0 0h4M3 17h4m0 0a2 2 0 1 0 4 0m-4 0a2 2 0 1 1 4 0m0 0h10"
-            ></path></svg
-          >
-          {lang === 'es' ? 'Explorar por Dificultad' : 'Browse by Difficulty'}
-        </h3>
-        <div class="flex flex-wrap gap-3">
-          {
-            stats.difficulties.easy > 0 && (
-              <a href={`/${lang}/tag/easy`} class="filter-badge filter-easy">
-                {lang === 'es' ? 'Fácil' : 'Easy'} ({stats.difficulties.easy})
-              </a>
-            )
-          }
-          {
-            stats.difficulties.medium > 0 && (
-              <a
-                href={`/${lang}/tag/medium`}
-                class="filter-badge filter-medium"
+    <!-- Técnicas Populares -->
+    {
+      topTechniques.length > 0 && (
+        <section class="py-8 md:py-12">
+          <div class="container max-w-7xl mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl lg:text-5xl font-black mb-8 font-sans tracking-tight bg-linear-to-r from-slate-900 via-indigo-600 to-slate-900 dark:from-slate-100 dark:via-indigo-400 dark:to-slate-100 bg-clip-text text-transparent flex items-center gap-3">
+              <svg
+                class="w-8 h-8 text-orange-500 shrink-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="1.5"
               >
-                {lang === 'es' ? 'Medio' : 'Medium'} (
-                {stats.difficulties.medium})
-              </a>
-            )
-          }
-          {
-            stats.difficulties.hard > 0 && (
-              <a href={`/${lang}/tag/hard`} class="filter-badge filter-hard">
-                {lang === 'es' ? 'Difícil' : 'Hard'} ({stats.difficulties.hard})
-              </a>
-            )
-          }
-          {
-            stats.difficulties.insane > 0 && (
-              <a
-                href={`/${lang}/tag/insane`}
-                class="filter-badge filter-insane"
-              >
-                Insane ({stats.difficulties.insane})
-              </a>
-            )
-          }
-        </div>
-
-        <h3
-          class="text-xl md:text-2xl font-bold mb-4 mt-6 text-slate-900 dark:text-slate-100 font-sans flex items-center gap-2"
-        >
-          <svg
-            class="w-5 h-5 text-cyan-500 shrink-0"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-            ><path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M5.25 14.25h13.5m-13.5 0a3 3 0 0 1-3-3m3 3a3 3 0 1 0 0 6h13.5a3 3 0 1 0 0-6m-16.5-3a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3m-19.5 0a4.5 4.5 0 0 1 .9-2.7L5.737 5.1a3.375 3.375 0 0 1 2.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 0 1 .9 2.7m0 0a3 3 0 0 1-3 3m0 3h.008v.008h-.008v-.008Zm0-6h.008v.008h-.008v-.008Zm-3 6h.008v.008h-.008v-.008Zm0-6h.008v.008h-.008v-.008Z"
-            ></path></svg
-          >
-          {lang === 'es' ? 'Explorar por Plataforma' : 'Browse by Platform'}
-        </h3>
-        <div class="flex flex-wrap gap-3">
-          {
-            stats.byPlatform.htb > 0 && (
-              <a
-                href={`/${lang}/writeup/hackthebox`}
-                class="filter-badge filter-platform-htb"
-              >
-                HackTheBox ({stats.byPlatform.htb})
-              </a>
-            )
-          }
-          {
-            stats.byPlatform.tryhackme > 0 && (
-              <a
-                href={`/${lang}/writeup/tryhackme`}
-                class="filter-badge filter-platform-thm"
-              >
-                TryHackMe ({stats.byPlatform.tryhackme})
-              </a>
-            )
-          }
-          {
-            stats.byPlatform.vulnhub > 0 && (
-              <a
-                href={`/${lang}/writeup/vulnhub`}
-                class="filter-badge filter-platform-vh"
-              >
-                VulnHub ({stats.byPlatform.vulnhub})
-              </a>
-            )
-          }
-          {
-            stats.byPlatform.hackmyvm > 0 && (
-              <a
-                href={`/${lang}/writeup/hackmyvm`}
-                class="filter-badge filter-platform-hmvm"
-              >
-                HackMyVM ({stats.byPlatform.hackmyvm})
-              </a>
-            )
-          }
-        </div>
-      </div>
-    </section>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l5.654-4.654m5.58-5.58 4.243-4.243a1 1 0 0 1 1.414 1.414l-4.243 4.243m-5.58 5.58L8.19 8.19"
+                />
+              </svg>
+              {lang === 'es'
+                ? 'Técnicas Más Cubiertas'
+                : 'Most Covered Techniques'}
+            </h2>
+            <div class="flex flex-wrap gap-3">
+              {topTechniques.map(([technique, count]) => (
+                <a
+                  href={`/${lang}/tag/${technique.toLowerCase().replace(/\s+/g, '-')}`}
+                  class="technique-badge"
+                >
+                  {technique} <span class="technique-count">({count})</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+      )
+    }
 
     {
       recentPosts.length > 0 && (
@@ -492,6 +485,19 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
                     ? slugParts[slugParts.length - 1]
                     : post.id.replace(/\.md$/, '');
                 const category = post.data.category || 'tutorial';
+                const categoryColors = {
+                  tutorial:
+                    'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 border-indigo-400 dark:border-indigo-700',
+                  research:
+                    'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border-purple-400 dark:border-purple-700',
+                  tools:
+                    'bg-cyan-100   dark:bg-cyan-900/40   text-cyan-700   dark:text-cyan-300   border-cyan-400   dark:border-cyan-700',
+                  news: 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300 border-yellow-400 dark:border-yellow-700',
+                  writeup:
+                    'bg-green-100  dark:bg-green-900/40  text-green-700  dark:text-green-300  border-green-400  dark:border-green-700',
+                };
+                const catClass =
+                  categoryColors[category] ?? categoryColors.tutorial;
                 return (
                   <article
                     class="group bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-indigo-500/25 hover:border-indigo-500 flex flex-col relative animate-scaleIn shadow-md"
@@ -501,27 +507,65 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
                     itemtype="https://schema.org/BlogPosting"
                   >
                     <div class="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    {post.data.heroImage && (
-                      <div class="w-full h-52 overflow-hidden bg-linear-to-br from-slate-100 to-indigo-100/50 dark:from-slate-800 dark:to-indigo-900/30">
+                    {/* Logo / imagen */}
+                    <div class="w-full h-52 overflow-hidden bg-linear-to-br from-slate-100 to-indigo-100/50 dark:from-slate-800 dark:to-indigo-900/30 flex items-center justify-center p-8">
+                      {post.data.logo ? (
+                        <img
+                          src={post.data.logo}
+                          alt={post.data.title}
+                          loading="lazy"
+                          itemprop="image"
+                          class="max-w-full max-h-full object-contain transition-transform duration-500 group-hover:scale-110"
+                        />
+                      ) : post.data.heroImage ? (
                         <img
                           src={post.data.heroImage}
                           alt={post.data.title}
                           loading="lazy"
                           itemprop="image"
-                          class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110 block"
+                          class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110 absolute inset-0"
                         />
-                      </div>
-                    )}
-                    <div class="p-6 lg:p-8 flex flex-col flex-1 gap-4">
-                      <div class="flex items-center mb-2">
+                      ) : (
+                        <svg
+                          class="w-16 h-16 text-indigo-300 dark:text-indigo-700"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                          />
+                        </svg>
+                      )}
+                    </div>
+                    {/* Contenido */}
+                    <div class="p-6 flex flex-col flex-1 gap-4">
+                      {/* Fila de badges */}
+                      <div class="flex flex-wrap gap-2 items-center">
+                        <span
+                          class={`inline-flex items-center px-3 py-2 rounded-lg text-xs font-extrabold font-sans uppercase tracking-wide leading-none border-2 ${catClass}`}
+                        >
+                          {category}
+                        </span>
+                        {post.data.difficulty && (
+                          <span
+                            class={`difficulty-${post.data.difficulty} inline-flex items-center px-3 py-2 rounded-lg text-xs font-bold font-sans capitalize leading-none border-2`}
+                          >
+                            {t(`difficulty.${post.data.difficulty}`)}
+                          </span>
+                        )}
                         <time
-                          class="text-sm text-slate-600 dark:text-slate-400 font-medium font-sans"
+                          class="ml-auto text-xs text-slate-500 dark:text-slate-400 font-medium font-sans"
                           datetime={post.data.pubDate.toISOString()}
                           itemprop="datePublished"
                         >
                           {formatDate(post.data.pubDate, lang as string)}
                         </time>
                       </div>
+                      {/* Título */}
                       <h3
                         class="text-xl lg:text-2xl font-extrabold m-0 leading-snug font-sans tracking-tight"
                         itemprop="headline"
@@ -534,15 +578,17 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
                           {post.data.title}
                         </a>
                       </h3>
+                      {/* Descripción */}
                       <p
                         class="text-slate-600 dark:text-slate-400 m-0 leading-relaxed text-[15px] font-sans flex-1 line-clamp-3"
                         itemprop="description"
                       >
                         {post.data.description}
                       </p>
+                      {/* Tags */}
                       {post.data.tags && post.data.tags.length > 0 && (
                         <div class="flex flex-wrap gap-2 mt-auto pt-4 border-t border-slate-200 dark:border-slate-800">
-                          {post.data.tags.slice(0, 2).map((tag: string) => (
+                          {post.data.tags.slice(0, 4).map((tag: string) => (
                             <a
                               href={`/${lang}/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`}
                               class="tag"
@@ -760,38 +806,135 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
       )
     }
 
-    {/* Técnicas Populares */}
+    {/* CTF Recientes */}
     {
-      topTechniques.length > 0 && (
-        <section class="py-8 md:py-12">
+      recentCtf.length > 0 && (
+        <section
+          class="py-8 md:py-12 animate-fadeInUp"
+          aria-labelledby="recent-ctf-title"
+        >
           <div class="container max-w-7xl mx-auto px-4">
-            <h2 class="text-3xl md:text-4xl lg:text-5xl font-black mb-8 font-sans tracking-tight bg-linear-to-r from-slate-900 via-indigo-600 to-slate-900 dark:from-slate-100 dark:via-indigo-400 dark:to-slate-100 bg-clip-text text-transparent flex items-center gap-3">
-              <svg
-                class="w-8 h-8 text-orange-500 shrink-0"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="1.5"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l5.654-4.654m5.58-5.58 4.243-4.243a1 1 0 0 1 1.414 1.414l-4.243 4.243m-5.58 5.58L8.19 8.19"
-                />
-              </svg>
-              {lang === 'es'
-                ? 'Técnicas Más Cubiertas'
-                : 'Most Covered Techniques'}
+            <h2
+              id="recent-ctf-title"
+              class="text-3xl md:text-4xl lg:text-5xl font-black mb-8 font-sans tracking-tight bg-linear-to-r from-slate-900 via-red-600 to-slate-900 dark:from-slate-100 dark:via-red-400 dark:to-slate-100 bg-clip-text text-transparent"
+            >
+              {lang === 'es' ? 'Últimos CTF' : 'Latest CTF'}
             </h2>
-            <div class="flex flex-wrap gap-3">
-              {topTechniques.map(([technique, count]) => (
-                <a
-                  href={`/${lang}/tag/${technique.toLowerCase().replace(/\s+/g, '-')}`}
-                  class="technique-badge"
-                >
-                  {technique} <span class="technique-count">({count})</span>
-                </a>
-              ))}
+            <div
+              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
+              role="list"
+            >
+              {recentCtf.map((ctf, index) => {
+                const slugParts = ctf.id.replace(/\.md$/, '').split('/');
+                // id = "es/web/sql-injection-login" → last segment only
+                const actualSlug = slugParts[slugParts.length - 1];
+                const logoToShow = ctf.data.logo || ctf.data.heroImage;
+                const ctfCategoryColors = {
+                  web: 'bg-blue-100   dark:bg-blue-900/40   text-blue-700   dark:text-blue-300   border-blue-400   dark:border-blue-700',
+                  pwn: 'bg-red-100    dark:bg-red-900/40    text-red-700    dark:text-red-300    border-red-400    dark:border-red-700',
+                  crypto:
+                    'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300 border-yellow-400 dark:border-yellow-700',
+                  forensics:
+                    'bg-teal-100   dark:bg-teal-900/40   text-teal-700   dark:text-teal-300   border-teal-400   dark:border-teal-700',
+                  reversing:
+                    'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300 border-orange-400 dark:border-orange-700',
+                  misc: 'bg-slate-100  dark:bg-slate-800     text-slate-700  dark:text-slate-300  border-slate-400  dark:border-slate-600',
+                  osint:
+                    'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border-purple-400 dark:border-purple-700',
+                };
+                const ctfCatClass =
+                  ctfCategoryColors[ctf.data.category] ??
+                  ctfCategoryColors.misc;
+                return (
+                  <article
+                    class="group bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-red-500/20 hover:border-red-500 flex flex-col relative shadow-md"
+                    style={`animation-delay: ${index * 0.1}s`}
+                    role="listitem"
+                  >
+                    <div class="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-red-500 via-orange-500 to-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    {/* Logo */}
+                    <div class="w-full h-52 overflow-hidden bg-linear-to-br from-slate-100 to-red-100/50 dark:from-slate-800 dark:to-red-900/20 flex items-center justify-center p-8">
+                      {logoToShow ? (
+                        <img
+                          src={logoToShow}
+                          alt={ctf.data.title}
+                          loading="lazy"
+                          class="max-w-full max-h-full object-contain transition-transform duration-500 group-hover:scale-110"
+                        />
+                      ) : (
+                        <svg
+                          class="w-16 h-16 text-red-300 dark:text-red-700"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"
+                          />
+                        </svg>
+                      )}
+                    </div>
+                    {/* Contenido */}
+                    <div class="p-6 flex flex-col flex-1 gap-4">
+                      {/* Fila de badges — misma estructura que writeup */}
+                      <div class="flex flex-wrap gap-2 items-center">
+                        <span
+                          class={`inline-flex items-center px-3 py-2 rounded-lg text-xs font-extrabold font-sans uppercase tracking-wide leading-none border-2 ${ctfCatClass}`}
+                        >
+                          {ctf.data.category}
+                        </span>
+                        <span
+                          class={`difficulty-${ctf.data.difficulty} inline-flex items-center px-3 py-2 rounded-lg text-xs font-bold font-sans capitalize leading-none border-2`}
+                        >
+                          {t(`difficulty.${ctf.data.difficulty}`)}
+                        </span>
+                        {ctf.data.points && (
+                          <span class="inline-flex items-center gap-1 px-2.5 py-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 rounded-lg text-xs font-bold border-2 border-yellow-300 dark:border-yellow-700">
+                            <svg
+                              class="w-3.5 h-3.5 text-yellow-500"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+                            </svg>
+                            {ctf.data.points}
+                          </span>
+                        )}
+                      </div>
+                      {/* Título */}
+                      <h3 class="text-xl lg:text-2xl font-extrabold m-0 leading-snug font-sans tracking-tight">
+                        <a
+                          href={`/${lang}/ctf/${ctf.data.category}/${actualSlug}`}
+                          class="text-slate-900 dark:text-slate-50 no-underline hover:text-red-600 dark:hover:text-red-400 transition-colors duration-300 line-clamp-2"
+                        >
+                          {ctf.data.title}
+                        </a>
+                      </h3>
+                      {/* Descripción */}
+                      <p class="text-slate-600 dark:text-slate-400 leading-relaxed text-[15px] font-sans flex-1 line-clamp-3">
+                        {ctf.data.description}
+                      </p>
+                      {/* Tags */}
+                      {ctf.data.tags && ctf.data.tags.length > 0 && (
+                        <div class="flex flex-wrap gap-2 mt-auto pt-4 border-t border-slate-200 dark:border-slate-800">
+                          {ctf.data.tags.slice(0, 4).map((tag: string) => (
+                            <a
+                              href={`/${lang}/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`}
+                              class="tag"
+                              rel="tag"
+                            >
+                              #{tag}
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -956,19 +1099,62 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
 
   /* Estadísticas Cards */
   .stat-card {
-    @apply bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-2xl p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-indigo-500;
+    @apply relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl overflow-hidden;
+  }
+  .stat-card::before {
+    content: '';
+    @apply absolute top-0 left-0 right-0 h-1 rounded-t-2xl;
+  }
+  .stat-card-indigo::before {
+    @apply bg-indigo-500;
+  }
+  .stat-card-indigo:hover {
+    @apply shadow-indigo-500/20 border-indigo-300 dark:border-indigo-700;
+  }
+  .stat-card-purple::before {
+    @apply bg-purple-500;
+  }
+  .stat-card-purple:hover {
+    @apply shadow-purple-500/20 border-purple-300 dark:border-purple-700;
+  }
+  .stat-card-cyan::before {
+    @apply bg-cyan-500;
+  }
+  .stat-card-cyan:hover {
+    @apply shadow-cyan-500/20 border-cyan-300 dark:border-cyan-700;
+  }
+  .stat-card-orange::before {
+    @apply bg-orange-500;
+  }
+  .stat-card-orange:hover {
+    @apply shadow-orange-500/20 border-orange-300 dark:border-orange-700;
   }
 
   .stat-icon {
-    @apply mb-3 flex justify-center;
+    @apply mb-4 flex justify-center;
+  }
+  .stat-icon-inner {
+    @apply w-14 h-14 rounded-2xl flex items-center justify-center;
+  }
+  .stat-icon-indigo {
+    @apply bg-indigo-100 dark:bg-indigo-900/30;
+  }
+  .stat-icon-purple {
+    @apply bg-purple-100 dark:bg-purple-900/30;
+  }
+  .stat-icon-cyan {
+    @apply bg-cyan-100   dark:bg-cyan-900/30;
+  }
+  .stat-icon-orange {
+    @apply bg-orange-100 dark:bg-orange-900/30;
   }
 
   .stat-number {
-    @apply text-3xl md:text-4xl font-black text-slate-900 dark:text-slate-100 mb-2;
+    @apply text-3xl md:text-4xl font-black text-slate-900 dark:text-slate-100 mb-1.5;
   }
 
   .stat-label {
-    @apply text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide;
+    @apply text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest;
   }
 
   /* Filter Badges */
@@ -1024,6 +1210,34 @@ const blogPostsStructuredData = recentPosts.map((post) => ({
 
   /* Featured Cards */
   .featured-card {
-    @apply block bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-red-500 no-underline;
+    @apply block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-red-500/10 hover:border-red-400 dark:hover:border-red-600 no-underline;
+  }
+
+  /* Animaciones hero */
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .animate-fadeInDown {
+    animation: fadeInDown 0.65s cubic-bezier(0.22, 0.68, 0, 1.2) both;
+  }
+  .animate-fadeInUp {
+    animation: fadeInUp 0.65s cubic-bezier(0.22, 0.68, 0, 1.2) 0.15s both;
   }
 </style>
