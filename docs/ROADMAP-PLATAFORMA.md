@@ -124,7 +124,44 @@ modelar las colecciones de contenido — no se pierde el diseño ya hecho.
 
 ---
 
-## 7. Costes estimados (mensual)
+## 7. Escalabilidad y gestión a volumen
+
+Escenario real: cientos de writeups por plataforma (p. ej. ~300 de HTB) que, sumando
+todas las plataformas y categorías, llegan fácilmente a **600–1000+ entradas**. Esto
+**refuerza** la decisión de panel/backend y añade estas consideraciones.
+
+### Por qué el panel deja de ser opcional
+Mantener 600+ archivos `.md` a mano (crear, renombrar, borrar, mover imágenes) es
+inmanejable. Desde el panel, **añadir o quitar = un clic**, con búsqueda, filtros y
+acciones en lote. Directus gestiona miles de registros sin problema.
+
+### Los datos NO son el cuello de botella
+600 —o 10.000— writeups son solo texto: unos pocos MB en PostgreSQL, que maneja
+millones de filas. Lo que pesa son **imágenes/PDF/vídeo**, que van a object storage
+(barato) y a hosts de vídeo, **nunca a la base de datos**.
+
+### El punto crítico: estrategia de renderizado
+
+| Estrategia | Cómo escala | Cuándo conviene |
+| :--- | :--- | :--- |
+| SSG puro (construir cada página en cada deploy) | Bien hasta ~1–2k páginas; el build tarda cada vez más | Pocos cientos, cambios poco frecuentes |
+| **SSR/híbrido + caché (recomendado)** | Renderiza bajo demanda y cachea; publicar/quitar es **inmediato, sin reconstruir todo** | Cientos/miles con cambios frecuentes desde el panel |
+
+Con un panel que añade/quita contenido a diario, **SSR/híbrido con caché** es la
+opción: publicar un writeup lo hace visible al instante sin recompilar 600 páginas.
+
+### UX de listados a volumen
+- **Paginación** — nunca mostrar 600 entradas en una sola página.
+- **Filtros** — por plataforma, dificultad, OS, tags, certificación.
+- **Búsqueda** full-text sobre todo el catálogo.
+
+### Impacto en las fases
+- La **Fase 2** prioriza **SSR/híbrido con caché** en lugar de SSG puro.
+- Paginación y filtros en los listados desde el inicio, no como añadido posterior.
+
+---
+
+## 8. Costes estimados (mensual)
 
 | Concepto | Coste aprox. |
 | :--- | :--- |
@@ -139,7 +176,7 @@ modelar las colecciones de contenido — no se pierde el diseño ya hecho.
 
 ---
 
-## 8. Riesgos y consideraciones
+## 9. Riesgos y consideraciones
 
 - **Superficie de ataque:** un backend expuesto es un objetivo real. En un sitio de
   ciberseguridad, el hardening no es opcional.
@@ -150,7 +187,7 @@ modelar las colecciones de contenido — no se pierde el diseño ya hecho.
 
 ---
 
-## 9. Decisiones pendientes (lo que necesito de ti)
+## 10. Decisiones pendientes (lo que necesito de ti)
 
 1. **Hosting del backend:** ¿VPS propio (más barato, más control) o gestionado tipo
    Railway (más caro, menos mantenimiento)?
@@ -161,7 +198,7 @@ modelar las colecciones de contenido — no se pierde el diseño ya hecho.
 
 ---
 
-## 10. Próximo paso propuesto
+## 11. Próximo paso propuesto
 
 Empezar por una **prueba de concepto (POC)** de la Fase 1: Directus + Postgres
 corriendo en local, una colección modelada y el frontend leyendo de la API — para
